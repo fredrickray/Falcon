@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import AsideBar from '../components/AsideBar';
 import {BsTrashFill} from 'react-icons/bs';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { Link } from 'react-router-dom';
-import useFetch from '../hooks/useFetch';
+import {Link} from 'react-router-dom';
+// import useFetch from '../hooks/useFetch';
 
 const Profile = () => {
   const [showInputField, setShowInputField] = useState (false);
@@ -16,8 +16,18 @@ const Profile = () => {
   const [twitter, setTwitter] = useState ('');
   const [tiktok, setTikTok] = useState ('');
   const URL = 'http://localhost:9000/auth/socials';
-  const UPDATE_URL = 'http://localhost:9000/auth/update'
-  const { data, error } = useFetch("http://localhost:9000/store/get-products")
+  const UPDATE_URL = 'http://localhost:9000/auth/update';
+  // const {data, error} = useFetch ('http://localhost:9000/store/get-products')
+
+  // useEffect(() => {
+  //   axios.get("http://localhost:9000/auth/getUser", {
+  //     email: localStorage.email
+  //   }).then(response => {
+  //     console.log(response)
+  //   }).catch(err => {
+  //     console.log(err)
+  //   })
+  // })
 
   const handleOptionChange = () => {
     setShowInputField (true);
@@ -44,94 +54,91 @@ const Profile = () => {
 
   const Save = () => {
     axios
-    .post (URL, {
-      instagram,
-      twitter,
-      tiktok,
-      email
-    })
-    .then (response => {
-      console.log (response);
-      const {instagram, twitter, tiktok} = response.data.data
-      localStorage.setItem("instagram", instagram)
-      localStorage.setItem("twitter", twitter)
-      localStorage.setItem("tiktok", tiktok)
-      const Toast = Swal.mixin ({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: toast => {
-          toast.addEventListener ('mouseenter', Swal.stopTimer);
-          toast.addEventListener ('mouseleave', Swal.resumeTimer);
-        },
-      });
+      .post (URL, {
+        instagram,
+        twitter,
+        tiktok,
+        email,
+      })
+      .then (response => {
+        console.log (response);
+        const {instagram, twitter, tiktok} = response.data.data;
+        localStorage.setItem ('instagram', instagram);
+        localStorage.setItem ('twitter', twitter);
+        localStorage.setItem ('tiktok', tiktok);
+        const Toast = Swal.mixin ({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: toast => {
+            toast.addEventListener ('mouseenter', Swal.stopTimer);
+            toast.addEventListener ('mouseleave', Swal.resumeTimer);
+          },
+        });
 
-      Toast.fire ({
-        icon: 'success',
-        title: 'Socials accounts added successfully',
+        Toast.fire ({
+          icon: 'success',
+          title: 'Socials accounts added successfully',
+        });
+      })
+      .catch (err => {
+        console.log (err);
+        Swal.fire ({
+          position: 'top-end',
+          toast: true,
+          title: err.response.data.message,
+          color: 'red',
+          showConfirmButton: false,
+          timer: 2500,
+        });
       });
-
-    })
-    .catch (err => {
-      console.log (err);
-      Swal.fire ({
-        position: 'top-end',
-        toast: true,
-        title: err.response.data.message,
-        color: "red",
-        showConfirmButton: false,
-        timer: 2500,
-      });
-    });
-  }
+  };
 
   const update = () => {
-    setIsButtonDisabled(true)
-    axios.post(UPDATE_URL, {
-      firstname,
-      lastname,
-      username,
-    })
-    .then(response => {
-      console.log(response)
-      const { firstname, lastname, username } = response.data.data
-      setIsButtonDisabled(false)
-      const Toast = Swal.mixin ({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: toast => {
-          toast.addEventListener ('mouseenter', Swal.stopTimer);
-          toast.addEventListener ('mouseleave', Swal.resumeTimer);
-        },
-      });
-
-      Toast.fire ({
-        icon: 'success',
-        title: "Profile Updated successfully",
+    setIsButtonDisabled (true);
+    axios
+      .post (UPDATE_URL, {
+        firstname,
+        lastname,
+        username,
       })
-      
-    })
-    .catch(error => {
-      console.log(error)
+      .then (response => {
+        console.log (response);
+        // const {firstname, lastname, username} = response.data.data;
+        setIsButtonDisabled (false);
+        const Toast = Swal.mixin ({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: toast => {
+            toast.addEventListener ('mouseenter', Swal.stopTimer);
+            toast.addEventListener ('mouseleave', Swal.resumeTimer);
+          },
+        });
 
-      Swal.fire ({
-        position: 'top-end',
-        toast: true,
-        title: error.response.data.message,
-        color: 'red',
-        showConfirmButton: false,
-        timer: 2500,
+        Toast.fire ({
+          icon: 'success',
+          title: 'Profile Updated successfully',
+        });
+      })
+      .catch (error => {
+        console.log (error);
+
+        Swal.fire ({
+          position: 'top-end',
+          toast: true,
+          title: error.response.data.message,
+          color: 'red',
+          showConfirmButton: false,
+          timer: 2500,
+        });
+        setIsButtonDisabled (false);
       });
-      setIsButtonDisabled (false);
-    })
-  }
-
-   
+  };
 
   return (
     <div className="m-0 font-sans antialiased font-normal text-base leading-default bg-gray-50 text-slate-500">
@@ -179,7 +186,7 @@ const Profile = () => {
                         class="z-30 block w-full px-0 py-1 mb-0 transition-all border-0 rounded-lg ease-soft-in-out bg-inherit text-slate-700"
                         nav-link
                         active
-                        href="javascript:;"
+                        href
                         role="tab"
                         aria-selected="true"
                       >
@@ -265,7 +272,7 @@ const Profile = () => {
                       <a
                         class="z-30 block w-full px-0 py-1 mb-0 transition-colors border-0 rounded-lg ease-soft-in-out bg-inherit text-slate-700"
                         nav-link
-                        href="javascript:;"
+                        href
                         role="tab"
                         aria-selected="false"
                       >
@@ -320,14 +327,14 @@ const Profile = () => {
                 <div class="p-4 pb-0 mb-0 bg-white border-b-0 rounded-t-2xl flex flex-row">
                   <h6 class="mb-0">User Profile</h6>
                   <button
-                          type="button"
-                          className="inline-block ml-5  px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
-                          style={{background: 'lightGreen', marginLeft: "120px"}}
-                          onClick={update}
-                          disabled={isButtonDisabled ? true : false}
-                        >
-                         {isButtonDisabled ? 'Loading....' : 'Save'}
-                        </button>
+                    type="button"
+                    className="inline-block ml-5  px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+                    style={{background: 'lightGreen', marginLeft: '120px'}}
+                    onClick={update}
+                    disabled={isButtonDisabled ? true : false}
+                  >
+                    {isButtonDisabled ? 'Loading....' : 'Save'}
+                  </button>
                 </div>
                 <div class="flex-auto p-4">
                   <h6 class="font-bold leading-tight uppercase text-xs text-slate-500">
@@ -459,14 +466,14 @@ const Profile = () => {
                         Add social accounts.
                       </p>
                       {!showInputField &&
-                      <button
-                        type="button"
-                        className="inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
-                        style={{background: '#FF9B00'}}
-                        onClick={handleOptionChange}
-                      >
-                        + Add
-                      </button> }
+                        <button
+                          type="button"
+                          className="inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+                          style={{background: '#FF9B00'}}
+                          onClick={handleOptionChange}
+                        >
+                          + Add
+                        </button>}
 
                       {showInputField &&
                         <div
@@ -486,10 +493,10 @@ const Profile = () => {
                               className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
                               id="instagram"
                               type="text"
-                              placeholder='https://instagram.com/user/mike'
-                              value={instagram}
-                              onChange={e => setInstagram(e.target.value)}
+                              value="https://instagram.com/user/"
+                              onChange={e => setInstagram (e.target.value)}
                             />
+
                             <div className="mt-4 cursor-pointer">
                               <BsTrashFill onClick={trashInput} />
                             </div>
@@ -516,7 +523,7 @@ const Profile = () => {
                               type="text"
                               placeholder="https://twitter.com/user/mike"
                               value={twitter}
-                              onChange={e => setTwitter(e.target.value)}
+                              onChange={e => setTwitter (e.target.value)}
                             />
                             <div className="mt-4 cursor-pointer">
                               <BsTrashFill onClick={trashSecondInput} />
@@ -544,7 +551,7 @@ const Profile = () => {
                               type="number"
                               placeholder="https://Tik_Tok.com/user/mike"
                               value={tiktok}
-                              onChange={e => setTikTok(e.target.value)}
+                              onChange={e => setTikTok (e.target.value)}
                             />
                             <div className="mt-4 cursor-pointer">
                               <BsTrashFill onClick={trashThirdInput} />
@@ -600,7 +607,7 @@ const Profile = () => {
                       </div>
                       <a
                         class="inline-block py-3 pl-0 pr-4 mb-0 ml-auto font-bold text-center uppercase align-middle transition-all bg-transparent border-0 rounded-lg shadow-none cursor-pointer leading-pro text-xs ease-soft-in hover:scale-102 hover:active:scale-102 active:opacity-85 text-fuchsia-500 hover:text-fuchsia-800 hover:shadow-none active:scale-100"
-                        href="javascript:;"
+                        href
                       >
                         Reply
                       </a>
@@ -621,7 +628,7 @@ const Profile = () => {
                       </div>
                       <a
                         class="inline-block py-3 pl-0 pr-4 mb-0 ml-auto font-bold text-center uppercase align-middle transition-all bg-transparent border-0 rounded-lg shadow-none cursor-pointer leading-pro text-xs ease-soft-in hover:scale-102 hover:active:scale-102 active:opacity-85 text-fuchsia-500 hover:text-fuchsia-800 hover:shadow-none active:scale-100"
-                        href="javascript:;"
+                        href
                       >
                         Reply
                       </a>
@@ -642,7 +649,7 @@ const Profile = () => {
                       </div>
                       <a
                         class="inline-block py-3 pl-0 pr-4 mb-0 ml-auto font-bold text-center uppercase align-middle transition-all bg-transparent border-0 rounded-lg shadow-none cursor-pointer leading-pro text-xs ease-soft-in hover:scale-102 hover:active:scale-102 active:opacity-85 text-fuchsia-500 hover:text-fuchsia-800 hover:shadow-none active:scale-100"
-                        href="javascript:;"
+                        href
                       >
                         Reply
                       </a>
@@ -663,7 +670,7 @@ const Profile = () => {
                       </div>
                       <a
                         class="inline-block py-3 pl-0 pr-4 mb-0 ml-auto font-bold text-center uppercase align-middle transition-all bg-transparent border-0 rounded-lg shadow-none cursor-pointer leading-pro text-xs ease-soft-in hover:scale-102 hover:active:scale-102 active:opacity-85 text-fuchsia-500 hover:text-fuchsia-800 hover:shadow-none active:scale-100"
-                        href="javascript:;"
+                        href
                       >
                         Reply
                       </a>
@@ -684,7 +691,7 @@ const Profile = () => {
                       </div>
                       <a
                         class="inline-block py-3 pl-0 pr-4 mb-0 ml-auto font-bold text-center uppercase align-middle transition-all bg-transparent border-0 rounded-lg shadow-none cursor-pointer leading-pro text-xs ease-soft-in hover:scale-102 hover:active:scale-102 active:opacity-85 text-fuchsia-500 hover:text-fuchsia-800 hover:shadow-none active:scale-100"
-                        href="javascript:;"
+                        href
                       >
                         Reply
                       </a>
@@ -698,7 +705,9 @@ const Profile = () => {
               <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 shadow-soft-xl rounded-2xl bg-clip-border">
                 <div className="p-4 pb-0 mb-0 bg-white rounded-t-2xl">
                   <h6 className="mb-1">Projects</h6>
-                  <p className="leading-normal text-sm">Architects design houses</p>
+                  <p className="leading-normal text-sm">
+                    Architects design houses
+                  </p>
                 </div>
                 <div className="flex-auto p-4">
                   <div className="flex flex-wrap -mx-3">
@@ -706,7 +715,7 @@ const Profile = () => {
                     <div className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
                       <div class="relative flex flex-col min-w-0 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border">
                         <div class="relative">
-                          <a class="block shadow-xl rounded-2xl">
+                          <a href class="block shadow-xl rounded-2xl">
                             <img
                               src="../assets/img/home-decor-1.jpg"
                               alt="img-blur-shadow"
@@ -718,7 +727,7 @@ const Profile = () => {
                           <p class="relative z-10 mb-2 leading-normal text-transparent bg-gradient-to-tl from-gray-900 to-slate-800 text-sm bg-clip-text">
                             Project #2
                           </p>
-                          <a href="javascript:;">
+                          <a href>
                             <h5>Modern</h5>
                           </a>
                           <p class="mb-6 leading-normal text-sm">
@@ -739,7 +748,7 @@ const Profile = () => {
                     <div className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
                       <div class="relative flex flex-col min-w-0 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border">
                         <div class="relative">
-                          <a class="block shadow-xl rounded-2xl">
+                          <a href class="block shadow-xl rounded-2xl">
                             <img
                               src="../assets/img/home-decor-2.jpg"
                               alt="img-blur-shadow"
@@ -751,7 +760,7 @@ const Profile = () => {
                           <p class="relative z-10 mb-2 leading-normal text-transparent bg-gradient-to-tl from-gray-900 to-slate-800 text-sm bg-clip-text">
                             Project #1
                           </p>
-                          <a href="javascript:;">
+                          <a href>
                             <h5>Scandinavian</h5>
                           </a>
                           <p class="mb-6 leading-normal text-sm">
@@ -766,14 +775,14 @@ const Profile = () => {
                             </button>
                             <div class="mt-2">
                               <a
-                                href="javascript:;"
+                                href
                                 class="relative z-20 inline-flex items-center justify-center w-6 h-6 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
                                 data-target="tooltip_trigger"
                                 data-placement="bottom"
                               >
                                 <img
                                   class="w-full rounded-circle"
-                                  alt="Image placeholder"
+                                  alt="Img placeholder"
                                   src="../assets/img/team-3.jpg"
                                 />
                               </a>
@@ -789,14 +798,14 @@ const Profile = () => {
                                 />
                               </div>
                               <a
-                                href="javascript:;"
+                                href
                                 class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
                                 data-target="tooltip_trigger"
                                 data-placement="bottom"
                               >
                                 <img
                                   class="w-full rounded-circle"
-                                  alt="Image placeholder"
+                                  alt="Img placeholder"
                                   src="../assets/img/team-4.jpg"
                                 />
                               </a>
@@ -812,14 +821,14 @@ const Profile = () => {
                                 />
                               </div>
                               <a
-                                href="javascript:;"
+                                href
                                 class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
                                 data-target="tooltip_trigger"
                                 data-placement="bottom"
                               >
                                 <img
                                   class="w-full rounded-circle"
-                                  alt="Image placeholder"
+                                  alt="Img placeholder"
                                   src="../assets/img/team-1.jpg"
                                 />
                               </a>
@@ -835,14 +844,14 @@ const Profile = () => {
                                 />
                               </div>
                               <a
-                                href="javascript:;"
+                                href
                                 class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
                                 data-target="tooltip_trigger"
                                 data-placement="bottom"
                               >
                                 <img
                                   class="w-full rounded-circle"
-                                  alt="Image placeholder"
+                                  alt="Img placeholder"
                                   src="../assets/img/team-2.jpg"
                                 />
                               </a>
@@ -866,7 +875,7 @@ const Profile = () => {
                     <div className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
                       <div class="relative flex flex-col min-w-0 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border">
                         <div class="relative">
-                          <a class="block shadow-xl rounded-2xl">
+                          <a href class="block shadow-xl rounded-2xl">
                             <img
                               src="../assets/img/home-decor-3.jpg"
                               alt="img-blur-shadow"
@@ -878,7 +887,7 @@ const Profile = () => {
                           <p class="relative z-10 mb-2 leading-normal text-transparent bg-gradient-to-tl from-gray-900 to-slate-800 text-sm bg-clip-text">
                             Project #3
                           </p>
-                          <a href="javascript:;">
+                          <a href>
                             <h5>Minimalist</h5>
                           </a>
                           <p class="mb-6 leading-normal text-sm">
@@ -893,14 +902,14 @@ const Profile = () => {
                             </button>
                             <div class="mt-2">
                               <a
-                                href="javascript:;"
+                                href
                                 class="relative z-20 inline-flex items-center justify-center w-6 h-6 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
                                 data-target="tooltip_trigger"
                                 data-placement="bottom"
                               >
                                 <img
                                   class="w-full rounded-circle"
-                                  alt="Image placeholder"
+                                  alt="Img placeholder"
                                   src="../assets/img/team-4.jpg"
                                 />
                               </a>
@@ -916,14 +925,14 @@ const Profile = () => {
                                 />
                               </div>
                               <a
-                                href="javascript:;"
+                                href
                                 class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
                                 data-target="tooltip_trigger"
                                 data-placement="bottom"
                               >
                                 <img
                                   class="w-full rounded-circle"
-                                  alt="Image placeholder"
+                                  alt="Img placeholder"
                                   src="../assets/img/team-3.jpg"
                                 />
                               </a>
@@ -939,14 +948,14 @@ const Profile = () => {
                                 />
                               </div>
                               <a
-                                href="javascript:;"
+                                href
                                 class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
                                 data-target="tooltip_trigger"
                                 data-placement="bottom"
                               >
                                 <img
                                   class="w-full rounded-circle"
-                                  alt="Image placeholder"
+                                  alt="Img placeholder"
                                   src="../assets/img/team-2.jpg"
                                 />
                               </a>
@@ -962,14 +971,14 @@ const Profile = () => {
                                 />
                               </div>
                               <a
-                                href="javascript:;"
+                                href
                                 class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
                                 data-target="tooltip_trigger"
                                 data-placement="bottom"
                               >
                                 <img
                                   class="w-full rounded-circle"
-                                  alt="Image placeholder"
+                                  alt="Img placeholder"
                                   src="../assets/img/team-1.jpg"
                                 />
                               </a>
@@ -1006,69 +1015,6 @@ const Profile = () => {
               </div>
             </div>
           </div>
-          <footer class="pt-4">
-            <div class="w-full px-6 mx-auto">
-              <div class="flex flex-wrap items-center -mx-3 lg:justify-between">
-                <div class="w-full max-w-full px-3 mt-0 mb-6 shrink-0 lg:mb-0 lg:w-1/2 lg:flex-none">
-                  <div class="leading-normal text-center text-sm text-slate-500 lg:text-left">
-                    ©
-                    <script>
-                      document.write(new Date().getFullYear() + ",");
-                    </script>
-                    made with <i class="fa fa-heart" /> by
-                    <a
-                      href="https://www.creative-tim.com"
-                      class="font-semibold text-slate-700"
-                      target="_blank"
-                    >
-                      Creative Tim
-                    </a>
-                    for a better web.
-                  </div>
-                </div>
-                <div class="w-full max-w-full px-3 mt-0 shrink-0 lg:w-1/2 lg:flex-none">
-                  <ul class="flex flex-wrap justify-center pl-0 mb-0 list-none lg:justify-end">
-                    <li class="nav-item">
-                      <a
-                        href="https://www.creative-tim.com"
-                        class="block px-4 pt-0 pb-1 font-normal transition-colors ease-soft-in-out text-sm text-slate-500"
-                        target="_blank"
-                      >
-                        Creative Tim
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a
-                        href="https://www.creative-tim.com/presentation"
-                        class="block px-4 pt-0 pb-1 font-normal transition-colors ease-soft-in-out text-sm text-slate-500"
-                        target="_blank"
-                      >
-                        About Us
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a
-                        href="https://creative-tim.com/blog"
-                        class="block px-4 pt-0 pb-1 font-normal transition-colors ease-soft-in-out text-sm text-slate-500"
-                        target="_blank"
-                      >
-                        Blog
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a
-                        href="https://www.creative-tim.com/license"
-                        class="block px-4 pt-0 pb-1 pr-0 font-normal transition-colors ease-soft-in-out text-sm text-slate-500"
-                        target="_blank"
-                      >
-                        License
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </footer>
         </div>
       </div>
     </div>

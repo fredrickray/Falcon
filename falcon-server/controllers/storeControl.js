@@ -62,18 +62,21 @@ exports.createStore = async (req, res) => {
 exports.createProduct = async (req, res) => {
   const {name, description, price, email, weight, quantity, image,  style, size, colour} = req.body;
   if (name == '') {
-    res.send ('Name field must not be empty');
+    res.send ({message: 'Name field must not be empty'});
   } else if (description == '') {
-    res.send ('Description field must not be empty');
+    res.send ({message: 'Description field must not be empty'});
   } else if (price == '') {
-    res.send ('Price field must not be empty');
+    res.send ({message: 'Price field must not be empty'});
   } else if (weight == '') {
-    res.send ('Weight field must not be empty');
+    res.send ({message: 'Weight field must not be empty'});
   }
   else if (quantity == '') {
-    res.send ('Quantity field must not be empty');
-  } else {
-    knex ('Goods')
+    res.send ({message: 'Quantity field must not be empty'});
+  } else if(!image || image == "") {
+    res.send({message: "Please select an image"})
+  }
+   else {
+    knex ('Products')
       .insert ({
         name,
         price,
@@ -87,52 +90,64 @@ exports.createProduct = async (req, res) => {
         size
       })
       .then (response => {
-        console.log (response);
+        // console.log (response);
         res
-          .status (200)
-          .json ({message: 'Store created', status: 'Success', response});
-        console.log (response);
+          .status (201)
+          .json ({message: 'Product created succesfully', status: 'Success', response});
+        console.log ({message: "Product created succesfully"}, response);
       })
       .catch (err => {
-        console.log (err);
+        console.log ({message: "Server error"}, err);
         res
-          .status (400)
-          .json ({message: 'Failed to create product', status: 'failed', err});
+          .status (500)
+          .json ({message: 'There was a server error', status: 'Server error', err});
       });
   }
 };
 
-// getting history of all product for a merchant
-exports.getAllProducts = async (req, res) => {
-  const name = req.params.store;
-    
-  if (!name) {
-    res.send ({message: "There's no name"});
-  } else {
-    try {
-      let response = await knex ('Goods').where ({store: name});
-      console.log (response);
-      // res.send(response)
-      if (response == '') {
-        res.status (404).json ({
-          status: 'Not found',
-          message: "There's no Store with this name, try again",
-        });
-        console.log ('Store not found');
-      } else {
-        res.status (200).json ({
-          status: 'Success',
-          message: 'Retrieved Store for user',
-          response,
-        });
-        console.log (response);
-      }
-    } catch (err) {
-      console.log (err);
-      res.status (400).json ({status: 'Error', message: err});
+// getting all products of a merchants
+exports.getProducts = async(req, res) => {
+  let email = req.body.email
+  try{
+    let response = await knex("Products").where({email: email})
+    if(response == "") {
+      console.log("Email not found")
+      res.status(404).json({message: "Email not found"})
     }
+    else{
+      let data = response
+      let data2 = JSON.parse(JSON.stringify(data));
+      console.log({message: "Products were retrived succesfully", data2})
+      res.status(200).json({status: "success", message: "Products were retrieved successfully", data2})
+    }
+  } 
+  catch (error){
+    // console.log(error)
+    res.status(500).send({status: "Server Error", message: "There was an error in the server"})
   }
-  // res.send("You requested to see the store with the name of " + req.params.store)
+}
+
+// getting the store of a merchant
+exports.getStore = async (req, res) => {
+  const name = req.params.store;
+
+  try{
+    let response = await knex("Products").where({store: name})
+    console.log(response)
+    // res.send(response)
+    if(response == "") {
+      res.status(404).json({status: "Not found", message: "There's no Store with this name, try again"})
+      console.log("Store not found")
+    }
+    else{
+      res.status(200).json({status: "Success", message: "Retrieved Store for user", response})
+      console.log(response)
+    }
+  } 
+  catch(err) {
+    console.log(err)
+    res.status(500).json({status: "Error", message: err})
+  }
 };
 
 exports.queryProducts = async(req, res) => {
@@ -160,19 +175,16 @@ exports.queryProducts = async(req, res) => {
 exports.getProductID = async (req, res) => {
   const id = req.params.id;
 
-  if (!id) {
-    res.send ({message: "There's no id for this product"});
-  } else {
     try {
-      let response = await knex ('Goods').where ({id: id});
-      console.log (response);
+      let response = await knex ('Products').where ({id: id});
+      // console.log (response);
       // res.send(response)
       if (response == '') {
         res.status (404).json ({
           status: 'Not found',
           message: "There's no product with this id",
         });
-        console.log ('Product not found');
+        console.log ("There's no product with this id");
       } else {
         res.status (200).json ({
           status: 'Success',
@@ -183,10 +195,8 @@ exports.getProductID = async (req, res) => {
       }
     } catch (err) {
       console.log (err);
-      res.status (400).json ({status: 'Error', message: err});
+      res.status (500).json ({status: ' Sever Error', message: "Internal server error", err});
     }
-  }
-  // res.send("You requested to see the product with the id of " + req.params.id)
 };
 
 //deleting a product
