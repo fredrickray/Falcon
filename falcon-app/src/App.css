@@ -77,7 +77,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 20px 80px;
-  background-color: #E3E6F3;
+  background-color: #ffffff;;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
   position: sticky;
   z-index: 999;
@@ -132,6 +132,24 @@ body {
   font-size: 30px;
 }
 
+/* CART SIDE MENU */
+*[data-v-7d194230], *[data-v-7d194230]::after, *[data-v-7d194230]::before {
+  box-sizing: inherit;
+}
+
+.summary_body {
+  width: 100%;
+}
+
+.summary__cart {
+  border-bottom: 1px solid #e0e0e0;
+  height: calc(100vh - 400px);
+  margin: 0 -30px 24px;
+  min-height: 200px;
+  overflow: auto;
+  padding: 0 30px 10px;
+}
+
 #navbar .summary_cart_item_product{
   align-items: center;
   display: flex;
@@ -159,14 +177,63 @@ body {
   line-height: 17px;
 }
 
+#navbar .action {
+  display: flex;
+  align-items: center;
+}
 
-.summary__cart {
-  border-bottom: 1px solid #e0e0e0;
-  height: calc(100vh - 400px);
-  margin: 0 -30px 24px;
-  min-height: 200px;
-  overflow: auto;
-  padding: 0 30px 10px;
+#navbar .action__value {
+  width: 34px;
+  text-align: center;
+}
+
+#navbar .action__minus, #store .action__plus {
+  background-color: transparent;
+  outline: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+svg:not(:root) {
+  overflow: hidden;
+}
+
+
+
+#navbar .summary__cart__cta {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5rem 0;
+}
+
+#navbar .summary__cart__cta__btn {
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+  color: #4f4f4f;
+  display: flex;
+  font-size: 12px;
+  padding: 4px;
+  transition: color 300ms ease;
+  font-weight: 700;
+}
+
+#navbar .summary__cart__cta__btn__icon {
+  display: block;
+  fill: currentColor;
+  height: auto;
+  margin-right: 5px;
+  width: 14px;
+}
+
+#navbar .summary__footer, #navbar2 .summary__footer {
+  padding-top: 20px;
+  position: absolute;
+  bottom: 0px;
 }
 
 .summary__footer__item {
@@ -176,12 +243,21 @@ body {
   margin-bottom: 24px;
 }
 
+#navbar .summary__footer__item__value--2 {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+#navbar .summary__footer__item:last-child {
+  margin-bottom: 100px;
+}
+
 /* CART BUTTON STYLE */
 .btn{
     align-items: center;
     background-color: #0a0e27;
     border: none;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     color: #fff;
     cursor: pointer;
     display: inline-flex;
@@ -189,7 +265,8 @@ body {
     font-weight: 500;
     justify-content: flex-start;
     line-height: 1.9rem;
-    padding: 2.1rem 2.4rem;
+    padding: 1rem 8rem;
+    margin-bottom: 5%;
     text-align: center;
     text-decoration: none;
     transition: all .3s ease;
@@ -215,6 +292,28 @@ body {
 #close {
   display: none;
 }
+
+#close2 {
+  display: none;
+}
+
+.payment_process, #payment_process2{
+  /* display: flex;
+  flex-direction: column; */
+  display: inline-block;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+/* #payment_process {
+  display: none;
+  color: #222;
+  font-size: 14px;
+  cursor: pointer;
+} */
 
 
 /* END OF NAVBAR */
@@ -409,7 +508,7 @@ body {
       color: black;
       border-color: 1px solid #cce7d0;
       position: absolute;
-      postion: absolute;
+      /* postion: absolute; */
   }
   
    
@@ -482,11 +581,64 @@ body {
   }
   
   #prodetails .single-pro-details select {
-      display: block;
-      padding: 5px 10px;
-      margin-bottom: 10px;
+    display: block;
+    padding: 1rem 8rem;
+    /* margin-bottom: 30px; */
+    /* margin-top: 30px; */
+    margin: 10px 0px;
+    border-color: black;
+    border: 1px solid;
+    border-radius: 5px;
+    width: 100%;
+  }
+
+  #prodetails .select_option_name  {
+    padding: 1rem 8rem;
+  }
+
+  #prodetails .select_option_value  {
+    padding: 1rem 8rem;
+  }
+
+  #prodetails .product_quantity {
+    margin: 0 0 15px;
   }
   
+  #prodetails .product_quantity .action{
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-evenly;
+    width: 40%;
+
+  }
+
+  #prodetails .product_quantity .action__btn{
+      align-items: center;
+      background-color: #f2f2f2;
+      border-radius: none;
+      display: flex;
+      flex: 0 0 auto;
+      font-size: 20px;
+      height: 40px;
+      justify-content: center;
+      line-height: 20px;
+      width: 50px;
+      color: black;
+      margin-left: 1.5%;
+  }
+
+  #prodetails .product_quantity .action__value{
+    flex: 0 0 auto;
+    font-size: 18px;
+    line-height: 18px;
+    min-width: 60px;
+  }
+
+  *[data-v-7be1d382], *[data-v-7be1d382]::after, *[data-v-7be1d382]::before {
+    box-sizing: inherit;
+}
+
   #prodetails .single-pro-details input {
       width: 50px;
       height: 47px;
@@ -500,7 +652,7 @@ body {
   }
   
   #prodetails .single-pro-details button {
-      background-color: #088178;
+      background-color: #0a0e27;
       color: white;
   }
   
@@ -934,14 +1086,35 @@ footer .copyright {
       right: -410px;
       height: 100vh;
       width: 410px;
-      background-color: #E3E6F3;
+      background-color: #ffffff;;
       box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
       padding: 80px 0 0 10px;
       transition: 0.4s;
   }
+
+  #navbar2 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    position: fixed;
+    top: 0;
+    right: -410px;
+    height: 100vh;
+    width: 410px;
+    background-color: #e49e9e;
+    box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
+    padding: 80px 0 0 10px;
+    transition: 0.4s;
+}
+#navbar2.active2{
+  right: 0px;
+}
+
   #navbar.active {
       right: 0px;
   }
+
   #navbar li {
       margin-bottom: 25px;
   }
@@ -970,11 +1143,32 @@ footer .copyright {
       display: initial;
       position: absolute;
       top: 30px;
-      left: 30px;
+      right: 30px;
       color: #222;
       font-size: 24px;
       cursor: pointer;
   }
+  #close2 {
+    display: initial;
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    color: #222;
+    font-size: 24px;
+    cursor: pointer;
+}
+  #payment_process, #payment_process2 {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    color: #222;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+
   #lg-bag {
       display: none;
       cursor: pointer;
@@ -1015,7 +1209,7 @@ footer .copyright {
 }
 #navbar {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
     justify-content: flex-start;
     position: fixed;
@@ -1060,11 +1254,33 @@ footer .copyright {
     display: initial;
     position: absolute;
     top: 30px;
-    left: 30px;
+    right: 30px;
     color: #222;
     font-size: 24px;
     cursor: pointer;
 }
+
+#close2 {
+  display: initial;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  color: #222;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+#payment_process, #payment_process2 {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  color: #222;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 #lg-bag {
     display: none;
     cursor: pointer;
@@ -1103,7 +1319,7 @@ footer .copyright {
   .section-p1 {
       padding: 40px 40px;
   }
-  #navbar {
+  #navbar, #navbar2 {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -1113,17 +1329,30 @@ footer .copyright {
       right: -410px;
       height: 100vh;
       width: 410px;
-      background-color: #E3E6F3;
+      background-color: #ffffff;;
       box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
-      padding: 80px 0 0 10px;
+      padding: 80px 20px 0 20px;
       transition: 0.4s;
   }
+ 
+#navbar2.active2{
+  right: 0px;
+}
   #navbar.active {
       right: 0px;
   }
-  #navbar li {
+  #navbar li, #navbar2 li {
       margin-bottom: 25px;
+      padding: 81px 5px 5px 20px;
+      cursor: pointer;
   }
+
+  #navbar li :not(first-child)::before {
+    content: ">";
+    display: inline-block;
+    padding-right: 10px;
+}
+  
  #navbar .cartDesktop{
     display: none;
   }
@@ -1145,15 +1374,40 @@ footer .copyright {
     font-size: 30px;
   }
 
-  #close {
+  #close, #close2 {
       display: initial;
       position: absolute;
       top: 30px;
-      left: 30px;
+      right: 30px;
       color: #222;
       font-size: 24px;
       cursor: pointer;
   }
+
+  #payment_process, #payment_process2 {
+    display: flex;
+    flex-direction: row;
+    color: #222;
+    font-size: 14px;
+    cursor: pointer;
+    top: 30px;
+    left: 30px;
+    position: absolute;
+    top: -5%;
+    left: 8.5%;
+    justify-content: flex-end;
+}
+
+/* #payment_process2 {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  color: #222;
+  font-size: 14px;
+  cursor: pointer;
+} */
   #lg-bag {
       display: none;
       cursor: pointer;

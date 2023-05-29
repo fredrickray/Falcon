@@ -1,21 +1,22 @@
 import {useState, useEffect} from 'react';
-import Axios from 'axios';
 import Swal from 'sweetalert2';
+import axios from 'axios';
+// import { axiosInstance } from '../services/axiosHandler';
 const useFetch = url => {
   const [data, setData] = useState (null);
   const [error, setError] = useState (null);
   const [count, setCount] = useState(0)
   const token = localStorage.token;
-  const headers =  {
-    'Content-Type': 'application/json',
-    "Authorization": `Bearer ${token}`,
-    'Access-Control-Allow-Origin': "https://localhost:9000/store/get-products"
-  }
+  
+  // axiosInstance.interceptors.request.use( async(config) => {
+  //   config.headers.Authorization = `Bearer ${token}`
+  //   return config
+  // })
   useEffect (
     () => {
-      Axios.post (url, {
+      axios.post (url, {
         email: localStorage.email,
-      }, headers)
+      })
         .then (response => {
           console.log (response);
           console.log(token)
@@ -36,9 +37,10 @@ const useFetch = url => {
               title: 'Apple authentication is disabled',
               showConfirmButton: false,
               timer: 2500,
-            }).then(
-              window.location.href = "/Login"
-            )
+            })
+            // .then(
+            //   window.location.href = "/Login"
+            // )
             setError (error);
             
           }

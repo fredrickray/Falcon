@@ -165,21 +165,24 @@ exports.login = async (req, res) => {
 };
 
 exports.update = async (req, res) =>{
-  const { email, firstname, lastname, username } = req.body
+  const { email, fname, lname, uname, image } = req.body
 
   try {
     let user = await knex("Merchants")
       .where({email})
       .first()
-      .update({firstname, lastname, username})
       
-      if(!user || user == "") {
-        res.status(404).send({message: "Can't update, user not found"})
-        console.log("Can't update, user not found")
+      if (!user || user === "") {
+        res.status(404).send({ message: "Can't update, user not found" });
+        console.log("Can't update, user not found");
+      } else {
+        await knex("Merchants")
+          .where({ email })
+          .update({ firstname: fname, lastname: lname, username: uname, image });
+      
+        res.status(201).send({ message: "Updated successfully", status: "success", user });
       }
-      else{
-        res.status(201).send({message: "Updated successfully", status: "successs", user})
-      }
+      
   } 
   catch (error) {
     res.status(500).send({message: "Server error", error})

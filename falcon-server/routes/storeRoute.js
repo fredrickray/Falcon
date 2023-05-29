@@ -35,6 +35,9 @@ router
 .get("/products", storeController.queryProducts)
 
 router
+.get("/3products", storeController.query3Products)
+
+router
 .get("/get-product/:id", storeController.getProductID)
 
 router

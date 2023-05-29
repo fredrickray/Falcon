@@ -60,7 +60,7 @@ exports.createStore = async (req, res) => {
 
 //creating products
 exports.createProduct = async (req, res) => {
-  const {name, description, price, email, weight, quantity, image,  style, size, colour} = req.body;
+  const {name, description, price, email, weight, quantity, image,  style, size, colour, store} = req.body;
   if (name == '') {
     res.send ({message: 'Name field must not be empty'});
   } else if (description == '') {
@@ -87,7 +87,8 @@ exports.createProduct = async (req, res) => {
         image,
         style,
         colour,
-        size
+        size,
+        store
       })
       .then (response => {
         // console.log (response);
@@ -171,6 +172,26 @@ exports.queryProducts = async(req, res) => {
   }
 }
 
+exports.query3Products = async(req, res) => {
+  let { q } = req.query
+  const {email} = req.body
+  
+  try {
+    const search  = await knex("Products").where({email})
+    if(search == "") {
+      res.status(404).send({message: "email not found"})
+    }
+    else{
+      // console.log(search.splice(0,3))
+      console.log(search)
+      res.send({message: "Data retrieved", user: search})
+      // res.send(search.splice)
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({message: "server error"})
+  }
+}
 // To get a single product for a merchant
 exports.getProductID = async (req, res) => {
   const id = req.params.id;
@@ -231,6 +252,29 @@ exports.deleteProduct = async (req, res) => {
     }
   }
 };
+
+// purchased item 
+// itwOption are things like size, color, style
+exports.itemPurchased = async (req, res) => {
+  const { firstname, lastname, email, phone, itemName, itemPrice, itemOption} = req.body
+
+  try {
+    const response = await knex("Purchased").insert({
+      firstname,
+      lastname,
+      email,
+      phone,
+      itemName,
+      itemPrice,
+      itemOption
+    })
+    console.log(response)
+    res.send(response)
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({message: "There was a server error", error})
+  }
+}
 
 //delivery information
 exports.createDelivery = async (req, res) => {

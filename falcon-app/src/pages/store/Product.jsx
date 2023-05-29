@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {Link} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AsideBar from '../../components/AsideBar';
 import axios, { Axios } from "axios"
 import useFetch from '../../hooks/useFetch';
+// import {  } from 'react-router-dom';
 const Products = () => {
   const [searchItem, setSearchItem] = useState("")
   const QUERY_URL = `http://localhost:9000/store/products?q=${searchItem}`
@@ -25,8 +26,11 @@ const Products = () => {
   //   }
   //   fetchData()
   // }, [searchItem])
+  const navigate = useNavigate()
 
- 
+  const newProduct = () => {
+    window.location.href = "/store/Products/new"
+  }
 
   return (
     <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
@@ -60,6 +64,7 @@ const Products = () => {
               type="button"
               className="inline-block ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
               style={{background: '#FF9B00', margin: "4%"}}
+              onClick={newProduct}
             >
               Add Product +
             </button>
@@ -110,12 +115,15 @@ const Products = () => {
                     </thead>
                       <tbody>
                       {products?.map((result) =>(
-                      <Link to={`/Store/Product/${result.id}`} style={{ display: "inline-block" }}>
-                      <tr
-                        key={result.id}>
+                        // <Link to={`/Store/Product/${result.id}`}>
+                        <tr
+                        key={result.id} 
+                        onClick={() => navigate(`/Store/Product/${result.id}`)}
+                        className='cursor-pointer'>
                         <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent"
-                          style={{textDecoration: "none"}}>
-                          <div className="flex px-2 py-1">
+                          style={{textDecoration: "none",width:"100%"}}
+                          >
+                          <div className="flex px-2 py-1" >
                             <div>
                               <img
                                 src={result.image}
@@ -146,7 +154,7 @@ const Products = () => {
                           </span>
                         </td>
                       </tr>
-                        </Link>  
+                        /* </Link>    */
                       ))}
                     </tbody>
                   </table>

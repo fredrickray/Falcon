@@ -20,7 +20,8 @@ const NewProduct = () => {
   const [editing, setEditing] = useState (false);
   const [selectedImages, setSelectedImages] = useState ([]);
   const [value, setValue] = useState ('4');
-  const email = localStorage.email;
+  const [isButtonDisabled, setIsButtonDisabled] = useState (false);
+  const{ email } = localStorage;
   const token = localStorage.token;
 
   const handleOptionChange = () => {
@@ -76,7 +77,7 @@ const NewProduct = () => {
   // to use the function "handleImageUpload" and set Image to send to the backend
   const saveImage = event => {
     handleImageUpload (event);
-    setImage (event.target.value);
+    setImage (event.target.files[0])
   };
 
   // To restrict amount of images to select to 5
@@ -99,13 +100,14 @@ const NewProduct = () => {
     }
   };
   const CLOUDINARY_API =
-    'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
+  'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';  
   const PRODUCT_URL = 'http://localhost:9000/store/create-product';
 
   const create = () => {
     const formData = new FormData ();
     formData.append ('file', image);
     formData.append ('upload_preset', 'b74r48f2');
+    setIsButtonDisabled(true)
     const headers = {
       'Content-Type': 'application/json',
       "Authorization": `Bearer ${token}`,
@@ -113,7 +115,7 @@ const NewProduct = () => {
     };
 
     axios
-      .post (CLOUDINARY_API, formData, { headers })
+      .post (CLOUDINARY_API, formData)
       .then (imageResponse => {
         console.log (imageResponse.data.secure_url);
         const imageUrl = imageResponse.data.secure_url;
@@ -130,9 +132,10 @@ const NewProduct = () => {
             size: size,
             colour: colour,
             email: email,
-          }, { headers })
+          })
           .then (response => {
             console.log (response.data);
+            setIsButtonDisabled(false)
             Swal.fire ({
               position: 'center',
               toast: true,
@@ -144,6 +147,7 @@ const NewProduct = () => {
           })
           .catch (error => {
             console.log (error);
+            setIsButtonDisabled(false)
             Swal.fire ({
               position: 'center',
               toast: true,
@@ -156,6 +160,7 @@ const NewProduct = () => {
       })
       .catch (error => {
         console.log (error);
+        setIsButtonDisabled(false)
         Swal.fire ({
           position: 'center',
           toast: true,
@@ -167,6 +172,7 @@ const NewProduct = () => {
       });
   };
 
+  // Setting the value for various option in the dataOption field
   const multipleOptionChnage = event => {
     const {id, value} = event.target;
 
@@ -770,7 +776,7 @@ const NewProduct = () => {
               }}
             >
               <input
-                accept="image/png, image/jpeg"
+                accept="image/png, image/jpeg, image/jpg"
                 multiple
                 type="file"
                 max="5"
@@ -830,8 +836,9 @@ const NewProduct = () => {
               className="inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
               style={{background: '#828282'}}
               onClick={create}
+              disabled={isButtonDisabled ? true : false}
             >
-              Save & Preview{' '}
+              {isButtonDisabled ? "Saving..." :"Save & Preview"}
             </button>
             <button
               type="button"

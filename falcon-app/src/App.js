@@ -22,7 +22,7 @@ import StoreProduct from './pages/store/storeProduct';
 // ------>> STORE END <<-------
 import Test from './pages/Test';
 import NotFound from './components/notFound';
-
+import Tag from './pages/Tag';
 import "./assets/css/soft-ui-dashboard-tailwind.css"
 
 const App = () => {
@@ -43,6 +43,7 @@ const App = () => {
         <Route exact path="/store/shipping" element={<Shipping />} />
         <Route exact path="/Profile" element={<Profile />} />
         <Route exact path="/Home" element={<Home />} />
+        <Route exact path="/Tag" element={<Tag />} />
         {/* <Route exact path="/Store/View/:store" element={<StoreView />} /> */}
         <Route exact path="*" element={<NotFound />} />
         </Routes>

@@ -4,30 +4,41 @@ import {BsTrashFill} from 'react-icons/bs';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import {Link} from 'react-router-dom';
-// import useFetch from '../hooks/useFetch';
-
+import useFetch from '../hooks/useFetch';
 const Profile = () => {
   const [showInputField, setShowInputField] = useState (false);
   const [showSecondInput, setShowSecondInput] = useState (false);
   const [showThirdInput, setShowThirdInput] = useState (false);
   const [isButtonDisabled, setIsButtonDisabled] = useState (false);
+  const [image, setImage] = useState (
+    'https://res.cloudinary.com/dlokxjygn/image/upload/v1684341637/utxs0yadssiqbxjre0ev.jpg'
+  );
+  // const [selectedFile, setSelectedFile] = useState(null);
+
   const {firstname, lastname, username, email, phone} = localStorage;
+  const [fname, setFname] = useState (firstname);
+  const [lname, setLname] = useState (lastname);
+  const [uname, setUserName] = useState (username);
   const [instagram, setInstagram] = useState ('');
   const [twitter, setTwitter] = useState ('');
   const [tiktok, setTikTok] = useState ('');
   const URL = 'http://localhost:9000/auth/socials';
   const UPDATE_URL = 'http://localhost:9000/auth/update';
-  // const {data, error} = useFetch ('http://localhost:9000/store/get-products')
+  const CLOUDINARY_API =
+    'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
+    const {error, data} = useFetch("http://localhost:9000/store/get-products")
+  
+  const profileImgAdd = event => {
+    const file = event.target.files[0];
+    const reader = new FileReader ();
 
-  // useEffect(() => {
-  //   axios.get("http://localhost:9000/auth/getUser", {
-  //     email: localStorage.email
-  //   }).then(response => {
-  //     console.log(response)
-  //   }).catch(err => {
-  //     console.log(err)
-  //   })
-  // })
+    reader.onload = function (e) {
+      setImage (e.target.result);
+    };
+
+    reader.readAsDataURL (file);
+    // setSelectedFile(file);
+  };
 
   const handleOptionChange = () => {
     setShowInputField (true);
@@ -52,6 +63,7 @@ const Profile = () => {
     setShowThirdInput (false);
   };
 
+  // Add social media account details
   const Save = () => {
     axios
       .post (URL, {
@@ -84,7 +96,7 @@ const Profile = () => {
         });
       })
       .catch (err => {
-        console.log (err);
+        console.log (err)
         Swal.fire ({
           position: 'top-end',
           toast: true,
@@ -96,38 +108,115 @@ const Profile = () => {
       });
   };
 
-  const update = () => {
-    setIsButtonDisabled (true);
-    axios
-      .post (UPDATE_URL, {
-        firstname,
-        lastname,
-        username,
-      })
-      .then (response => {
-        console.log (response);
-        // const {firstname, lastname, username} = response.data.data;
-        setIsButtonDisabled (false);
-        const Toast = Swal.mixin ({
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: toast => {
-            toast.addEventListener ('mouseenter', Swal.stopTimer);
-            toast.addEventListener ('mouseleave', Swal.resumeTimer);
-          },
-        });
+  // const update = () => {
+  //   const formData = new FormData ();
+  //   formData.append ('file', image);
+  //   formData.append ('upload_preset', 'b74r48f2');
+  //   // const headers = {
+  //   //   'Content-Type': 'application/json',
+  //   //   "Authorization": `Bearer ${token}`,
+  //   //   'Access-Control-Allow-Origin': "https://api.cloudinary.com/v1_1/dlokxjygn/image/upload' "
+  //   // };
 
-        Toast.fire ({
-          icon: 'success',
-          title: 'Profile Updated successfully',
-        });
+  //   axios
+  //     .post (CLOUDINARY_API, formData)
+  //     .then (imageResponse => {
+  //       console.log (imageResponse.data.secure_url);
+  //       const imageUrl = imageResponse.data.secure_url;
+
+  //       axios
+  //         .post (UPDATE_URL, {
+  //           fname,
+  //           lname,
+  //           uname,
+  //           image: imageUrl,
+  //         })
+  //         .then (response => {
+  //           console.log (response.data);
+  //           Swal.fire ({
+  //             position: 'top-right',
+  //             toast: true,
+  //             title: `${response.data}`,
+  //             color: 'red',
+  //             showConfirmButton: false,
+  //             timer: 2500,
+  //           });
+  //         })
+  //         .catch (error => {
+  //           console.log (error);
+  //           Swal.fire ({
+  //             position: 'top-right',
+  //             toast: true,
+  //             title: `${error.data}`,
+  //             color: 'red',
+  //             showConfirmButton: false,
+  //             timer: 2500,
+  //           });
+  //         });
+  //     })
+  //     .catch (error => {
+  //       console.log (error);
+  //       Swal.fire ({
+  //         position: 'top-right',
+  //         toast: true,
+  //         title: `${error.data}`,
+  //         color: 'red',
+  //         showConfirmButton: false,
+  //         timer: 2500,
+  //       });
+  //     });
+  // };
+
+  // to update user profile
+  const update = () => {
+    const formData = new FormData ();
+    formData.append ('file', image);
+    formData.append ('upload_preset', 'b74r48f2');
+    setIsButtonDisabled (true);
+
+    axios
+      .post (CLOUDINARY_API, formData)
+      .then (imageResponse => {
+        console.log(imageResponse)
+        console.log (imageResponse.data.secure_url);
+        const imageUrl = imageResponse.data.secure_url;
+
+        axios
+          .post (UPDATE_URL, {
+            fname,
+            lname,
+            uname,
+            image: imageUrl,
+          })
+          .then (response => {
+            console.log (response);
+            // const {firstname, lastname, username} = response.data.data;
+            setIsButtonDisabled (false);
+            const Toast = Swal.mixin ({
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true,
+              didOpen: toast => {
+                toast.addEventListener ('mouseenter', Swal.stopTimer);
+                toast.addEventListener ('mouseleave', Swal.resumeTimer);
+              },
+            });
+
+            Toast.fire ({
+              icon: 'success',
+              title: 'Profile Updated successfully',
+            });
+          })
+          .catch (err => {
+            console.log (err);
+            setIsButtonDisabled (false);
+          });
       })
       .catch (error => {
         console.log (error);
-
+        setIsButtonDisabled (false)
         Swal.fire ({
           position: 'top-end',
           toast: true,
@@ -136,7 +225,6 @@ const Profile = () => {
           showConfirmButton: false,
           timer: 2500,
         });
-        setIsButtonDisabled (false);
       });
   };
 
@@ -159,13 +247,24 @@ const Profile = () => {
             <div class="flex flex-wrap -mx-3">
               <div class="flex-none w-auto max-w-full px-3">
                 <div class="text-base ease-soft-in-out h-18.5 w-18.5 relative inline-flex items-center justify-center rounded-xl text-white transition-all duration-200">
-                  <img
-                    src="../assets/img/bruce-mars.jpg"
-                    alt="profile_image"
-                    class="w-full shadow-soft-sm rounded-xl"
-                  />
+                  <label for="profile-image" class="relative">
+                    <img
+                      src={image}
+                      accept="image/png, image/jpeg, image/jpg"
+                      alt="profile"
+                      class="w-full shadow-soft-sm rounded-xl cursor-pointer"
+                      // onChange={}
+                    />
+                    <input
+                      type="file"
+                      id="profile-image"
+                      class="hidden"
+                      onChange={profileImgAdd}
+                    />
+                  </label>
                 </div>
               </div>
+
               <div class="flex-none w-auto max-w-full px-3 my-auto">
                 <div class="h-full">
                   <h5 class="mb-1">{firstname} {lastname}</h5>
@@ -333,7 +432,7 @@ const Profile = () => {
                     onClick={update}
                     disabled={isButtonDisabled ? true : false}
                   >
-                    {isButtonDisabled ? 'Loading....' : 'Save'}
+                    {isButtonDisabled ? 'Saving....' : 'Save'}
                   </button>
                 </div>
                 <div class="flex-auto p-4">
@@ -357,7 +456,8 @@ const Profile = () => {
                             className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                             id="firstname"
                             type="text"
-                            value={firstname}
+                            value={fname}
+                            onChange={e => setFname (e.target.value)}
                           />
                         </div>
                       </div>
@@ -378,7 +478,8 @@ const Profile = () => {
                             className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                             id="name"
                             type="text"
-                            value={lastname}
+                            value={lname}
+                            onChange={e => setLname (e.target.value)}
                           />
                         </div>
                       </div>
@@ -399,7 +500,8 @@ const Profile = () => {
                             className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                             id="name"
                             type="text"
-                            value={username}
+                            value={uname}
+                            onChange={e => setUserName (e.target.value)}
                           />
                         </div>
                       </div>
@@ -704,7 +806,7 @@ const Profile = () => {
             <div className="flex-none w-full max-w-full px-3 mt-6">
               <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 shadow-soft-xl rounded-2xl bg-clip-border">
                 <div className="p-4 pb-0 mb-0 bg-white rounded-t-2xl">
-                  <h6 className="mb-1">Projects</h6>
+                  <h6 className="mb-1">3 Recent Projects</h6>
                   <p className="leading-normal text-sm">
                     Architects design houses
                   </p>
@@ -712,12 +814,15 @@ const Profile = () => {
                 <div className="flex-auto p-4">
                   <div className="flex flex-wrap -mx-3">
 
-                    <div className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
+                     {data?.map((result) => (
+                    <div
+                    key={result.id}
+                     className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
                       <div class="relative flex flex-col min-w-0 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border">
                         <div class="relative">
                           <a href class="block shadow-xl rounded-2xl">
                             <img
-                              src="../assets/img/home-decor-1.jpg"
+                              src={result.imgage}
                               alt="img-blur-shadow"
                               class="max-w-full shadow-soft-2xl rounded-2xl"
                             />
@@ -725,7 +830,7 @@ const Profile = () => {
                         </div>
                         <div class="flex-auto px-1 pt-6">
                           <p class="relative z-10 mb-2 leading-normal text-transparent bg-gradient-to-tl from-gray-900 to-slate-800 text-sm bg-clip-text">
-                            Project #2
+                            Project #{result.id}
                           </p>
                           <a href>
                             <h5>Modern</h5>
@@ -744,13 +849,13 @@ const Profile = () => {
                         </div>
                       </div>
                     </div>
-
-                    <div className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
+                      ))}   
+                    {/* <div className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
                       <div class="relative flex flex-col min-w-0 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border">
                         <div class="relative">
                           <a href class="block shadow-xl rounded-2xl">
                             <img
-                              src="../assets/img/home-decor-2.jpg"
+                              src="https://res.cloudinary.com/dlokxjygn/image/upload/v1679792952/ije2lvjfohj8zssnqjn5.jpg"
                               alt="img-blur-shadow"
                               class="max-w-full shadow-soft-2xl rounded-xl"
                             />
@@ -773,100 +878,6 @@ const Profile = () => {
                             >
                               View Project
                             </button>
-                            <div class="mt-2">
-                              <a
-                                href
-                                class="relative z-20 inline-flex items-center justify-center w-6 h-6 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  class="w-full rounded-circle"
-                                  alt="Img placeholder"
-                                  src="../assets/img/team-3.jpg"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                class="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Nick Daniel
-                                <div
-                                  class="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                              <a
-                                href
-                                class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  class="w-full rounded-circle"
-                                  alt="Img placeholder"
-                                  src="../assets/img/team-4.jpg"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                class="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Peterson
-                                <div
-                                  class="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                              <a
-                                href
-                                class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  class="w-full rounded-circle"
-                                  alt="Img placeholder"
-                                  src="../assets/img/team-1.jpg"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                class="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Elena Morison
-                                <div
-                                  class="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                              <a
-                                href
-                                class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  class="w-full rounded-circle"
-                                  alt="Img placeholder"
-                                  src="../assets/img/team-2.jpg"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                class="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Ryan Milly
-                                <div
-                                  class="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -900,104 +911,10 @@ const Profile = () => {
                             >
                               View Project
                             </button>
-                            <div class="mt-2">
-                              <a
-                                href
-                                class="relative z-20 inline-flex items-center justify-center w-6 h-6 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  class="w-full rounded-circle"
-                                  alt="Img placeholder"
-                                  src="../assets/img/team-4.jpg"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                class="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Peterson
-                                <div
-                                  class="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                              <a
-                                href
-                                class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  class="w-full rounded-circle"
-                                  alt="Img placeholder"
-                                  src="../assets/img/team-3.jpg"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                class="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Nick Daniel
-                                <div
-                                  class="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                              <a
-                                href
-                                class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  class="w-full rounded-circle"
-                                  alt="Img placeholder"
-                                  src="../assets/img/team-2.jpg"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                class="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Ryan Milly
-                                <div
-                                  class="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                              <a
-                                href
-                                class="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid ease-soft-in-out text-xs rounded-circle hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  class="w-full rounded-circle"
-                                  alt="Img placeholder"
-                                  src="../assets/img/team-1.jpg"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                class="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Elena Morison
-                                <div
-                                  class="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
                     <div className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
                       <div class="relative flex flex-col h-full min-w-0 break-words bg-transparent border border-solid shadow-none rounded-2xl border-slate-100 bg-clip-border">
