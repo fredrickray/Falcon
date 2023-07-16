@@ -5,7 +5,7 @@ node_modules/*
 /node_modules
 /.pnp
 .pnp.js
-/falcon-server/.env
+falcon-server/.env
 # testing
 /coverage
 

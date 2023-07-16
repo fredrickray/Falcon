@@ -15,8 +15,7 @@ const Test = () => {
         //             to: 'NGN'
         //         },
         //         headers: {
-        //             'X-RapidAPI-Key': '8b57bdc3dcmsh8ae267c7ceaff4ep1b9f49jsnf07c663c102b',
-        //             'X-RapidAPI-Host': 'currency-conversion-and-exchange-rates.p.rapidapi.com'
+        //            
         //         }
         //     };
     
