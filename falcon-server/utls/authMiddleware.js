@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken")
-
 const knex = require ('knex') ({
     client: 'mysql',
     connection: {
@@ -11,32 +10,28 @@ const knex = require ('knex') ({
     },
   });
 
+// MERN Authentication -- Net Ninja
+const requireAuth = async(req, res, next) => {
 
-const requireAuth = (req, res, next) => {
-    const token = req.cookies.jwt
+    // verifying authentication
+    const { authorization } = req.headers
 
-    // Checking if json web tokn exist and is verified
-    if(token) {
-      const decoded =   jwt.verify(token, "this is the hardest secret to decode", async(err, decodedToken) => {
-        console.log(decoded)
-            if(err) {
-                console.log(err.message)
-                res.send({message: "There was an error", err})
-                // next()
-            } 
-            else{
-                const user = await knex().where({ id })
-                console.log(decodedToken.iat)
-                console.log(user)
-                console.log('Token was verified, User is allowed to continue')
-                next()
-                // res.status(200).send({message: "There was no error and token was identified",token: decodedToken})
-            }
-        })
+    if(!authorization) {
+        return res.status(401).json({error: "Authorization token required"})
     }
-    else{
-        res.redirect("/")
+
+    const token = authorization.split(' ')[1]
+
+    try{
+     const { id } = jwt.verify(token, process.env.SECRET)
+     req.user = await knex("Merchants").where({ id })
+     console.log(id)
+     next()
+    }
+    catch (error) {
+        // console.log(error)
+        res.status(401).json({error: "Request is not authorized"})
     }
 }
 
-module.exports = { requireAuth }
+module.exports = requireAuth;

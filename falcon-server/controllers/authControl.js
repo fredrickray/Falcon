@@ -8,29 +8,20 @@ const cookieParser = require ('cookie-parser');
 const sendEmail = require ('../utls/sendEmail');
 const crypto = require ('crypto');
 const app = express ();
+const knex = require("../knex-db/knex")
+const {createToken, maxAge} = require("../utls/createToken")
 app.use (cookieParser ());
 
-// requiring knex and connecting to the database
-const knex = require ('knex') ({
-  client: 'mysql',
-  connection: {
-    host: 'localhost',
-    port: 8889,
-    user: 'root',
-    password: 'root',
-    database: 'Falcon',
-  },
-});
 
 // to use the passport oauth
 
 // Creating tokens
-const maxAge = 3 * 24 * 60 * 60;
-const createToken = id => {
-  return jwt.sign ({id}, process.env.SECRET, {
-    expiresIn: maxAge,
-  });
-};
+// const maxAge = 3 * 24 * 60 * 60;
+// const createToken = id => {
+//   return jwt.sign ({id}, process.env.SECRET, {
+//     expiresIn: maxAge,
+//   });
+// };
 
 // "this is the hardest secret to decode"
 // Verifying JWT
@@ -90,9 +81,7 @@ exports.register = async (req, res) => {
       res.send ({message: 'A mininmum of 8 chracters is required'});
     } else if (phone == '') {
       res.send ({message: 'Enter a valid phone number'});
-    } else if (phone.length < 11) {
-      res.send ({message: 'Phone number must be 11 digits'});
-    } else if (phone.length > 11) {
+    } else if (phone.length < 11 || phone.length > 11) {
       res.send ({message: 'Phone number must be 11 digits'});
     } else {
       try {
@@ -113,25 +102,25 @@ exports.register = async (req, res) => {
           withCredentials: true,
           maxAge: maxAge * 1000,
         });
-        res
-          .status (201)
-          .send ({message: 'An email was sent to your account, please verify'});
-        crypto.randomBytes (32).toString ('hex');
-        const url = `${process.env.BASE_URL}user/${user.id}/verify/${token}`;
-        await sendEmail (user.email, 'Verify Email', url);
-        // res.status (200).json ({
-        //   success: true,
-        //   message: 'Registration was successful',
-        //   status: 'success',
-        //   User: user,
-        //   token,
-        // });
+        // res
+        //   .status (201)
+        //   .send ({message: 'An email was sent to your account, please verify'});
+        // crypto.randomBytes (32).toString ('hex');
+        // const url = `${process.env.BASE_URL}user/${user.id}/verify/${token}`;
+        // await sendEmail (user.email, 'Verify Email', url);
+        res.status (200).json ({
+          success: true,
+          message: 'Registration was successful',
+          status: 'success',
+          User: user,
+          token,
+        });
         console.log (user);
       } catch (error) {
         console.log (error);
         res
-          .status (400)
-          .json ({status: 'An error occured', message: 'Error', error});
+          .status (500)
+          .json ({status: 'Server Error', message: 'There was a server error', error});
       }
     }
   });
@@ -175,26 +164,69 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.update = async (req, res) =>{
-  const { email, firstname, lastname, username } = req.body
+// exports.update = async (req, res) =>{
+//   const { email, fname, lname, uname, image } = req.body
+
+//   try {
+//     let user = await knex("Merchants")
+//       .where({email})
+//       .first()
+      
+//       if (!user || user === "") {
+//         res.status(404).send({ message: "Can't update, user not found" });
+//         console.log("Can't update, user not found");
+//       } else {
+//         await knex("Merchants")
+//           .where({ email })
+//           .update({ firstname: fname, lastname: lname, username: uname, image });
+      
+//         res.status(201).send({ message: "Updated successfully", status: "success", user });
+//       }
+      
+//   } 
+//   catch (error) {
+//     res.status(500).send({message: "Server error", error})
+//     console.log("There was a server error")
+//     console.log(error)
+//   }
+// }
+
+exports.update = async (req, res) => {
+  const { image, email } = req.body
 
   try {
-    let user = await knex("Merchants")
-      .where({email})
-      .first()
-      .update({firstname, lastname, username})
+    
+  } catch (error) {
+    
+  }
+}
+
+
+exports.update = async (req, res) =>{
+  const { image, email } = req.body
+
+  try {
+    let user = await knex("Merchant")
+      .where({email: email})
+      // .first()
       
-      if(!user || user == "") {
-        res.status(404).send({message: "Can't update, user not found"})
-        console.log("Can't update, user not found")
+      if (!user || user === "") {
+        res.status(404).send({ message: "Can't update, user not found" });
+        console.log("Can't update, user not found");
+      } else {
+        await knex("Merchants")
+          .where({ email: email })
+          .update({ image: image });
+      
+        res.status(200).send({ message: "Updated successfully", status: "success", user })
+        console.log(user)
       }
-      else{
-        res.status(201).send({message: "Updated successfully", status: "successs", user})
-      }
+      
   } 
   catch (error) {
-    res.status(500).send({message: "Server error", error})
+    res.status(500).send({message: "Server error", error: error.message})
     console.log("There was a server error")
+    console.log(error.message)
   }
 }
 
@@ -218,7 +250,24 @@ exports.social = async (req, res) => {
   }
 };
 
+exports.getUser = async (req, res) => {
+  const { email } = req.body
 
+  try {
+    const user = await knex("Merchants").where({email}).select("");
+    if(!user || user == ""){
+      res.status(404).send({message: "Email not found"})
+      console.log("Email not found")
+    }
+    else{
+      res.status(200).send({message: "User found", user})
+    }
+  } 
+  catch (error) {
+    console.log(error)
+    res.status(500).send({message: "There was a server error", error})
+  }
+}
 // To get all Merchants
 exports.users = async (req, res) => {
   const id = req.body.id;

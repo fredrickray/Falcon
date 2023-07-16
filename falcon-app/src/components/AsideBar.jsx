@@ -3,6 +3,7 @@ import {GiClothes} from 'react-icons/gi';
 import {AiOutlineDown, AiOutlineUp} from 'react-icons/ai';
 import {MdLocalShipping} from 'react-icons/md';
 import {Link} from 'react-router-dom';
+import Logout from './LogOut';
 const AsideBar = () => {
   const [show, setShow] = useState (false);
   const handleClick = () => {
@@ -12,7 +13,7 @@ const AsideBar = () => {
   const { username } = localStorage
 
   return (
-    <aside class="max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 my-4 ml-4 block w-full -translate-x-full flex-wrap items-center justify-between overflow-y-auto rounded-2xl border-0 bg-white p-0 antialiased shadow-soft-xl transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-white">
+    <aside class="max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 my-4 ml-4 block w-full -translate-x-full flex-wrap items-center justify-between overflow-y-auto rounded-2xl border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-transparent">
       <div class="h-19.5">
         <i
           class="absolute top-0 right-0 hidden p-4 opacity-50 cursor-pointer fas fa-times text-slate-400 xl:hidden"
@@ -76,13 +77,32 @@ const AsideBar = () => {
             >
               <Link
                 class="py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors"
-                to="/store/products/new"
+                to="/Store/new"
               >
                 <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
                   <GiClothes size="500%" style={{height: '100%'}} />
                 </div>
                 <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
                   Create store
+                </span>
+              </Link>
+            </li>}
+
+          {show &&
+            <li
+              id="myDiv"
+              className="mt-0.5 w-full transition-all ease-soft-in-out duration-500"
+              section-content
+            >
+              <Link
+                class="py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors"
+                to="/store/products/new"
+              >
+                <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+                  <GiClothes size="500%" style={{height: '100%'}} />
+                </div>
+                <span class="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
+                  Create product
                 </span>
               </Link>
             </li>}
@@ -227,7 +247,8 @@ const AsideBar = () => {
       </div>
 
       <div class="mx-4">
-        <button class="inline-block w-full px-6 py-3 my-4 font-bold text-center text-white uppercase align-middle transition-all ease-in border-0 rounded-lg select-none shadow-soft-md bg-150 bg-x-25 leading-pro text-xs bg-gradient-to-tl from-purple-700 to-pink-500 hover:shadow-soft-2xl hover:scale-102">
+        <button class="inline-block w-full px-6 py-3 my-4 font-bold text-center text-white uppercase align-middle transition-all ease-in border-0 rounded-lg select-none shadow-soft-md bg-150 bg-x-25 leading-pro text-xs bg-gradient-to-tl from-purple-700 to-pink-500 hover:shadow-soft-2xl hover:scale-102"
+          onClick={Logout}>
           Logout{' '}
         </button>
       </div>

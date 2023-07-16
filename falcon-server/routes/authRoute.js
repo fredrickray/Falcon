@@ -22,6 +22,9 @@ router
 .post("/login", authController.login)
 
 router
+.get("/getUser", authController.getUser)
+
+router
 .post("/update", authController.update)
 
 router

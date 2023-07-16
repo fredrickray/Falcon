@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
+import {useParams} from 'react-router-dom';
 import {BsTrashFill} from 'react-icons/bs';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import {GrClose} from 'react-icons/gr';
-import {Link} from 'react-router-dom';
-const NewProduct = () => {
+import useProductId from '../../hooks/useProductID';
+const StoreProduct = () => {
+  const { id } = useParams ();
   const [showInputField, setShowInputField] = useState (false);
   const [showSecondInput, setShowSecondInput] = useState (false);
   const [showThirdInput, setShowThirdInput] = useState (false);
@@ -20,9 +22,10 @@ const NewProduct = () => {
   const [editing, setEditing] = useState (false);
   const [selectedImages, setSelectedImages] = useState ([]);
   const [value, setValue] = useState ('4');
-  const [isButtonDisabled, setIsButtonDisabled] = useState (false);
-  const {email} = localStorage;
-  // const token = localStorage.token;
+  const email = localStorage.email;
+  const token = localStorage.token;
+
+  const { error, data: productDetail } = useProductId(`http://localhost:9000/store/get-product/${id}`)
 
   const handleOptionChange = () => {
     setShowInputField (true);
@@ -77,7 +80,7 @@ const NewProduct = () => {
   // to use the function "handleImageUpload" and set Image to send to the backend
   const saveImage = event => {
     handleImageUpload (event);
-    setImage (event.target.files[0]);
+    setImage (event.target.value);
   };
 
   // To restrict amount of images to select to 5
@@ -101,21 +104,20 @@ const NewProduct = () => {
   };
   const CLOUDINARY_API =
     'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
-  const PRODUCT_URL = 'http://localhost:9000/store/create-product';
+  const PRODUCT_URL = 'http://localhost:9000/store/update-product';
 
   const create = () => {
     const formData = new FormData ();
     formData.append ('file', image);
     formData.append ('upload_preset', 'b74r48f2');
-    setIsButtonDisabled (true);
-    // const headers = {
-    //   'Content-Type': 'application/json',
-    //   Authorization: `Bearer ${token}`,
-    //   'Access-Control-Allow-Origin': "https://api.cloudinary.com/v1_1/dlokxjygn/image/upload' ",
-    // };
+    const headers = {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`,
+      'Access-Control-Allow-Origin': "https://api.cloudinary.com/v1_1/dlokxjygn/image/upload' "
+    };
 
     axios
-      .post (CLOUDINARY_API, formData)
+      .post (CLOUDINARY_API, formData, { headers })
       .then (imageResponse => {
         console.log (imageResponse.data.secure_url);
         const imageUrl = imageResponse.data.secure_url;
@@ -132,10 +134,9 @@ const NewProduct = () => {
             size: size,
             colour: colour,
             email: email,
-          })
+          }, { headers })
           .then (response => {
             console.log (response.data);
-            setIsButtonDisabled (false);
             Swal.fire ({
               position: 'center',
               toast: true,
@@ -147,7 +148,6 @@ const NewProduct = () => {
           })
           .catch (error => {
             console.log (error);
-            setIsButtonDisabled (false);
             Swal.fire ({
               position: 'center',
               toast: true,
@@ -160,7 +160,6 @@ const NewProduct = () => {
       })
       .catch (error => {
         console.log (error);
-        setIsButtonDisabled (false);
         Swal.fire ({
           position: 'center',
           toast: true,
@@ -172,7 +171,6 @@ const NewProduct = () => {
       });
   };
 
-  // Setting the value for various option in the dataOption field
   const multipleOptionChnage = event => {
     const {id, value} = event.target;
 
@@ -191,62 +189,32 @@ const NewProduct = () => {
   // console.log (style);
   // console.log (colour);
 
-  // const create = () => {
-  //     axios.all ([
-  //       axios.post (CLOUDINARY_API, formData),
-  //       axios.post (
-  //         PRODUCT_URL,
-  //         // JSON.stringify(price, store, description, formData, quantity, email, name),
-  //         // console.log(JSON.stringify)
-  //         {
-  //           name: name,
-  //           description: description,
-  //           quantity: quantity,
-  //           weight: weight,
-  //           price: price,
-  //           image: formData.u,
-  //           style: style,
-  //           size: size,
-  //           colour: colour,
-  //           email: email,
-  //         }
-  //       ),
-  //     ])
-  //       .then (
-  //         axios.spread ((imageResponse, TotalResponse) => {
-  //           console.log (imageResponse.data);
-  //           console.log (TotalResponse.data);
-  //         })
-  //       )
-  //       .catch (err => {
-  //         console.log (err);
-  //       });
-  //   };
+  const back = () => {
+    window.location.href = "/products"
+  }
 
   return (
     <div className="bg-white">
       <nav
         navbar-main
-        className="relative flex flex-wrap items-center justify-between w-full px-0 py-2 mx-6 mt-6 transition-all shadow-none bg-gray-950/80 duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
+        class="relative flex flex-wrap items-center justify-between w-full px-0 py-2 mx-6 mt-6 transition-all shadow-none bg-gray-950/80 duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
         navbar-scroll="true"
       >
         <div class="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
           <nav
-            className="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
+            class="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
             navbar-main
             navbar-scroll="true"
           >
-            <div className="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
-              <div className="flex items-center">
-                <Link to="/Products">
-                  <GrClose class="mr-4" style={{cursor: 'pointer'}} />
-                </Link>
+            <div class="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
+              <div class="flex items-center">
+                <GrClose className="mr-4" onClick={back}/>
                 <h6 class="mb-0 font-bold capitalize">Add new product</h6>
               </div>
-              <nav class="flex justify-end xl:margin: left-4">
-                <button
+              <nav class="flex justify-end xl:margin: left-4" >
+              <button
                   type="button"
-                  className="ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+                  class="ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
                   style={{background: '#828282'}}
                   onClick={create}
                 >
@@ -254,18 +222,19 @@ const NewProduct = () => {
                 </button>
                 <button
                   type="button"
-                  className="ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+                  class="ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
                   style={{background: '#FF9B00'}}
                 >
                   Add Product +
                 </button>
               </nav>
             </div>
-          </nav>
+          </nav>   
         </div>
       </nav>
 
-      <div className="container-fluid">
+        {productDetail?.map((result) => (
+      <div key={result.index} className="container-fluid">
         <div className=" mx-auto py-4 container-fluid">
           <div className="flex flex-row">
             <div className="w-full md:w-8/12 mx-2">
@@ -286,6 +255,7 @@ const NewProduct = () => {
                         className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                         id="name"
                         type="text"
+                        value={result.name}
                         onChange={e => setName (e.target.value)}
                       />
                     </div>
@@ -304,6 +274,7 @@ const NewProduct = () => {
                         className="form-input focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                         id="description"
                         rows="3"
+                        value={result.description}
                         style={{height: '200px'}}
                         onChange={e => setDescription (e.target.value)}
                       />
@@ -323,7 +294,7 @@ const NewProduct = () => {
                         className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                         id="price"
                         type="number"
-                        value={price}
+                        value={result.price}
                         onChange={e => setPrice (e.target.value)}
                       />
                     </div>
@@ -360,6 +331,7 @@ const NewProduct = () => {
                         className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                         id="quantity"
                         type="number"
+                        value={result.weight}
                         onChange={e => setWeight (e.target.value)}
                       />
                     </div>
@@ -375,7 +347,7 @@ const NewProduct = () => {
                         className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                         id="quantity"
                         type="number"
-                        value={quantity}
+                        value={result.quantity}
                         onChange={handleQuntityChange}
                         // {e => setQuantity (e.target.value)}
                       />
@@ -742,28 +714,21 @@ const NewProduct = () => {
             }}
           >
             {selectedImages.map ((imageUrl, index) => (
-              <div className="" key={index}>
-                <img
-                  className="card w-full h-full mb-4 hover:opacity-75"
-                  src={imageUrl}
-                  alt={`Selected Img ${index}`}
-                  style={{
-                    width: '300px',
-                    height: '300px',
-                    marginTop: "45px",
-                    marginLeft: '60px',
-                    alignItems: 'center',
-                     justifyContent: 'center',
-                  }}
-                />
-                {/* <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 hover:opacity-100 transition-opacity duration-300">
-                  <button className="bg-red-500 text-white px-4 py-2 rounded-full">
-                    Delete
-                  </button>
-                </div> */}
-              </div>
+              <img
+                key={index}
+                className="card w-full h-full  mb-4"
+                src={imageUrl}
+                alt={`Selected Img ${index}`}
+                style={{
+                  width: '300px',
+                  height: '300px',
+                  marginTop: '50px',
+                  marginLeft: '60px',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              />
             ))}
-
             <div
               className="input-wrapper"
               style={{
@@ -783,7 +748,7 @@ const NewProduct = () => {
               }}
             >
               <input
-                accept="image/png, image/jpeg, image/jpg"
+                accept="image/png, image/jpeg"
                 multiple
                 type="file"
                 max="5"
@@ -843,9 +808,8 @@ const NewProduct = () => {
               className="inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
               style={{background: '#828282'}}
               onClick={create}
-              disabled={isButtonDisabled ? true : false}
             >
-              {isButtonDisabled ? 'Saving...' : 'Save & Preview'}
+              Save & Preview{' '}
             </button>
             <button
               type="button"
@@ -858,9 +822,9 @@ const NewProduct = () => {
         </div>
 
       </div>
-
+    ))}
     </div>
   );
 };
 
-export default NewProduct;
+export default StoreProduct;

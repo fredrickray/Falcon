@@ -1,12 +1,36 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import {Link} from 'react-router-dom';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
+// import jwt_decode from "jwt-decode";
+
 const Login = () => {
   const [email, setEmail] = useState ('');
   const [password, setPassword] = useState ('');
   const [isButtonDisabled, setIsButtonDisabled] = useState (false);
   const LOGIN_URL = 'http://localhost:9000/auth/login';
+  const [user, setUser] = useState({});
+
+  // const handleCallbackResponse = (response) => {
+  //   console.log("Encoded JWT ID token: " + response.credential)
+  //   const userObject = jwt_decode(response.credential)
+  //   console.log(userObject)
+  //   setUser(userObject)
+  // }
+  // useEffect(() => {
+  //  /*  global google */
+  //   google.accounts.id.initialize({
+  //     client_id: "535346481262-ei6k004c8l3hdv6hkcrpderl0kb2qsd5.apps.googleusercontent.com",
+  //     callback: handleCallbackResponse
+  //   })
+
+  //   google.accounts.id.renderButton(
+  //     document.getElementById("googleDiv"),
+  //     {theme: "outline", size: "large"}
+  //   )
+  // }, [])
+  // if we have no user: show the sign in button
+  // if we have a user : shjow a logout button 
 
   const login = () => {
     // console.log("login")
@@ -167,6 +191,9 @@ const Login = () => {
                       <h3 className="relative z-10 font-bold text-transparent bg-gradient-to-tl from-blue-600 to-cyan-400 bg-clip-text">
                         Welcome back
                       </h3>
+                      <div id="googleDiv">
+                        
+                      </div>
                       <div class="flex flex-wrap px-3 -mx-3  lg:px-6 xl:px-12">
 
                         <div class="w-3/12 max-w-full px-1 ml-auto flex-0">
