@@ -191,59 +191,44 @@ exports.login = async (req, res) => {
 //   }
 // }
 
-// exports.update = async (req, res) => {
-
-// }
 exports.update = async (req, res) => {
-  const { image, email } = req.body;
+  const { image, email } = req.body
 
   try {
-    const user = await knex("Merchants")
-      .where({ email })
-      .first();
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    await knex("Merchants")
-      .where({ email })
-      .update({ image });
-
-    res.status(200).json({ message: "Updated successfully", user });
+    
   } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).json({ message: "Server error" });
+    
   }
-};
+}
 
-// exports.update = async (req, res) =>{
-//   const { image, email } = req.body
 
-//   try {
-//     let user = await knex("Merchant")
-//       .where({email: email})
-//       // .first()
+exports.update = async (req, res) =>{
+  const { image, email } = req.body
+
+  try {
+    let user = await knex("Merchant")
+      .where({email: email})
+      // .first()
       
-//       if (!user || user === "") {
-//         res.status(404).send({ message: "Can't update, user not found" });
-//         console.log("Can't update, user not found");
-//       } else {
-//         await knex("Merchants")
-//           .where({ email: email })
-//           .update({ image: image });
+      if (!user || user === "") {
+        res.status(404).send({ message: "Can't update, user not found" });
+        console.log("Can't update, user not found");
+      } else {
+        await knex("Merchants")
+          .where({ email: email })
+          .update({ image: image });
       
-//         res.status(200).send({ message: "Updated successfully", status: "success", user })
-//         console.log(user)
-//       }
+        res.status(200).send({ message: "Updated successfully", status: "success", user })
+        console.log(user)
+      }
       
-//   } 
-//   catch (error) {
-//     res.status(500).send({message: "Server error", error: error.message})
-//     console.log("There was a server error")
-//     console.log(error.message)
-//   }
-// }
+  } 
+  catch (error) {
+    res.status(500).send({message: "Server error", error: error.message})
+    console.log("There was a server error")
+    console.log(error.message)
+  }
+}
 
 // Adding Social details to user
 exports.social = async (req, res) => {
