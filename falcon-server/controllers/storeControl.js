@@ -108,7 +108,7 @@ exports.createProduct = async (req, res) => {
 
 // getting all products of a merchants
 exports.getProducts = async(req, res) => {
-  let email = req.body.email
+  let { email } = req.body
   try{
     let response = await knex("Products").where({email: email})
     if(response == "") {

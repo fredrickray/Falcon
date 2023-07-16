@@ -2,7 +2,8 @@ import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Axios from 'axios';
-
+// import dotenv from "dotenv"
+// dotenv.config()
 const Register = () => {
   const [fnameReg, setFnameReg] = useState ('');
   const [lnameReg, setLnameReg] = useState ('');
@@ -10,34 +11,57 @@ const Register = () => {
   const [emailReg, setEmailReg] = useState ('');
   const [passwordReg, setPasswordReg] = useState ('');
   const [phone, setPhone] = useState ('');
-  const [form, setForm] = useState ({
-    firstname: '',
-    lastname: "",
-    email: "",
-    username: "",
-    password: "",
-    phone: '',
-  });
   
-  // const handleFormSubmit = (e) => {
-  //   e.preventDefault()
-  //   const test = Object.values(form)
-  //   if(test.includes("")) 
-  //     return
-  //   console.log("WWWWW")
-  //   console.log(test)
-  // }
-  // const handleForm = (e) => {
-  //   const { name, value } = e.target
-  //   setForm(prevValue => {
-  //     return {
-  //       ...prevValue,
-  //       [name]: value
-  //     }
-  //   })
-  //   // console.log(form)
-  // }
+  
   const API_URL = 'http://localhost:9000/auth/register';
+
+  
+  const facebookReg = () => {
+    Swal.fire ({
+      position: 'top-end',
+      // icon: 'success',
+      toast: true,
+      title: 'FaceBook authentication is disabled',
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  };
+
+  const appleReg = () => {
+    Swal.fire ({
+      position: 'top-end',
+      // icon: 'success',
+      toast: true,
+      title: 'Apple authentication is disabled',
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  };
+
+  const googleReg = () => {
+    window.open (
+      `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'http://localhost:9000'}/auth/google/callback`,
+      '_self'
+    );
+    // Swal.fire ({
+    //   position: 'top-end',
+    //   // icon: 'success',
+    //   toast: true,
+    //   title: 'Google authentication, coming soon!!!',
+    //   showConfirmButton: false,
+    //   timer: 2500,
+    // });
+  };
+
+  const googleAuth = () => {
+    fetch("/auth/google/callback")
+      .then(response => {
+        console.log(response)
+      }) 
+      .catch(error => {
+        console.log(error)
+      })
+  }
 
   const register = () => {
     Axios.post (API_URL, {
@@ -187,9 +211,10 @@ const Register = () => {
                     <div class="w-3/12 max-w-full px-1 ml-auto flex-0">
                       <a
                         class="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
-                        href="/"
+                        // href="/"
                       >
-                        <svg width="24px" height="32px" viewBox="0 0 64 64">
+                        <svg width="24px" height="32px" viewBox="0 0 64 64"
+                          onClick={facebookReg}>
                           <g
                             stroke="none"
                             strokeWidth="1"
@@ -219,9 +244,10 @@ const Register = () => {
                     <div class="w-3/12 max-w-full px-1 flex-0">
                       <a
                         class="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
-                        href="/"
+                        // href="/"
                       >
-                        <svg width="24px" height="32px" viewBox="0 0 64 64">
+                        <svg width="24px" height="32px" viewBox="0 0 64 64"
+                        onClick={appleReg}>
                           <g
                             stroke="none"
                             strokeWidth="1"
@@ -243,9 +269,10 @@ const Register = () => {
                     <div className="w-3/12 max-w-full px-1 mr-auto flex-0">
                       <a
                         className="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
-                        href="/"
+                        // href="/"
                       >
-                        <svg width="24px" height="32px" viewBox="0 0 64 64">
+                        <svg width="24px" height="32px" viewBox="0 0 64 64"
+                        onClick={googleAuth}>
                           <g
                             stroke="none"
                             stroke-width="1"

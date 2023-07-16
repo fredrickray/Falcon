@@ -18,7 +18,7 @@ const Home = () => {
         {/* <!-- Navbar --> */}
         <nav
           class="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
-          navbar-main
+          navbarmain="true"
           navbar-scroll="true"
         >
           <div class="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
@@ -523,51 +523,9 @@ const Home = () => {
                       <h6>Projects</h6>
                       <p class="mb-0 leading-normal text-sm">
                         <i class="fa fa-check text-cyan-500" />
-                        <span class="ml-1 font-semibold">{count} done</span>
+                        <span class="ml-1 font-semibold">{count} done </span>
                         this month
                       </p>
-                    </div>
-                    <div class="flex-none w-5/12 max-w-full px-3 my-auto text-right lg:w-1/2 lg:flex-none">
-                      <div class="relative pr-6 lg:float-right">
-                        <a
-                          dropdown-trigger
-                          class="cursor-pointer"
-                          aria-expanded="false"
-                        >
-                          <i class="fa fa-ellipsis-v text-slate-400" />
-                        </a>
-                        <p class="hidden transform-dropdown-show" />
-
-                        <ul
-                          dropdown-menu
-                          class="z-100 text-sm transform-dropdown shadow-soft-3xl duration-250 before:duration-350 before:font-awesome before:ease-soft min-w-44 -ml-34 before:text-5.5 pointer-events-none absolute top-0 m-0 mt-2 list-none rounded-lg border-0 border-solid border-transparent bg-white bg-clip-padding px-2 py-4 text-left text-slate-500 opacity-0 transition-all before:absolute before:top-0 before:right-7 before:left-auto before:z-40 before:text-white before:transition-all before:content-['\f0d8']"
-                        >
-                          <li class="relative">
-                            <a
-                              class="py-1.2 lg:ease-soft clear-both block w-full whitespace-nowrap rounded-lg border-0 bg-transparent px-4 text-left font-normal text-slate-500 lg:transition-colors lg:duration-300"
-                              href
-                            >
-                              Action
-                            </a>
-                          </li>
-                          <li class="relative">
-                            <a
-                              class="py-1.2 lg:ease-soft clear-both block w-full whitespace-nowrap rounded-lg border-0 bg-transparent px-4 text-left font-normal text-slate-500 lg:transition-colors lg:duration-300"
-                              href
-                            >
-                              Another action
-                            </a>
-                          </li>
-                          <li class="relative">
-                            <a
-                              class="py-1.2 lg:ease-soft clear-both block w-full whitespace-nowrap rounded-lg border-0 bg-transparent px-4 text-left font-normal text-slate-500 lg:transition-colors lg:duration-300"
-                              href
-                            >
-                              Something else here
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -837,3 +795,21 @@ const Home = () => {
 };
 
 export default Home;
+
+
+// {selectedImages.map ((imageUrl, index) => (
+//   <img
+//     key={index}
+//     className="card w-full h-full  mb-4"
+//     src={imageUrl}
+//     alt={`Selected Img ${index}`}
+//     style={{
+//       width: '300px',
+//       height: '300px',
+//       marginTop: '50px',
+//       marginLeft: '60px',
+//       alignItems: 'center',
+//       justifyContent: 'center',
+//     }}
+//   />
+// ))}

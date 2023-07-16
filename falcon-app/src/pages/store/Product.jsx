@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AsideBar from '../../components/AsideBar';
-import axios, { Axios } from "axios"
 import useFetch from '../../hooks/useFetch';
-// import {  } from 'react-router-dom';
 const Products = () => {
   const [searchItem, setSearchItem] = useState("")
-  const QUERY_URL = `http://localhost:9000/store/products?q=${searchItem}`
-  const {error, data: products, count} = useFetch("http://localhost:9000/store/get-products")
+  // const QUERY_URL = `http://localhost:9000/store/products?q=${searchItem}`
+  const { data: products, count} = useFetch("http://localhost:9000/store/get-products")
   // useEffect(() => {
   //  const token = localStorage.token
   //   // console.log(token)
@@ -42,7 +40,7 @@ const Products = () => {
             {/* <!-- breadcrumb --> */}
             <ol class="flex flex-wrap pt-1 mr-12 bg-transparent rounded-lg sm:mr-16">
               <li class="leading-normal text-sm">
-                <a class="opacity-50 text-slate-700" href="javascript:;">Home</a>
+                <a class="opacity-50 text-slate-700" href>Home</a>
               </li>
               <li class="text-sm pl-2 capitalize leading-normal text-slate-700 before:float-left before:pr-2 before:text-gray-600 before:content-['/']" aria-current="page">Store</li>
               <li class="text-sm pl-2 capitalize leading-normal text-slate-700 before:float-left before:pr-2 before:text-gray-600 before:content-['/']" aria-current="page">Products</li>
@@ -114,7 +112,7 @@ const Products = () => {
                       </tr>
                     </thead>
                       <tbody>
-                      {products?.map((result) =>(
+                      {products?.filter(data=>data.name.toLowerCase().includes(searchItem)).map((result) =>(
                         // <Link to={`/Store/Product/${result.id}`}>
                         <tr
                         key={result.id} 
@@ -126,7 +124,7 @@ const Products = () => {
                           <div className="flex px-2 py-1" >
                             <div>
                               <img
-                                src={result.image}
+                                src={result.image.split('\r\n')[0]}
                                 className="inline-flex items-center justify-center mr-4 text-white transition-all duration-200 ease-soft-in-out text-sm h-9 w-9 rounded-xl"
                                 alt="user1"
                               />
@@ -145,7 +143,7 @@ const Products = () => {
                         </td>
                         <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                           <span className="font-semibold leading-tight text-xs text-black-400">
-                            0 / 18
+                            0 / {result.quantity}
                           </span>
                         </td>
                         <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
@@ -169,56 +167,3 @@ const Products = () => {
 };
 
 export default Products;
-
-{
-  /* <div>
-<header className="fixed">
-  <div className=''>
-      <div className=''>
-          <i></i>
-      </div>
-      <div>
-          <h1 className='text-sm'>Add new product</h1>
-      </div>
-  </div>
-</header>
-<hr className="border border-black-300 my-6" />
-
-<main class="flex flex-col items-center">
-  <form class="w-full md:w-3/4 lg:w-1/2">
-    <div class="py-4">
-      <label for="product_name" class="block font-medium text-sm mb-2">
-        Product name
-      </label>
-      <input
-        id="product_name"
-        type="text"
-        class="w-full border border-gray-300 py-2 px-3 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      />
-    </div>
-    <div class="py-4">
-      <label for="description" class="block font-medium text-sm mb-2">
-        Product description
-      </label>
-      <div class="border border-gray-300 rounded-md shadow-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500">
-        <div id="quill-container" class="ql-container ql-snow">
-          <div class="ql-editor" contenteditable="true" />
-        </div>
-      </div>
-    </div>
-  </form>
-</main>
-</div> */
-}
-
-// Login button div
-{
-  /* <div className="text-center">
-                          <button
-                            type="button"
-                            className="inline-block w-full px-6 py-3 mt-6 mb-0 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
-                          >
-                            Sign in
-                          </button>
-                        </div> */
-}

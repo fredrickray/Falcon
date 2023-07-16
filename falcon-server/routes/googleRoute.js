@@ -1,0 +1,33 @@
+const router = require("express").Router()
+const passport = require("passport")
+
+
+
+// Route for initiating the Google OAuth authentication
+router
+.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+
+// Route for handling the callback URL after successful authentication
+router
+.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    // Redirect or handle successful authentication
+    res.redirect('/Home');
+  }
+);
+
+// Route for accessing the authenticated user profile
+router
+.get('/profile', (req, res) => {
+  if (req.user) {
+    // User is authenticated, access the user profile from req.user
+    res.send(req.user);
+  } 
+  else {
+    // User is not authenticated, handle accordingly
+    res.status(401).send('Unauthorized');
+  }
+});
+
+module.exports = router;

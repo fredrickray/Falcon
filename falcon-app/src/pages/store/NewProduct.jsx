@@ -3,7 +3,7 @@ import {BsTrashFill} from 'react-icons/bs';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import {GrClose} from 'react-icons/gr';
-import { Link } from "react-router-dom"
+import {Link} from 'react-router-dom';
 const NewProduct = () => {
   const [showInputField, setShowInputField] = useState (false);
   const [showSecondInput, setShowSecondInput] = useState (false);
@@ -21,8 +21,8 @@ const NewProduct = () => {
   const [selectedImages, setSelectedImages] = useState ([]);
   const [value, setValue] = useState ('4');
   const [isButtonDisabled, setIsButtonDisabled] = useState (false);
-  const{ email } = localStorage;
-  const token = localStorage.token;
+  const {email} = localStorage;
+  // const token = localStorage.token;
 
   const handleOptionChange = () => {
     setShowInputField (true);
@@ -77,7 +77,7 @@ const NewProduct = () => {
   // to use the function "handleImageUpload" and set Image to send to the backend
   const saveImage = event => {
     handleImageUpload (event);
-    setImage (event.target.files[0])
+    setImage (event.target.files[0]);
   };
 
   // To restrict amount of images to select to 5
@@ -100,19 +100,19 @@ const NewProduct = () => {
     }
   };
   const CLOUDINARY_API =
-  'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';  
+    'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
   const PRODUCT_URL = 'http://localhost:9000/store/create-product';
 
   const create = () => {
     const formData = new FormData ();
     formData.append ('file', image);
     formData.append ('upload_preset', 'b74r48f2');
-    setIsButtonDisabled(true)
-    const headers = {
-      'Content-Type': 'application/json',
-      "Authorization": `Bearer ${token}`,
-      'Access-Control-Allow-Origin': "https://api.cloudinary.com/v1_1/dlokxjygn/image/upload' "
-    };
+    setIsButtonDisabled (true);
+    // const headers = {
+    //   'Content-Type': 'application/json',
+    //   Authorization: `Bearer ${token}`,
+    //   'Access-Control-Allow-Origin': "https://api.cloudinary.com/v1_1/dlokxjygn/image/upload' ",
+    // };
 
     axios
       .post (CLOUDINARY_API, formData)
@@ -135,7 +135,7 @@ const NewProduct = () => {
           })
           .then (response => {
             console.log (response.data);
-            setIsButtonDisabled(false)
+            setIsButtonDisabled (false);
             Swal.fire ({
               position: 'center',
               toast: true,
@@ -147,7 +147,7 @@ const NewProduct = () => {
           })
           .catch (error => {
             console.log (error);
-            setIsButtonDisabled(false)
+            setIsButtonDisabled (false);
             Swal.fire ({
               position: 'center',
               toast: true,
@@ -160,7 +160,7 @@ const NewProduct = () => {
       })
       .catch (error => {
         console.log (error);
-        setIsButtonDisabled(false)
+        setIsButtonDisabled (false);
         Swal.fire ({
           position: 'center',
           toast: true,
@@ -227,26 +227,26 @@ const NewProduct = () => {
     <div className="bg-white">
       <nav
         navbar-main
-        class="relative flex flex-wrap items-center justify-between w-full px-0 py-2 mx-6 mt-6 transition-all shadow-none bg-gray-950/80 duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
+        className="relative flex flex-wrap items-center justify-between w-full px-0 py-2 mx-6 mt-6 transition-all shadow-none bg-gray-950/80 duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
         navbar-scroll="true"
       >
         <div class="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
           <nav
-            class="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
+            className="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
             navbar-main
             navbar-scroll="true"
           >
-            <div class="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
-              <div class="flex items-center">
+            <div className="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
+              <div className="flex items-center">
                 <Link to="/Products">
-                  <GrClose class="mr-4" style={{cursor: "pointer"}}/>
+                  <GrClose class="mr-4" style={{cursor: 'pointer'}} />
                 </Link>
                 <h6 class="mb-0 font-bold capitalize">Add new product</h6>
               </div>
-              <nav class="flex justify-end xl:margin: left-4" >
-              <button
+              <nav class="flex justify-end xl:margin: left-4">
+                <button
                   type="button"
-                  class="ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+                  className="ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
                   style={{background: '#828282'}}
                   onClick={create}
                 >
@@ -254,14 +254,14 @@ const NewProduct = () => {
                 </button>
                 <button
                   type="button"
-                  class="ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+                  className="ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
                   style={{background: '#FF9B00'}}
                 >
                   Add Product +
                 </button>
               </nav>
             </div>
-          </nav>   
+          </nav>
         </div>
       </nav>
 
@@ -742,21 +742,28 @@ const NewProduct = () => {
             }}
           >
             {selectedImages.map ((imageUrl, index) => (
-              <img
-                key={index}
-                className="card w-full h-full  mb-4"
-                src={imageUrl}
-                alt={`Selected Img ${index}`}
-                style={{
-                  width: '300px',
-                  height: '300px',
-                  marginTop: '50px',
-                  marginLeft: '60px',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              />
+              <div className="" key={index}>
+                <img
+                  className="card w-full h-full mb-4 hover:opacity-75"
+                  src={imageUrl}
+                  alt={`Selected Img ${index}`}
+                  style={{
+                    width: '300px',
+                    height: '300px',
+                    marginTop: "45px",
+                    marginLeft: '60px',
+                    alignItems: 'center',
+                     justifyContent: 'center',
+                  }}
+                />
+                {/* <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 hover:opacity-100 transition-opacity duration-300">
+                  <button className="bg-red-500 text-white px-4 py-2 rounded-full">
+                    Delete
+                  </button>
+                </div> */}
+              </div>
             ))}
+
             <div
               className="input-wrapper"
               style={{
@@ -838,7 +845,7 @@ const NewProduct = () => {
               onClick={create}
               disabled={isButtonDisabled ? true : false}
             >
-              {isButtonDisabled ? "Saving..." :"Save & Preview"}
+              {isButtonDisabled ? 'Saving...' : 'Save & Preview'}
             </button>
             <button
               type="button"
