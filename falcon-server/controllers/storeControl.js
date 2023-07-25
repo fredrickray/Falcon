@@ -121,6 +121,7 @@ exports.getProducts = async(req, res) => {
       console.log({message: "Products were retrived succesfully", data2})
       res.status(200).json({status: "success", message: "Products were retrieved successfully", data2})
     }
+    
   } 
   catch (error){
     // console.log(error)
@@ -148,6 +149,28 @@ exports.getStore = async (req, res) => {
   catch(err) {
     console.log(err)
     res.status(500).json({status: "Error", message: err})
+  }
+};
+
+exports.checkStoreExist = async (req, res) => {
+  const email = req.body;
+
+  try{
+    let response = await knex("Store").where(email)
+    console.log(response)
+    // res.send(response)
+    if(response == "") {
+      res.status(404).json({status: "Not found", message: "There's no Store for this user"})
+      console.log("Store not found")
+    }
+    else{
+      res.status(200).json({status: "Success", message: "Retrieved Store for user", response})
+      console.log(response)
+    }
+  } 
+  catch(err) {
+    console.log(err)
+    res.status(500).json({status: " Inrternal Server Error", message: err})
   }
 };
 
@@ -278,16 +301,56 @@ exports.itemPurchased = async (req, res) => {
 
 //delivery information
 exports.createDelivery = async (req, res) => {
-  const {name, location, fee, email} = req.body;
+  const { location, fee, email } = req.body;
 
-  knex ('delivery')
-    .insert ({name: name, location: location, fee: fee, email: email})
-    .then (response => {
-      console.log (response);
-      res.status (200).json ({
-        message: 'Delivery information Created',
-        status: 'success',
-        response,
-      });
-    });
+  try {
+    const response = await knex("Delivery").insert({ location, fee, email })
+    console.log(response)
+    res.send(response)
+  } 
+  catch (error) {
+    console.log(error)
+    res.status(500).send({message: "Internal server error", error})
+  }
 };
+
+
+exports.getDelivery = async (req, res) => {
+  const { email } = req.body
+
+  try{
+    let response = await knex("Delivery").where({email: email})
+    if(response == "") {
+      console.log("Email not found")
+      res.status(404).json({message: "Email not found"})
+    }
+    else{
+      let data = response
+      let data2 = JSON.parse(JSON.stringify(data));
+      console.log({message: "Delivery was retrived succesfully", data2})
+      res.status(200).json({status: "success", message: "Products were retrieved successfully", data2})
+    }
+  } 
+  catch (error){
+    res.status(500).send({status: "Server Error", message: "There was an error in the server"})
+  }
+}
+
+exports.deleteDelivery = async (req, res) => {
+  const { id } = req.params
+
+  try {
+    // Use Knex to delete the item from the database based on the provided ID
+    const deletedItem = await knex('Delivery').where({ id: id }).del();
+
+    if (deletedItem === 0) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    return res.status(200).json({ message: 'Item deleted successfully' });
+  } 
+  catch (error) {
+    console.error('Error deleting item:', error.message);
+    return res.status(500).json({ message: 'Internal server error', err: error.message });
+  }
+}

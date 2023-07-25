@@ -6,24 +6,9 @@ const Products = () => {
   const [searchItem, setSearchItem] = useState("")
   // const QUERY_URL = `http://localhost:9000/store/products?q=${searchItem}`
   const { data: products, count} = useFetch("http://localhost:9000/store/get-products")
-  // useEffect(() => {
-  //  const token = localStorage.token
-  //   // console.log(token)
-  //   if(!token || token == "") {
-  //     window.location.href = "/Login"
-  //   }
-  //   else{
-  //     console.log("Token found")
-  //   }
-  // }, [1000])
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const res = await axios.get(QUERY_URL)
-  //     setQuery(res.data)
-  //   }
-  //   fetchData()
-  // }, [searchItem])
+  const filteredProducts = products.filter((data) =>
+  data.name.toLowerCase().includes(searchItem.toLowerCase())
+);
   const navigate = useNavigate()
 
   const newProduct = () => {
@@ -55,7 +40,7 @@ const Products = () => {
                   <i class="fas fa-search" aria-hidden="true"></i>
                 </span>
                 <input type="text" class="pl-8.75 text-sm focus:shadow-soft-primary-outline ease-soft w-1/100 leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 pr-3 text-gray-700 transition-all placeholder:text-gray-500 focus:border-fuchsia-300 focus:outline-none focus:transition-shadow" placeholder="Type here..." 
-                  onChange={e => setSearchItem(e.target.value)}/>
+                  onChange={e => setSearchItem(e.target.value)} value={searchItem}/>
               </div>
             </div>
             <button
@@ -111,9 +96,11 @@ const Products = () => {
                         </th>
                       </tr>
                     </thead>
-                      <tbody>
-                      {products?.filter(data=>data.name.toLowerCase().includes(searchItem)).map((result) =>(
-                        // <Link to={`/Store/Product/${result.id}`}>
+                    {filteredProducts.length === 0 ? (
+                      <p style={{marginLeft: "140%", fontSize: "20px"}} className='p-2 align-middle bg-transparent whitespace-nowrap shadow-transparent'>No item found</p>
+                    ) : (
+                      <tbody> 
+                      {filteredProducts.map((result) =>(
                         <tr
                         key={result.id} 
                         onClick={() => navigate(`/Store/Product/${result.id}`)}
@@ -152,9 +139,9 @@ const Products = () => {
                           </span>
                         </td>
                       </tr>
-                        /* </Link>    */
                       ))}
                     </tbody>
+                    )}
                   </table>
                 </div>
               </div>

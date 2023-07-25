@@ -28,7 +28,7 @@ exports.allStores = async(req, res) => {
       console.log(err)
       res.send({message: "There was an error retrieving data", status: "Error"})
     }
-  }
+}
 
 
   // retrieving a particular store by id

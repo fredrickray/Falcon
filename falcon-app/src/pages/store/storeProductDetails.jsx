@@ -8,34 +8,33 @@ import Swal from 'sweetalert2';
 import useProductId from '../../hooks/useProductID';
 import { AiOutlineShoppingCart } from "react-icons/ai"
 import { GrClose } from 'react-icons/gr';
-import { FlutterWaveButton, closePaymentModal } from 'flutterwave-react-v3';
+import { FlutterWaveButton, closePaymentModal, useFlutterwave } from 'flutterwave-react-v3';
 function StoreProductDetailed() {
   const { id } = useParams();
-  // const [cartAdd, setCartAdd] = useState(0)
+  const [firstanme, setFirstname] = useState("")
+  const [lastname, setLastname] = useState("")
+  const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
   const [cartItemCount, setCartItemCount] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [size, setSize] = useState(null)
   const { error, data: productDetail } = useProductId(`http://localhost:9000/store/get-product/${id}`)
-  const [data, setData] = useState([])
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [addedItem, setAddedItem] = useState(() => {
-    const storedCartItem = localStorage.getItem('cartItem');
-    return storedCartItem ? JSON.parse(storedCartItem) : null;
-  });
+  const [size, setSize] = useState(() => {
+    const storedSize = localStorage.getItem("size")
+    return storedSize ? storedSize : null
+  })
+  // console.log(productDetail)
+  const [addedItem, setAddedItem] = useState([])
 
-  // console.log(size)
+  // const [ totalPrice, setTotalPrice ] = useState(0)
+  const totalPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
+  // console.log(totalPrice)
+  // const price  = localStorage.getItem("cartItem")
+  // const subTotal = price * quantity
+  // console.log(price)
 
   const added = () => {
-    setAddedItem((prevCartItem) => {
-      if (prevCartItem === null) {
-        setIsButtonDisabled(true)
-        return productDetail;
-      } else {
-        // Handle adding multiple products to the cart, if needed
-        // For example, you can create an array of cart items
-        return [prevCartItem, productDetail];
-      }
-    });
+    setAddedItem((prevCartItem) => [...prevCartItem, ...productDetail]);
     const Toast = Swal.mixin({
       toast: true,
       position: 'top-end',
@@ -70,40 +69,31 @@ function StoreProductDetailed() {
       setQuantity(quantity - 1);
     }
   };
-  const [localStSize, setLocalStSize] = useState()
+  // const [localStSize, setLocalStSize] = useState()
   // 
   useEffect(() => {
-    localStorage.setItem('cartItem', JSON.stringify(addedItem));
+    if(addedItem.length > 0) {
+      localStorage.setItem('cartItem', JSON.stringify(addedItem));
+    }
   }, [addedItem]);
 
   useEffect(() => {
     const cartItem = localStorage.getItem("cartItem");
-    const localStSize = localStorage.getItem("size")
     const parsedArray = cartItem ? JSON.parse(cartItem) : [];
     if(parsedArray) {
       const itemCount = parsedArray.length;
       // console.log(itemCount);
       console.log(parsedArray);
-      setData(parsedArray);
+      // setData(parsedArray);
+      setAddedItem(parsedArray)
       setCartItemCount(itemCount);
     }
     
   }, []);
-  console.log(data)
+  // console.log(data)
 
-  console.log(cartItemCount)
+  // console.log(cartItemCount)
 
-  // useEffect(() => {
-  //   const cartItem = localStorage.getItem("cartItem");
-  //   if(!cartItem == null) {
-  //     const parsedArray = JSON.parse(cartItem);
-  //     let arrayCount =  parsedArray.lenght
-  //     console.log(arrayCount)
-  //     console.log(parsedArray.length)
-  //     setData(parsedArray);
-  //   }
-  //   return
-  // }, []);
 
   const emptyCart = () => {
     localStorage.removeItem("cartItems")
@@ -112,16 +102,17 @@ function StoreProductDetailed() {
   const bar = document.getElementById('cart');
   const close = document.getElementById('close');
   const close2 = document.getElementById("close2")
+  const close3 = document.getElementById("close3")
   const nav = document.getElementById('navbar');
   const nav2 = document.getElementById("navbar2")
   const nav3 = document.getElementById("navbar3")
-  // const summaryBody = document.querySelector("#navbar .summary_body");
   const emptyCartButton = document.getElementById("summary_emptyCart_button")
   const infoNav = document.getElementById("infoNav")
   const shippingNav = document.getElementById("shippingNav")
   const back_Cart = document.getElementById("back_Cart")
   const back_Info = document.getElementById("back_Info")
-  //   const bar1 = document.getElementById("bar1")
+  // const [totalPrice, setTotalPrice] = useState("")
+  // console.log(addedItem)
 
   if (bar) {
     bar.addEventListener('click', () => {
@@ -131,31 +122,6 @@ function StoreProductDetailed() {
   if (infoNav) {
     infoNav.addEventListener("click", () => {
       nav2.classList.add("active2")
-      //   summaryBody.innerHTML = `
-      //   <div className='summary_body'>
-      //   <div className='summary_form'>
-      //   <div className='form_item_flex'>
-      //   <div className='form_item'>
-      //     <input className='form_input' placeholder="Firstname"/>
-      //   </div>
-      //   <div className='form_item'>
-      //     <input className='form_input' placeholder="Firstname"/>
-      //   </div>
-      //   </div>
-      //   <div className='form_item'>
-      //     <input className='form_input' placeholder="e.g myemail@gmail.com"/>
-      //   </div>
-
-      //   <div className='form_item'>
-      //     <input className='form_input' placeholder="+234" type='number'/>
-      //   </div>
-
-      //   <div data-v-7ef2909e className='discount_group'>
-      //     <input data-v-7ef2909e id='discountCode' className='form_input' placeholder="Optional"/>
-      //     <button data-v-7ef2909e className='btn discount_cta' type="">Apply</button>
-      //   </div>
-      //   </div> 
-      // </div>`;
     })
   }
 
@@ -192,6 +158,13 @@ function StoreProductDetailed() {
   if (close2) {
     close2.addEventListener('click', () => {
       nav2.classList.remove('active2', "active");
+      // nav2.classList.remove('active');
+    });
+  }
+
+  if (close3) {
+    close3.addEventListener('click', () => {
+      nav3.classList.remove('active3');
       // nav2.classList.remove('active');
     });
   }
@@ -243,6 +216,9 @@ function StoreProductDetailed() {
 
     return item;
   }
+
+  const key = process.env.REACT_APP_FLWT_PUBLIC_KEY
+  // console.log(key)
   // smallimg[0].onclick = function () {
   //     MainImg.src = smallimg[0].src;
   // }
@@ -255,37 +231,40 @@ function StoreProductDetailed() {
   // smallimg[3].onclick = function () {
   //     MainImg.src = smallimg[3].src;
   // }
-  //   const config = {
-  //     // public_key: process.env.FLUTTERWAVE_PUBLIC_API_KEY,
-  //     public_key: 'FLWPUBK-8bc4fc27f95377a4bf1b478af957f69f-X',
-  //     tx_ref: Date.now (),
-  //     amount: 100,
-  //     currency: 'NGN',
-  //     payment_options: 'card,mobilemoney,ussd',
-  //     customer: {
-  //       email: localStorage.email,
-  //       phone: "0908272651",
-  //       name: "Mike"
-  //       // email: email,
-  //       // phone_number: phone,
-  //       // name: name,
-  //     },
-  //     customizations: {
-  //       title: 'My store',
-  //       description: 'Payment for items in cart',
-  //       logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
-  //     },
-  //   };
+    const config = {
+      // public_key: process.env.FLUTTERWAVE_PUBLIC_API_KEY,
+      public_key: 'FLWPUBK_TEST-21c38cdcf4a96ed2f051470b7d362f30-X',
+      tx_ref: Date.now (),
+      amount: totalPrice,
+      currency: 'NGN',
+      payment_options: 'card,mobilemoney,ussd',
+      customer: {
+        email: email,
+        phone: phone,
+        name: firstanme + lastname
+        // email: email,
+        // phone_number: phone,
+        // name: name,
+      },
+      customizations: {
+        title: 'My store',
+        description: 'Payment for items in cart',
+        logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
+      },
+    };
 
-  //   const fwConfig = {
-  //     ...config,
-  //     text: 'Pay with Flutterwave!',
-  //     callback: response => {
-  //       console.log (response);
-  //       closePaymentModal (); // this will close the modal programmatically
-  //     },
-  //     onClose: () => {},
-  //   };
+    const fwConfig = {
+      ...config,
+      text: 'Proceed to payment',
+      callback: response => {
+        console.log (response);
+        closePaymentModal (); // this will close the modal programmatically
+      },
+      onClose: () => {},
+    };
+
+    // const handleFlutterPayment = useFlutterwave(config);
+
   if (!error) {
     return (
       <div>
@@ -301,22 +280,24 @@ function StoreProductDetailed() {
 
            
 
-                  {(addedItem || data) && (
+                
                     <div data-v-7d194230 className='summary_cart_item'>
                       {(Array.isArray(addedItem) && addedItem.length > 0) ? (
                         <div data-v-7d194230 className='summary_cart_item'>
-                          {addedItem.map((item) => (
-                            <div key={item.id} data-v-7d194230 className='summary_cart_item_variants'>
+                          {addedItem.map((info) => (
+                            <div key={info.created_at} data-v-7d194230 className='summary_cart_item_variants'>
                               <div data-v-7d194230 className='summary_cart_item_product'>
                                 <div data-v-7d194230 className='summary_cart_item_product_details'>
                                   <p data-v-7d194230 className='summary_cart_item_product_name'>
-                                    {item.name}
+                                    {info.name}
                                   </p>
+                                  {size && (
                                   <span data-v-7d194230 className='summary_cart_item_product_variant'>
                                     {size}
                                   </span>
+                                  )}
                                   <span data-v-7d194230 className='summary_cart_item_product_price'>
-                                    NGN {item.price}
+                                    NGN {info.price}
                                   </span>
                                 </div>
                                 <div data-v-7d194230 className='summary__cart__item__product__cta'>
@@ -334,43 +315,10 @@ function StoreProductDetailed() {
                             </div>
                           ))}
                         </div>
-                      ) : (
-                        Array.isArray(data) && data.length > 0 && (
-                          <div data-v-7d194230 className='summary_cart_item'>
-                            {data.map((item) => (
-                              <div key={item.id} data-v-7d194230 className='summary_cart_item_variants'>
-                                <div data-v-7d194230 className='summary_cart_item_product'>
-                                  <div data-v-7d194230 className='summary_cart_item_product_details'>
-                                    <p data-v-7d194230 className='summary_cart_item_product_name'>
-                                      {item.name}
-                                    </p>
-                                    <span data-v-7d194230 className='summary_cart_item_product_variant'>
-                                      {size}
-                                    </span>
-                                    <span data-v-7d194230 className='summary_cart_item_product_price'>
-                                      NGN {item.price}
-                                    </span>
-                                  </div>
-                                  <div data-v-7d194230 className='summary__cart__item__product__cta'>
-                                    <div data-v-7d194230 className='action'>
-                                      <button data-v-7d194230 type="button" className='action_minus'>
-                                        <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M14.158 12.332H10.7V11.275H14.158V12.332Z" fill="#333333"></path></svg>
-                                      </button>
-                                      <span data-v-7d194230 className='action__value'>1</span>
-                                      <button data-v-7d194230 type='button' className='action_plus'>
-                                        <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M15.406 11.772H12.557V14.782H11.535V11.772H8.7V10.827H11.535V7.838H12.557V10.827H15.406V11.772Z" fill="#333333"></path></svg>
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )
-                      )}
+                        
+                      ) : null}
 
                     </div>
-                  )}
 
 
 
@@ -400,7 +348,7 @@ function StoreProductDetailed() {
                     Items
                   </div>
                   <div data-v-7d194230 className='summary_footer_item_value'>
-                    NGN 150,000
+                    <strong>NGN</strong> {totalPrice.toLocaleString()}
                   </div>
                 </div>
 
@@ -409,19 +357,19 @@ function StoreProductDetailed() {
                     Total
                   </div>
                   <div data-v-7d194230 className='summary__footer__item__value--2'>
-                    NGN 15,000
+                  <strong>NGN</strong> {totalPrice.toLocaleString()}
                   </div>
                 </div>
 
                 <div data-v-7d194230 className='summary__footer__item'>
-                  <button type="" disabled={isButtonDisabled ? false : true} id='infoNav' className='btn btn--primary btn--block'>Continue</button>
+                  <button type=""  id='infoNav' className='btn btn--primary btn--block'>Continue</button>
                 </div>
               </div>
 
               <AiOutlineShoppingCart className='cartDesktop' /><p className='cartNumber'>{cartItemCount}</p>
               <GrClose id='close' />
               <ul id='payment_process' className='payment_process'>
-                <li>Cart</li>
+                <li style={{color: "blue"}}>Cart</li>
                 <li>Information</li>
                 <li>Shipping</li>
               </ul>
@@ -433,18 +381,18 @@ function StoreProductDetailed() {
                 <div className='summary_form'>
                   <div className='form_item_flex'>
                     <div className='form_item'>
-                      <input className='form_input' placeholder="Firstname" />
+                      <input className='form_input' placeholder="Firstname" onChange={e => setFirstname(e.target.value)}/>
                     </div>
                     <div className='form_item'>
-                      <input className='form_input' placeholder="Lastname" />
+                      <input className='form_input' placeholder="Lastname" onChange={e => setLastname(e.target.value)}/>
                     </div>
                   </div>
                   <div className='form_item'>
-                    <input className='form_input' placeholder="e.g myemail@gmail.com" />
+                    <input className='form_input' placeholder="e.g myemail@gmail.com" onChange={e => setEmail(e.target.value)}/>
                   </div>
 
                   <div className='form_item'>
-                    <input className='form_input' placeholder="+234" type='number' />
+                    <input className='form_input' placeholder="+234" type='number' onChange={e => setPhone(e.target.value)}/>
                   </div>
 
                   <div data-v-7ef2909e className='discount_group'>
@@ -462,7 +410,7 @@ function StoreProductDetailed() {
                     Items
                   </div>
                   <div data-v-7d194230 className='summary_footer_item_value'>
-                    NGN 150,000
+                  <strong>NGN</strong> {totalPrice.toLocaleString()}
                   </div>
                 </div>
 
@@ -471,19 +419,19 @@ function StoreProductDetailed() {
                     Total
                   </div>
                   <div data-v-7d194230 className='summary__footer__item__value--2'>
-                    NGN 15,000
+                  <strong>NGN</strong> {totalPrice.toLocaleString()}
                   </div>
                 </div>
 
                 <div data-v-7d194230 className='summary__footer__item'>
-                  <button type="" id='shippingNav' className='btn btn--primary btn--block'>Continue to shipping</button>
+                  <button type="" id='shippingNav' className='btn btn--primary blocks'><span className='btn-span'>Continue to shipping</span></button>
                 </div>
               </div>
 
               <GrClose id='close2' />
               <ul id='payment_process2' className='payment_process'>
                 <li id="back_Cart">Cart</li>
-                <li>Information</li>
+                <li style={{color: "blue"}}>Information</li>
                 <li>Shipping</li>
               </ul>
             </ul>
@@ -518,7 +466,7 @@ function StoreProductDetailed() {
 
                   <div className='form_item'>
                     <label for="delivery_note">Delivery Note</label>
-                    <textarea rows="" cols="" />
+                    <textarea className='form_textarea' rows="" cols="" />
                   </div>
 
                 </div>
@@ -531,7 +479,7 @@ function StoreProductDetailed() {
                     Items
                   </div>
                   <div data-v-7d194230 className='summary_footer_item_value'>
-                    NGN 150,000
+                  <strong>NGN</strong> {totalPrice.toLocaleString()}
                   </div>
                 </div>
 
@@ -540,20 +488,33 @@ function StoreProductDetailed() {
                     Total
                   </div>
                   <div data-v-7d194230 className='summary__footer__item__value--2'>
-                    NGN 15,000
+                  <strong>NGN</strong> {totalPrice.toLocaleString()}
                   </div>
                 </div>
 
                 <div data-v-7d194230 className='summary__footer__item'>
-                  <button type="" className='btn btn--primary btn--block'>PLACE YOUR ORDER</button>
+                  {/* <button 
+                    type="" 
+                    className='btn btn--primary btn--block'
+                    onClick={() => {
+                      handleFlutterPayment({
+                        callback: (response) => {
+                          console.log(response)
+                          closePaymentModal()
+                        },
+                        onClose: () => {},
+                      })
+                    }}
+                    >PLACE YOUR ORDER</button> */}
+                    <FlutterWaveButton type="submit"  className="btn btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton>
                 </div>
               </div>
 
-              <GrClose id='close2' />
+              <GrClose id='close3' />
               <ul id='payment_process3' className='payment_process'>
                 <li id="back_Info">Cart</li>
                 <li>Information</li>
-                <li>Shipping</li>
+                <li style={{color: "blue"}}>Shipping</li>
               </ul>
             </ul>
           </div>
@@ -565,11 +526,8 @@ function StoreProductDetailed() {
         {productDetail?.map((result) => (
           <section id="prodetails" className="section-p1" key={result.id}>
             <div className="single-pro-image">
-              <img src={result.image} width="100%" id="MainImg" alt="" />
-              {/* {{if(result) {
-                
-              }}} */}
-              {result.image.length > 1 && (
+              <img src={result.image.split('\r\n')[0]} width="100%" id="MainImg" alt="" />
+              {/* {result.image.length > 1 && ( */}
                 <div className="small-img-group">
                   <div className="small-img-col">
                     <img
@@ -579,25 +537,28 @@ function StoreProductDetailed() {
                       alt=""
                     />
                   </div>
+
                   <div className="small-img-col">
                     <img
-                      src={result.image}
+                      src={result.image.split('\r\n')[1]}
                       width="100%"
                       className="small-img"
                       alt=""
                     />
                   </div>
+
                   <div className="small-img-col">
                     <img
-                      src={result.image}
+                      src={result.image.split('\r\n')[2]}
                       width="100%"
                       className="small-img"
                       alt=""
                     />
                   </div>
+
                   <div className="small-img-col">
                     <img
-                      src={result.image}
+                      src={result.image.split('\r\n')[3]}
                       width="100%"
                       className="small-img"
                       alt=""
@@ -605,7 +566,7 @@ function StoreProductDetailed() {
                   </div>
 
                 </div>
-              )}
+              {/* // )} */}
             </div>
 
             <div className="single-pro-details">

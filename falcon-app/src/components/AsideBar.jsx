@@ -1,14 +1,44 @@
 import React, { useState } from 'react';
-import {GiClothes} from 'react-icons/gi';
-import {AiOutlineDown, AiOutlineUp} from 'react-icons/ai';
-import {MdLocalShipping} from 'react-icons/md';
-import {Link} from 'react-router-dom';
+import { GiClothes, GiArtificialIntelligence } from 'react-icons/gi';
+import { AiOutlineDown, AiOutlineUp } from 'react-icons/ai';
+import { MdLocalShipping } from 'react-icons/md';
+import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import Logout from './LogOut';
 const AsideBar = () => {
   const [show, setShow] = useState (false);
   const handleClick = () => {
     setShow (!show);
   };
+
+  const coming_soon = () => {
+    const Toast = Swal.mixin ({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: toast => {
+        toast.addEventListener ('mouseenter', Swal.stopTimer);
+        toast.addEventListener ('mouseleave', Swal.resumeTimer);
+      },
+    });
+
+    Toast.fire ({
+      color: "red",
+      icon: 'faliure',
+      title: "This feature is coming soon.....",
+    })
+  }
+
+  // Swal.fire ({
+  //   position: 'top-end',
+  //   toast: true,
+  //   title: err.response.data.message,
+  //   color: 'red',
+  //   showConfirmButton: false,
+  //   timer: 2500,
+  // });
 
   const { username } = localStorage
 
@@ -53,12 +83,27 @@ const AsideBar = () => {
             </Link>
           </li>
 
-          <li onClick={handleClick} class="mt-0.5 w-full">
-            <Link class="py-2.7 shadow-soft-2xl text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors cursor-pointer">
-              <div class="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+          <li onClick={coming_soon} className="mt-0.5 w-full">
+            <Link
+              className="py-2.7  text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap rounded-lg bg-white px-4 font-semibold text-slate-700 transition-colors"
+              // to="/MyAi"
+            >
+              <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+                <GiArtificialIntelligence size="500%" style={{height: '100%'}} />
+
+              </div>
+              <span className="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
+                My AI
+              </span>
+            </Link>
+          </li>
+
+          <li onClick={handleClick} className="mt-0.5 w-full">
+            <Link className="py-2.7 shadow-soft-2xl text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors cursor-pointer">
+              <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
                 <GiClothes size="500%" style={{height: '100%'}} />
               </div>
-              <span class="flex-grow ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
+              <span className="flex-grow ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
                 Store
               </span>
               {/* <i section-open-icon="true" className="absolute right-0 hidden pt-1 mr-4 leading-tight fa fa-plus text-xs"></i> */}

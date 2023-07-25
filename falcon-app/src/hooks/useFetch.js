@@ -6,27 +6,53 @@ const useFetch = url => {
   const [data, setData] = useState (null);
   const [error, setError] = useState (null);
   const [count, setCount] = useState(0)
-  const token = localStorage.token;
+  const { email } = localStorage;
   
   // axiosInstance.interceptors.request.use( async(config) => {
   //   config.headers.Authorization = `Bearer ${token}`
   //   return config
   // })
+
+  // const config = {
+  //   headers: {
+  //     Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjg5OTYxODQzLCJleHAiOjE2OTAxMzQ2NDN9.ZpjgZGUOUVkJlHnMNVBwesysUm9rBCzMnOHbwa1pCFA",
+  //   },
+  // };
+   
+  // const axiosInstance = axios.create();
+
+  //  // Add an interceptor to set the "Authorization" header with the token
+  //  axiosInstance.interceptors.request.use((config) => {
+  //   const {token} = localStorage;
+  //   if (token) {
+  //     config.headers["Authorization"] = `Bearer ${token}`;
+  //   }
+  //   return config;
+  // });
+
+
+  // let config = axios.create({
+  //   headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  // })
+
+  // console.log(token)
+
+
   useEffect (
     () => {
-      axios.post (url, {
-        email: localStorage.email,
-      })
+      axios.post (url, {email} )
         .then (response => {
           console.log (response);
-          console.log(token)
+          // console.log(token)
           let data = response.data.data2;
           // console.log(data)
           setData (data);
           setCount(data.length)
         })
         .catch (err => {
-          console.log (err);
+          // console.log (err.d);
           console.log(err.response.data.error)
           if(err.response.data.error) {
             Swal.fire ({
@@ -34,7 +60,7 @@ const useFetch = url => {
               // icon: 'success',
               toast: true,
               color: "red",
-              title: 'Apple authentication is disabled',
+              title: 'Authorization token required',
               showConfirmButton: false,
               timer: 2500,
             })
@@ -47,9 +73,9 @@ const useFetch = url => {
         //   console.log(token)
         });
     },
-    [url, error, token]
+    [url, error]
   );
-  return {data, error, count};
+  return { data, count };
 };
 
 export default useFetch;
