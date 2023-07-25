@@ -95,7 +95,8 @@ const Register = () => {
             icon: 'success',
             title: `Account created successfully`,
           }).then ((window.location.href = '/Home'));
-        } else {
+        } 
+        else {
           Swal.fire ({
             position: 'top-end',
             // icon: 'success',
@@ -108,16 +109,16 @@ const Register = () => {
         }
       })
       .catch (err => {
-        console.log ('ERROR', err);
-        Swal.fire ({
-          position: 'top-end',
-          icon: 'error',
-          iconHtml: '🙄',
-          toast: true,
-          title: err.message,
-          showConfirmButton: false,
-          timer: 2500,
-        });
+        console.log ('ERROR', err.message);
+        // Swal.fire ({
+        //   position: 'top-end',
+        //   icon: 'error',
+        //   iconHtml: '🙄',
+        //   toast: true,
+        //   title: err.message,
+        //   showConfirmButton: false,
+        //   timer: 2500,
+        // });
         console.log (err.config.data);
       });
   };
@@ -272,7 +273,7 @@ const Register = () => {
                         // href="/"
                       >
                         <svg width="24px" height="32px" viewBox="0 0 64 64"
-                        onClick={googleAuth}>
+                        onClick={googleReg}>
                           <g
                             stroke="none"
                             stroke-width="1"
@@ -323,7 +324,7 @@ const Register = () => {
                           aria-describedby="email-addon"
                           required
                           // onChange={handleForm}
-                          // onChange={e => setFnameReg (e.target.value)}
+                          onChange={e => setFnameReg (e.target.value)}
                         />
                       </div>
 
@@ -336,7 +337,7 @@ const Register = () => {
                           aria-label="LastName"
                           aria-describedby="email-addon"
                           // onChange={handleForm}
-                          // onChange={e => setLnameReg (e.target.value)}
+                          onChange={e => setLnameReg (e.target.value)}
                           required
                         />
                       </div>
@@ -350,6 +351,7 @@ const Register = () => {
                           aria-label="Username"
                           aria-describedby="email-addon"
                           required
+                          onChange={e => setUsername(e.target.value)}
                           // onChange={handleForm}
                         />
                       </div>
@@ -363,6 +365,7 @@ const Register = () => {
                           aria-label="Email"
                           aria-describedby="email-addon"
                           required
+                          onChange={e => setEmailReg(e.target.value)}
                           // onChange={handleForm}
                         />
                       </div>
@@ -376,6 +379,7 @@ const Register = () => {
                           aria-label="Password"
                           aria-describedby="password-addon"
                           required
+                          onChange={e => setPasswordReg(e.target.value)}
                           // onChange={handleForm}
                         />
                       </div>
@@ -389,15 +393,16 @@ const Register = () => {
                           aria-label="Phone number"
                           aria-describedby="email-addon"
                           required
+                          onChange={e => setPhone(e.target.value)}
                           // onChange={handleForm}
                         />
                       </div>
 
                       <div className="text-center">
                         <button
-                          // type="sub"
-                          class="inline-block w-full px-6 py-3 mt-6 mb-2 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:scale-102 hover:shadow-soft-xs leading-pro text-xs ease-soft-in tracking-tight-soft shadow-soft-md bg-150 bg-x-25 bg-gradient-to-tl from-gray-900 to-slate-800 hover:border-slate-700 hover:bg-slate-700 hover:text-white"
-                          // onClick={register}
+                          type="button"
+                          className="inline-block w-full px-6 py-3 mt-6 mb-2 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:scale-102 hover:shadow-soft-xs leading-pro text-xs ease-soft-in tracking-tight-soft shadow-soft-md bg-150 bg-x-25 bg-gradient-to-tl from-gray-900 to-slate-800 hover:border-slate-700 hover:bg-slate-700 hover:text-white"
+                          onClick={register}
                         >
                           Sign up
                         </button>
@@ -416,9 +421,6 @@ const Register = () => {
             </div>
           </div>
         </section>
-        {/* <!-- -------- START FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- --> */}
-
-        {/* <!-- -------- END FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- --> */}
       </main>
     </div>
   );

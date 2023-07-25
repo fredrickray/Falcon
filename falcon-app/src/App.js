@@ -9,6 +9,7 @@ import Login from "./pages/auth/Login"
 
 import Home from './pages/Home';
 import Profile from './pages/Profile';
+import MyAI from './pages/MyAI';
 
 // ------>> STORE <<-------
 import Products from './pages/store/Product';
@@ -43,6 +44,7 @@ const App = () => {
         <Route exact path="/store/shipping" element={<Shipping />} />
         <Route exact path="/Profile" element={<Profile />} />
         <Route exact path="/Home" element={<Home />} />
+        <Route exact path="/MyAi" element={<MyAI />} />
         <Route exact path="/Tag" element={<Tag />} />
         {/* <Route exact path="/Store/View/:store" element={<StoreView />} /> */}
         <Route exact path="*" element={<NotFound />} />

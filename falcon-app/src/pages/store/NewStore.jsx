@@ -1,205 +1,304 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import AsideBar from '../../components/AsideBar';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import useFetchStore from '../../hooks/useFetchStore';
+import { Link } from 'react-router-dom';
 const NewStore = () => {
-  const [name, setName] = useState ('');
-  const [link, setLink] = useState ('');
-  const [logo, setLogo] = useState ('');
-  const [isModalVisible, setIsModalVisible] = useState (false);
+  const [name, setName] = useState('');
+  const [link, setLink] = useState('');
+  const [logo, setLogo] = useState('');
+  const { email } = localStorage
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false)
+  const [showFormField, setShowFormField] = useState(false)
+  const [selectedImage, setSelectedImage] = useState(null);
+  const CLOUDINARY_API = 'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
+  const { data, error } = useFetchStore("http://localhost:9000/store/get-store")
 
-  const URL = 'htttp://localhost:9000/store/create-store';
+  const showForm = () => {
+    setShowFormField(!showFormField)
+    
+  }
+
+  // to use the function "handleImageUpload" and set Image to send to the backend
+  const saveImage = event => {
+    setLogo(event.target.files[0]);
+  };
+
+  // To restrict amount of images to select to 5
+  const maxImage = e => {
+    const file = e.target.files[0];
+    // setSelectedImage(URL.createObjectURL(files))
+    if (file) {
+      const imageUrl = window.URL.createObjectURL(file)
+      setSelectedImage(imageUrl)
+      saveImage(e)
+    }
+  };
+
+  const CREATE_STORE_URL = 'htttp://localhost:9000/store/create-store';
+  // const CHECK_STORE_URL = "http://localhost:9000/store/get-store"
   const create = () => {
+    const formData = new FormData();
+    formData.append('file', logo);
+    formData.append('upload_preset', 'b74r48f2');
+
     axios
-      .post (URL, {
-        name,
-        link,
-        logo,
+      .post(CLOUDINARY_API, formData)
+      .then(imageResponse => {
+        console.log(imageResponse.data.secure_url);
+        const logoUrl = imageResponse.data.secure_url;
+
+        axios
+          .post(CREATE_STORE_URL, {
+            name: name,
+            link: link,
+            logo: logoUrl,
+            email: email,
+          })
+          .then(response => {
+            console.log(response.data);
+            setIsButtonDisabled(false);
+            Swal.fire({
+              position: 'center',
+              toast: true,
+              title: `${response.data}`,
+              color: 'red',
+              showConfirmButton: false,
+              timer: 2500,
+            });
+          })
+          .catch(error => {
+            console.log("Log error for the post to the backend")
+            console.log(error);
+            setIsButtonDisabled(false);
+            Swal.fire({
+              position: 'center',
+              toast: true,
+              title: `${error.data}`,
+              color: 'red',
+              showConfirmButton: false,
+              timer: 2500,
+            });
+          });
       })
-      .then (response => {
-        console.log (response);
-      })
-      .catch (error => {
-        Swal.fire ({
-          position: 'top-end',
+      .catch(error => {
+        console.log("Log error for the image upload")
+        console.log(error);
+        setIsButtonDisabled(false);
+        Swal.fire({
+          position: 'center',
           toast: true,
-          title: error.response.data.message,
+          title: `${error}`,
           color: 'red',
           showConfirmButton: false,
           timer: 2500,
         });
-        console.log (error);
       });
   };
+
+
+
 
   return (
     <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
       <AsideBar />
       <main className="ease-soft-in-out xl:ml-68.5 relative h-screen max-h-screen rounded-xl transition-all duration-200">
-        <div className="flex justify-center items-center h-screen">
-          <button
-            type="button"
-            data-toggle="modal"
-            data-target="#import"
-            // onClick={() => setIsModalVisible (true)}
-            className="inline-block ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
-            style={{background: '#FF9B00'}}
+
+        <nav
+          class="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
+          navbarmain="true"
+          navbar-scroll="true"
+        >
+          <div class="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
+            <nav>
+              {/* <!-- breadcrumb --> */}
+              <ol class="flex flex-wrap pt-1 mr-12 bg-transparent rounded-lg sm:mr-16">
+                <li class="leading-normal text-sm">
+                  <a class="opacity-50 text-slate-700" href>Store</a>
+                </li>
+                <li
+                  class="text-sm pl-2 capitalize leading-normal text-slate-700 before:float-left before:pr-2 before:text-gray-600 before:content-['/']"
+                  aria-current="page"
+                >
+                  New Store
+                </li>
+              </ol>
+              <h6 class="mb-0 font-bold capitalize">New Store</h6>
+            </nav>
+
+            <div class="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
+              <ul class="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
+                {/* <!-- online builder btn  --> */}
+                <li class="flex items-center pl-4 xl:hidden">
+                  <a
+                    href
+                    class="block p-0 transition-all ease-nav-brand text-sm text-slate-500"
+                    sidenav-trigger
+                  >
+                    <div class="w-4.5 overflow-hidden">
+                      <i class="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
+                      <i class="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
+                      <i class="ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+        {/* <main className="mt-0 transition-all duration-200 ease-soft-in-out"> */}
+        <section className="min-h-screen mb-32">
+          <div
+            className="relative flex items-start pt-12 pb-56 m-4 overflow-hidden bg-center bg-cover min-h-50-screen rounded-xl"
+            style={{
+              backgroundImage: "url('../assets/img/b2.jpg')",
+            }}
           >
-            Open Modal
-          </button>
-        </div>
-        <div class="w-full mx-auto">
-          <div accordion>
-            <div accordion-section class="mb-4 rounded-t-1">
-              <h5 class="mb-0">
-                <button
-                  section-trigger
-                  class="relative flex items-center w-full p-4 font-semibold text-left transition-all border-b border-solid cursor-pointer border-slate-100 ease-soft-in text-slate-700 rounded-t-1"
-                  aria-expanded="true"
-                >
-                  How do I order?
-                  <i
-                    section-open-icon
-                    class="absolute right-0 hidden pt-1 mr-4 leading-tight fa fa-plus text-xs"
-                  />
-                  <i
-                    section-close-icon
-                    class="absolute right-0 pt-1 mr-4 leading-tight fa fa-minus text-xs"
-                  />
-                </button>
-              </h5>
-              <div
-                section-content
-                class="overflow-hidden transition-all ease-soft-in-out duration-350"
-              >
-                <div class="p-4 leading-normal text-sm opacity-80 ">
-                  We’re not always in the position that we want to be at. We’re constantly growing. We’re constantly making mistakes. We’re constantly trying to express ourselves and actualize our dreams. If you have the opportunity to play this game of life you need to appreciate every moment. A lot of people don’t appreciate the moment until it’s passed.
-                  {' '}
-                </div>
-              </div>
-            </div>
-            <div accordion-section class="mb-4">
-              <h5 class="mb-0">
-                <button
-                  section-trigger
-                  class="relative flex items-center w-full p-4 font-semibold text-left transition-all border-b border-solid cursor-pointer border-slate-100 ease-soft-in text-slate-500 rounded-t-1"
-                  aria-expanded="false"
-                >
-                  How can i make the payment?
-                  <i
-                    section-open-icon
-                    class="absolute right-0 pt-1 mr-4 leading-tight fa fa-plus text-xs"
-                  />
-                  <i
-                    section-close-icon
-                    class="absolute right-0 hidden pt-1 mr-4 leading-tight fa fa-minus text-xs"
-                  />
-                </button>
-              </h5>
-              <div
-                section-content
-                class="overflow-hidden transition-all ease-soft-in-out duration-350"
-              >
-                <div class="p-4 leading-normal text-sm opacity-80 ">
-                  It really matters and then like it really doesn’t matter. What matters is the people who are sparked by it. And the people who are like offended by it, it doesn’t matter. Because it's about motivating the doers. Because I’m here to follow my dreams and inspire other people to follow their dreams, too.
-                  {' '}
-                  <br />
-                  We’re not always in the position that we want to be at. We’re constantly growing. We’re constantly making mistakes. We’re constantly trying to express ourselves and actualize our dreams. If you have the opportunity to play this game of life you need to appreciate every moment. A lot of people don’t appreciate the moment until it’s passed.
-                  {' '}
-                </div>
-              </div>
-            </div>
-            <div accordion-section class="mb-4">
-              <h5 class="mb-0">
-                <button
-                  section-trigger
-                  class="relative flex items-center w-full p-4 font-semibold text-left transition-all border-b border-solid cursor-pointer border-slate-100 ease-soft-in text-slate-500 rounded-t-1"
-                  aria-expanded="false"
-                >
-                  How much time does it take to receive the order?
-                  <i
-                    section-open-icon
-                    class="absolute right-0 pt-1 mr-4 leading-tight fa fa-plus text-xs"
-                  />
-                  <i
-                    section-close-icon
-                    class="absolute right-0 hidden pt-1 mr-4 leading-tight fa fa-minus text-xs"
-                  />
-                </button>
-              </h5>
-              <div
-                section-content
-                class="overflow-hidden transition-all ease-soft-in-out duration-350"
-              >
-                <div class="p-4 leading-normal text-sm opacity-80 ">
-                  The time is now for it to be okay to be great. People in this world shun people for being great. For being a bright color. For standing out. But the time is now to be okay to be the greatest you. Would you believe in what you believe in, if you were the only one who believed it? If everything I did failed - which it doesn't, it actually succeeds - just the fact that I'm willing to fail is an inspiration. People are so scared to lose that they don't even try. Like, one thing people can't say is that I'm not trying, and I'm not trying my hardest, and I'm not trying to do the best way I know how.
-                  {' '}
-                </div>
-              </div>
-            </div>
-            <div accordion-section class="mb-4">
-              <h5 class="mb-0">
-                <button
-                  section-trigger
-                  class="relative flex items-center w-full p-4 font-semibold text-left transition-all border-b border-solid cursor-pointer border-slate-100 ease-soft-in text-slate-500 rounded-t-1"
-                  aria-expanded="false"
-                >
-                  Can I resell the products?
-                  <i
-                    section-open-icon
-                    class="absolute right-0 pt-1 mr-4 leading-tight fa fa-plus text-xs"
-                  />
-                  <i
-                    section-close-icon
-                    class="absolute right-0 hidden pt-1 mr-4 leading-tight fa fa-minus text-xs"
-                  />
-                </button>
-              </h5>
-              <div
-                section-content
-                class="overflow-hidden transition-all ease-soft-in-out duration-350"
-              >
-                <div class="p-4 leading-normal text-sm opacity-80 ">
-                  I always felt like I could do anything. That’s the main thing people are controlled by! Thoughts- their perception of themselves! They're slowed down by their perception of themselves. If you're taught you can’t do anything, you won’t do anything. I was taught I could do everything.
-                  {' '}
-                  <br />
-                  <br />
-                  If everything I did failed - which it doesn't, it actually succeeds - just the fact that I'm willing to fail is an inspiration. People are so scared to lose that they don't even try. Like, one thing people can't say is that I'm not trying, and I'm not trying my hardest, and I'm not trying to do the best way I know how.
-                  {' '}
-                </div>
-              </div>
-            </div>
-            <div accordion-section class="mb-4 rounded-b-1">
-              <h5 class="mb-0">
-                <button
-                  section-trigger
-                  class="relative flex items-center w-full p-4 font-semibold text-left transition-all border-b border-solid cursor-pointer border-slate-100 ease-soft-in text-slate-500 rounded-t-1"
-                  aria-expanded="false"
-                >
-                  Where do I find the shipping details?
-                  <i
-                    section-open-icon
-                    class="absolute right-0 pt-1 mr-4 leading-tight fa fa-plus text-xs"
-                  />
-                  <i
-                    section-close-icon
-                    class="absolute right-0 hidden pt-1 mr-4 leading-tight fa fa-minus text-xs"
-                  />
-                </button>
-              </h5>
-              <div
-                section-content
-                class="overflow-hidden transition-all ease-soft-in-out duration-350"
-              >
-                <div class="p-4 leading-normal text-sm opacity-80 ">
-                  There’s nothing I really wanted to do in life that I wasn’t able to get good at. That’s my skill. I’m not really specifically talented at anything except for the ability to learn. That’s what I do. That’s what I’m here for. Don’t be afraid to be wrong because you can’t learn anything from a compliment. I always felt like I could do anything. That’s the main thing people are controlled by! Thoughts- their perception of themselves! They're slowed down by their perception of themselves. If you're taught you can’t do anything, you won’t do anything. I was taught I could do everything.
-                  {' '}
+            <span className="absolute top-0 left-0 w-full h-full bg-center bg-cover bg-gradient-to-tl from-gray-900 to-slate-800 opacity-60" />
+            <div className="container z-10">
+              <div className="flex flex-wrap justify-center -mx-3">
+                <div className="w-full max-w-full px-3 mx-auto mt-0 text-center lg:flex-0 shrink-0 lg:w-5/12">
+                  <p className="text-white">
+                    Take your business to the next level🚀🚀🚀
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
+          {data && (
+            <div class="container">
+              <div class="flex flex-wrap -mx-3 -mt-48 md:-mt-56 lg:-mt-48">
+                <div class="w-full max-w-full px-3 mx-auto mt-0 md:flex-0 shrink-0 md:w-7/12 lg:w-5/12 xl:w-4/12">
+                  <div class="relative z-0 flex flex-col min-w-0 break-words bg-white border-0 shadow-soft-xl rounded-2xl bg-clip-border">
+                    <div class="p-6 mb-0 text-center bg-white rounded-t-2xl">
+                      <h5>Store has already been made</h5>
+                    </div>
+                  </div>
+                  <div style={{marginTop: "40%"}} className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
+                      <div class="relative flex flex-col h-full min-w-0 break-words bg-black border border-solid shadow-none rounded-2xl border-slate-100 bg-clip-border">
+                        <div class="flex flex-col justify-center flex-auto p-6 text-center">
+                          <Link to="/store/Products/new">
+                            <i class="mb-4 fa fa-plus text-white" />
+                            <h5 class="text-white">Create product</h5>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!data && (
+            <div className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
+              <div class="relative flex flex-col h-full min-w-0 break-words bg-transparent border border-solid shadow-none rounded-2xl border-slate-100 bg-clip-border">
+                <div class="flex flex-col justify-center flex-auto p-6 text-center">
+                  {/* <Link to="/store/Products/new"> */}
+                  <button onClick={showForm}>
+                    {showFormField ?
+                    <div>
+                       <i class="mb-4 fa fa-minus text-slate-400" />
+                       <h5 class="text-slate-400">Cancel</h5>
+                    </div> 
+                   
+                    :
+                    <div>
+                      <i class="mb-4 fa fa-plus text-slate-400" />
+                      <h5 class="text-slate-400">New Store</h5>
+                    </div>
+                    
+                    }
+                  </button>
+                  {/* </Link> */}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showFormField && (
+            <div class="container">
+              <div class="flex flex-wrap -mx-3 -mt-48 md:-mt-56 lg:-mt-48">
+                <div class="w-full max-w-full px-3 mx-auto mt-0 md:flex-0 shrink-0 md:w-7/12 lg:w-5/12 xl:w-4/12">
+                  <div class="relative z-0 flex flex-col min-w-0 break-words bg-white border-0 shadow-soft-xl rounded-2xl bg-clip-border">
+                    <div class="p-6 mb-0 text-center bg-white border-b-0 rounded-t-2xl">
+                      <h5>Create Store</h5>
+                    </div>
+                    <div class="flex-auto p-6">
+                      <form>
+                        <div class="mb-4">
+                          <input
+                            name="name"
+                            type="text"
+                            className="text-sm focus:shadow-soft-primary-outline leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:bg-white focus:text-gray-700 focus:outline-none focus:transition-shadow"
+                            placeholder="Name"
+                            aria-label="Name"
+                            aria-describedby="email-addon"
+                            required
+                            onChange={e => setName (e.target.value)}
+                          />
+                        </div>
+
+                        <div class="mb-4 flex items-center relative">
+                          <span className="absolute left-3 text-gray-400">
+                            http://localhost:9000/store/get-stores/
+                          </span>
+                          <input
+                            name="link"
+                            type="text"
+                            className="text-sm focus:shadow-soft-primary-outline leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 px-3 pl-8 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:bg-white focus:text-gray-700 focus:outline-none focus:transition-shadow relative" placeholder="Link"
+                            aria-label="Link"
+                            aria-describedby="email-addon"
+                            onChange={e => setLink(e.target.value)}
+                          />
+
+                        </div>
+
+                        <div class="mb-4">
+                          <input
+                            accept='image/png, image/jpeg, image/jpg'
+                            type="file"
+                            name="logo"
+                            className="text-sm focus:shadow-soft-primary-outline leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:bg-white focus:text-gray-700 focus:outline-none focus:transition-shadow"
+                            placeholder="lgog"
+                            aria-label="logo"
+                            aria-describedby="email-addon"
+                            onChange={maxImage}
+                          // onChange={handleForm}
+                          />
+                        </div>
+
+                        {selectedImage &&
+                          <img
+                            src={selectedImage}
+                            alt="Selected Image"
+                            style={{
+                              width: "50px",
+                              height: "50px"
+                            }}
+                          />}
+
+                        <div className="text-center">
+                          <button
+                            className="inline-block w-full px-6 py-3 mt-6 mb-2 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:scale-102 hover:shadow-soft-xs leading-pro text-xs ease-soft-in tracking-tight-soft shadow-soft-md bg-150 bg-x-25 bg-gradient-to-tl from-gray-900 to-slate-800 hover:border-slate-700 hover:bg-slate-700 hover:text-white"
+                            disabled={isButtonDisabled ? true : false}
+                            onClick={create}
+                            type='button'
+                          >
+                            {isButtonDisabled ? "Creating...." : "Create"}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+        {/* </main> */}
       </main>
     </div>
   );
