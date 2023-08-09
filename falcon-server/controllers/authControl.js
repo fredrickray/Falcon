@@ -23,32 +23,6 @@ app.use (cookieParser ());
 //   });
 // };
 
-// "this is the hardest secret to decode"
-// Verifying JWT
-const verifyJWT = (req, res, next) => {
-  const token = req.headers['x-access-token'];
-
-  if (!token) {
-    res.json ({
-      message: 'Token not found, token is needed to proceed',
-      status: 'No token',
-    });
-    console.log ('Token not found, token is needed to proceed');
-  } else {
-    jwt.verify (
-      token,
-      'this is the hardest secret to decode',
-      (err, decoded) => {
-        if (err) {
-          res.json ({message: 'Failed to authenticate', err});
-        } else {
-          req.userId = decoded.id;
-          next ();
-        }
-      }
-    );
-  }
-};
 
 //Registering merchant
 exports.register = async (req, res) => {
@@ -115,7 +89,7 @@ exports.register = async (req, res) => {
           User: user,
           token,
         });
-        console.log (user);
+        // console.log (user);
       } catch (error) {
         console.log (error);
         res
@@ -148,8 +122,7 @@ exports.login = async (req, res) => {
           withCredentials: true,
           maxAge: maxAge * 1000,
         });
-        console.log ({user: user, token});
-        // console.log(user.id)
+        // console.log ({user: user, token});
         res.status (200).json ({
           status: 'success',
           data: user,
@@ -158,75 +131,37 @@ exports.login = async (req, res) => {
         });
       }
     }
-  } catch (error) {
-    console.log (error);
-    res.status(500).send({message: "Server error", error})
+  } 
+  catch (error) {
+    res.status(500).send({message: "Internal server error", err: error.message})
   }
 };
 
-// exports.update = async (req, res) =>{
-//   const { email, fname, lname, uname, image } = req.body
-
-//   try {
-//     let user = await knex("Merchants")
-//       .where({email})
-//       .first()
-      
-//       if (!user || user === "") {
-//         res.status(404).send({ message: "Can't update, user not found" });
-//         console.log("Can't update, user not found");
-//       } else {
-//         await knex("Merchants")
-//           .where({ email })
-//           .update({ firstname: fname, lastname: lname, username: uname, image });
-      
-//         res.status(201).send({ message: "Updated successfully", status: "success", user });
-//       }
-      
-//   } 
-//   catch (error) {
-//     res.status(500).send({message: "Server error", error})
-//     console.log("There was a server error")
-//     console.log(error)
-//   }
-// }
-
-exports.update = async (req, res) => {
-  const { image, email } = req.body
-
-  try {
-    
-  } catch (error) {
-    
-  }
-}
-
 
 exports.update = async (req, res) =>{
-  const { image, email } = req.body
+  const { image, email, username } = req.body
 
   try {
-    let user = await knex("Merchant")
+    let user = await knex("Merchants")
       .where({email: email})
       // .first()
       
       if (!user || user === "") {
         res.status(404).send({ message: "Can't update, user not found" });
         console.log("Can't update, user not found");
-      } else {
+      } 
+      else {
         await knex("Merchants")
           .where({ email: email })
-          .update({ image: image });
+          .update({ image: image, username });
       
         res.status(200).send({ message: "Updated successfully", status: "success", user })
-        console.log(user)
+        // console.log(user)
       }
       
   } 
   catch (error) {
-    res.status(500).send({message: "Server error", error: error.message})
-    console.log("There was a server error")
-    console.log(error.message)
+    res.status(500).send({message: "Internal server error", err: error.message})
   }
 }
 
@@ -242,10 +177,10 @@ exports.social = async (req, res) => {
       email,
     });
 
-    console.log (user);
+    // console.log (user);
     res.send (user);
   } catch (error) {
-    console.log (error);
+    // console.log (error);
     res.send (error);
   }
 };
@@ -254,17 +189,17 @@ exports.getUser = async (req, res) => {
   const { email } = req.body
 
   try {
-    const user = await knex("Merchants").where({email}).select("");
+    const user = await knex("Merchants").where({email});
     if(!user || user == ""){
       res.status(404).send({message: "Email not found"})
-      console.log("Email not found")
+      // console.log("Email not found")
     }
     else{
       res.status(200).send({message: "User found", user})
     }
   } 
   catch (error) {
-    console.log(error)
+    // console.log(error)
     res.status(500).send({message: "There was a server error", error})
   }
 }
@@ -276,7 +211,7 @@ exports.users = async (req, res) => {
     let user = await knex.select ().from ('Merchants');
     // console.log(user)
     if (user) {
-      console.log (user);
+      // console.log (user);
       res.send ({message: 'Users retrived', user});
     } else {
       res.send ({message: 'Users were not retrived'});
@@ -286,77 +221,47 @@ exports.users = async (req, res) => {
   }
 };
 
-// To Reset Merchant's Password
-exports.passwordForgot = async (req, res) => {
-  const email = req.body.email;
-
-  try {
-    let user = await knex ('Merchants').where ({email: email}).first ();
-
-    if (user) {
-      res.json ({status: 'Success', message: 'Email was found', data: user});
-    } else {
-      res.json ({status: 'Failed', message: 'Email was not found'});
-    }
-  } catch (error) {
-    console.log (error);
-    res.json ({status: 'Error', message: 'There was an an error', err: error});
-  }
-};
-
 // To Update Merchant's Password
 exports.passwordReset = async (req, res) => {
-  bcrypt.hash (req.body.password, saltRounds, async (err, hash) => {
-    const password = hash;
-    const email = req.body.email;
+  const { email, password } = req.body;
 
-    try {
-      let user = await knex ('Merchants')
-        .where ({email: email})
-        .first ()
-        .update ({password: password});
+  // Check if email and password are provided
+  if (!email || !password) {
+    return res.send({
+      status: 'Failed',
+      message: 'Email and password are required.',
+    });
+  }
 
-      if (user) {
-        res.send ({
-          status: 'Success',
-          message: 'Email found and password updated successfully',
-        });
-      } else if (user == '') {
-        res.send ({
-          status: 'failed',
-          message: "Email found but password can't be empty",
-        });
-      } else {
-        res.send ({
-          status: 'Failed',
-          message: 'Email not found and password was not updated',
-        });
-      }
-    } catch (error) {
-      console.log (error);
-      res.send ({status: 'Error', message: 'An error occured'});
+  try {
+    // Hash the new password
+    const saltRounds = 10; // You can adjust this value based on your requirements
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Update the password in the database for the given email
+    const updatedRows = await knex('Merchants')
+      .where({ email: email })
+      .update({ password: hashedPassword });
+
+    if (updatedRows > 0) {
+      return res.json({
+        status: 'Success',
+        message: 'Email found and password updated successfully',
+      });
+    } 
+    else {
+      return res.json({
+        status: 'Failed',
+        message: 'Email not found and password was not updated',
+      });
     }
-  });
+  } 
+  catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: 'Error',
+      message: 'Internal server error',
+      err: error.message
+    });
+  }
 };
-
-// const mongoose = require("mongoose")
-// const Schema = mongoose.Schema
-// const tokenSchema = new Schema({
-//   userId: {
-//     type: Schema.Types.ObjectId,
-//     required: true,
-//     ref: "user",
-//     unique: true
-//   },
-//   token: {
-//     type: String,
-//     required: true
-//   },
-//   createdAt: {
-//     type: Date,
-//     default: Date.now(),
-//     expires: 3600
-//   }
-// })
-
-// module.exports = mongoose.model("token", tokenSchema)

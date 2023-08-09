@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
@@ -9,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState ('');
   const [isButtonDisabled, setIsButtonDisabled] = useState (false);
   const LOGIN_URL = 'http://localhost:9000/auth/login';
-  const [user, setUser] = useState({});
+  // const [user, setUser] = useState({});
 
   // const handleCallbackResponse = (response) => {
   //   console.log("Encoded JWT ID token: " + response.credential)
@@ -19,7 +19,7 @@ const Login = () => {
   // }
   // useEffect(() => {
   //  /*  global google */
-  //   google.accounts.id.initialize({
+  //   google.accounts.idx.initialize({
   //     client_id: "535346481262-ei6k004c8l3hdv6hkcrpderl0kb2qsd5.apps.googleusercontent.com",
   //     callback: handleCallbackResponse
   //   })
@@ -194,11 +194,11 @@ const Login = () => {
                       <div id="googleDiv">
                         
                       </div>
-                      <div class="flex flex-wrap px-3 -mx-3  lg:px-6 xl:px-12">
+                      <div className="flex flex-wrap px-3 -mx-3  lg:px-6 xl:px-12">
 
-                        <div class="w-3/12 max-w-full px-1 ml-auto flex-0">
+                        <div className="w-3/12 max-w-full px-1 ml-auto flex-0">
                           <a
-                            class="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
+                            className="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
                             href
                           >
                             <svg width="24px" height="32px" viewBox="0 0 64 64"
@@ -229,9 +229,9 @@ const Login = () => {
                           </a>
                         </div>
 
-                        <div class="w-3/12 max-w-full px-1 flex-0">
+                        <div className="w-3/12 max-w-full px-1 flex-0">
                           <a
-                            class="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
+                            className="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
                             href
                           >
                             <svg width="24px" height="32px" viewBox="0 0 64 64"
@@ -292,8 +292,8 @@ const Login = () => {
                             </svg>
                           </a>
                         </div>
-                        <div class="relative w-full max-w-full px-3 mt-2 text-center shrink-0">
-                      <p class="z-20 inline px-4 mb-2 font-semibold leading-normal bg-white text-sm text-slate-400">
+                        <div className="relative w-full max-w-full px-3 mt-2 text-center shrink-0">
+                      <p className="z-20 inline px-4 mb-2 font-semibold leading-normal bg-white text-sm text-slate-400">
                         or
                       </p>
                     </div>
@@ -319,7 +319,7 @@ const Login = () => {
                             required
                           />
                         </div>
-                        <label class="mb-2 ml-1 font-bold text-xs text-slate-700">
+                        <label className="mb-2 ml-1 font-bold text-xs text-slate-700">
                           Password
                         </label>
                         <div className="mb-4">
@@ -345,6 +345,11 @@ const Login = () => {
                           </button>
                         </div>
                       </form>
+                    </div>
+                    <div className='font-bold' style={{color: "blue", fontSize: "16px"}}>
+                      <Link to="/Reset-password" className=''>
+                         Forgot password?
+                      </Link>
                     </div>
                     <div className="p-6 px-1 pt-0 text-center bg-transparent border-t-0 border-t-solid rounded-b-2xl lg:px-2">
                       <p className="mx-auto mb-6 leading-normal text-sm">

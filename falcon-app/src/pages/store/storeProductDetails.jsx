@@ -1,103 +1,225 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-// import product2 from '../component/Image/products/n3.jpg';
-// import product3 from '../component/Image/products/n5.jpg';
-// import product4 from '../component/Image/products/n6.jpg';
-// import NotFound from "../component/ProductNotFound"
 import Swal from 'sweetalert2';
 import useProductId from '../../hooks/useProductID';
+import useFetchStore from '../../hooks/useFetchStore';
 import { AiOutlineShoppingCart } from "react-icons/ai"
 import { GrClose } from 'react-icons/gr';
-import { FlutterWaveButton, closePaymentModal, useFlutterwave } from 'flutterwave-react-v3';
+import { FlutterWaveButton, closePaymentModal } from 'flutterwave-react-v3';
+import axios from "axios"
+
+
 function StoreProductDetailed() {
   const { id } = useParams();
-  const [firstanme, setFirstname] = useState("")
+  const [firstname, setFirstname] = useState("")
   const [lastname, setLastname] = useState("")
-  const [email, setEmail] = useState("")
+  const [customer_email, setCustomerEmail] = useState("")
   const [phone, setPhone] = useState("")
+  // const [states, setStates] = useState(["Abia", "Abuja", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"]);
+  const states = ["Abia", "Abuja", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"]
+  const [deliveryNote, setDeliveryNote] = useState("")
+  const [shippingMoney, setShippingMoney] = useState(0.00)
+  const [deliveryInfo, setDeliveryInfo] = useState([])
+  // const [shpping, setShippping] = useState()
   const [cartItemCount, setCartItemCount] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { error, data: productDetail } = useProductId(`http://localhost:9000/store/get-product/${id}`)
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const { store } = useFetchStore("http://localhost:9000/stores/get-store")
+  const GET_DELIVERY_URL = "http://localhost:9000/store/get-delivery"
   const [size, setSize] = useState(() => {
     const storedSize = localStorage.getItem("size")
     return storedSize ? storedSize : null
   })
   // console.log(productDetail)
   const [addedItem, setAddedItem] = useState([])
+  const { email } = localStorage
+  let sumPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
+  sumPrice = sumPrice * quantity
+  const totalPrice = sumPrice + shippingMoney
 
-  // const [ totalPrice, setTotalPrice ] = useState(0)
-  const totalPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
-  // console.log(totalPrice)
-  // const price  = localStorage.getItem("cartItem")
-  // const subTotal = price * quantity
-  // console.log(price)
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const options = {
+  //         method: 'GET',
+  //         url: 'https://referential.p.rapidapi.com/v1/country',
+  //         params: {
+  //           fields: 'currency,currency_num_code,currency_code,continent_code,currency,iso_a3,dial_code',
+  //           limit: '20',
+  //           // continent_code: 'AF',
+  //           currency_code: 'NGN',
+  //         },
+  //         headers: {
+  //           'X-RapidAPI-Key': '8b57bdc3dcmsh8ae267c7ceaff4ep1b9f49jsnf07c663c102b',
+  //           'X-RapidAPI-Host': 'referential.p.rapidapi.com',
+  //         },
+  //       };
+
+  //       const response = await axios.request(options);
+  //       console.log(response.data);
+  //       setCountries(response.data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
+  // const handleCountryChange = (event) => {
+  //   const selectedCountry = event.target.value;
+  //   setSelectedCountry(selectedCountry);
+
+  //   // Filter the states based on the selected country
+  //   const selectedCountryData = countries.find((country) => country.value === selectedCountry);
+  //   const filteredStates = selectedCountryData?.states || [];
+  //   setStates(filteredStates);
+  //   setSelectedState(''); // Reset the selected state when a new country is selected
+  // };
+
+
 
   const added = () => {
-    setAddedItem((prevCartItem) => [...prevCartItem, ...productDetail]);
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 1500,
-      timerProgressBar: true,
-      didOpen: toast => {
-        toast.addEventListener('mouseenter', Swal.stopTimer);
-        toast.addEventListener('mouseleave', Swal.resumeTimer);
-      },
-    });
+    // Assuming 'setAddedItem', 'productDetail', 'Swal', 'setCartItemCount', 'cartItemCount', 'localStorage', 'size' are defined somewhere
 
-    Toast.fire({
-      icon: 'success',
-      title: 'Item added to cart',
-    });
-    setCartItemCount(cartItemCount + 1);
-    setIsButtonDisabled(false)
-    localStorage.setItem("size", size)
+    // Checking if the product is already in the cart
+    const isProductInCart = addedItem.some(item => item.id === productDetail.id);
+
+    if (isProductInCart) {
+      // Display an error message using SweetAlert2 or other UI element
+      Swal.fire({
+        icon: 'error',
+        title: 'Item already in cart',
+        text: 'The selected item is already in your cart.',
+      });
+    } else {
+      // Update the state to add the productDetail to the cart items
+      setAddedItem((prevCartItem) => [...prevCartItem, ...productDetail]);
+
+      // Display the success toast notification
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer);
+          toast.addEventListener('mouseleave', Swal.resumeTimer);
+        },
+      });
+
+      Toast.fire({
+        icon: 'success',
+        title: 'Item added to cart',
+      });
+
+      // Update the cart item count in the state
+      setCartItemCount(cartItemCount + 1);
+
+      // Store the selected size in local storage
+      localStorage.setItem('size', size);
+    }
   };
+
 
   // to add to quantity function
-  const addQuantity = () => {
-    // setCartAdd(cartAdd + 1);
-    setQuantity(quantity + 1)
-  };
+  // const addQuantity = (id) => {
+  //   // Find the product in the cart based on its id
+  //   const updatedCart = addedItem.map((item) =>
+  //     item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+  //   );
 
-  // to remove from quantity function
+  //   // Update the cart state with the updated cart
+  //   setAddedItem(updatedCart);
+  // };
+  const addQuantity = (id) => {
+    // setQuantity(id.target.value(quantity + 1))
+    setQuantity(quantity + 1)
+
+  }
+
   const minusQuantity = () => {
     if (quantity > 1) {
-      // setCartAdd(cartAdd - 1);
       setQuantity(quantity - 1);
     }
   };
+
+
+
+  // to remove from quantity function
+  // const minusQuantity = (id) => {
+  //   // Find the product in the cart based on its id
+  //   const updatedCart = addedItem.map((item) =>
+  //     item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item
+  //   );
+
+  //   // Update the cart state with the updated cart
+  //   setAddedItem(updatedCart);
+  // };
   // const [localStSize, setLocalStSize] = useState()
   // 
   useEffect(() => {
-    if(addedItem.length > 0) {
+    if (addedItem.length > 0) {
       localStorage.setItem('cartItem', JSON.stringify(addedItem));
+      // localStorage.setItem("quantity", quantity)
     }
   }, [addedItem]);
 
   useEffect(() => {
     const cartItem = localStorage.getItem("cartItem");
+    // const itemQuantity = localStorage.getItem("quantity")
     const parsedArray = cartItem ? JSON.parse(cartItem) : [];
-    if(parsedArray) {
+    if (parsedArray) {
       const itemCount = parsedArray.length;
       // console.log(itemCount);
       console.log(parsedArray);
       // setData(parsedArray);
       setAddedItem(parsedArray)
+      // setQuantity(itemQuantity)
       setCartItemCount(itemCount);
     }
-    
+
   }, []);
-  // console.log(data)
 
-  // console.log(cartItemCount)
+  useEffect(() => {
+    fetchSavedValues();
+  }, []); 
+
+  const fetchSavedValues = async () => {
+    try {
+      const response = await axios.post(GET_DELIVERY_URL, { email })
+      const shipping = response.data.data2
+      const newShiping = shipping.map((item) => ({ location: item.location, fee: item.fee }))
+      setDeliveryInfo(newShiping)
+    }
+    catch (error) {
+      console.error(error.message);
+    }
+  };
 
 
-  const emptyCart = () => {
-    localStorage.removeItem("cartItems")
+  const handleSelect = (e) => {
+    const { value } = e.target
+    const nes = deliveryInfo.find(item => item.location.toLowerCase() === value.toLowerCase())
+    const result = nes ? nes.fee : 0.00
+    setShippingMoney(result)
   }
+
+  const removeFromCart = (itemId) => {
+    // Remove the item from addedItem state
+    setAddedItem((prevCartItems) => prevCartItems.filter((item) => item.id !== itemId));
+
+    // Update the cart item count
+    setCartItemCount((prevCount) => prevCount - 1);
+
+    // Remove the item from localStorage
+    const cartItems = JSON.parse(localStorage.getItem('cartItem')) || [];
+    const updatedCartItems = cartItems.filter((item) => item.id !== itemId);
+    localStorage.setItem('cartItem', JSON.stringify(updatedCartItems));
+  };
+  
+  
   // SideBar toggle function
   const bar = document.getElementById('cart');
   const close = document.getElementById('close');
@@ -111,8 +233,6 @@ function StoreProductDetailed() {
   const shippingNav = document.getElementById("shippingNav")
   const back_Cart = document.getElementById("back_Cart")
   const back_Info = document.getElementById("back_Info")
-  // const [totalPrice, setTotalPrice] = useState("")
-  // console.log(addedItem)
 
   if (bar) {
     bar.addEventListener('click', () => {
@@ -171,54 +291,6 @@ function StoreProductDetailed() {
   let MainImg = document.getElementById('MainImg');
   let smallimg = document.getElementsByClassName('small-img');
 
-  function getParsedAddedItems(addedItem) {
-    let item = '';
-    if (Array.isArray(addedItem)) {
-      for (let i = 0; i < addedItem.length; i++) {
-        const element = addedItem[i];
-
-        item += `
-        <div key=${item.id} data-v-7d194230 className='summary_cart_item_variants'>
-          <div data-v-7d194230 className='summary_cart_item_product'>
-            <div data-v-7d194230 className='summary_cart_item_product_details'>
-              <p data-v-7d194230 className='summary_cart_item_product_name'>
-                ${item.name}
-              </p>
-              <span data-v-7d194230 className='summary_cart_item_product_variant'>
-                ${item.quantity}
-              </span>
-              <span data-v-7d194230 className='summary_cart_item_product_price'>
-                NGN ${item.price}
-              </span>
-            </div>
-            <div data-v-7d194230 className='summary__cart__item__product__cta'>
-              <div data-v-7d194230 className='action'>
-                <button data-v-7d194230 type="button" className='action_minus'>
-                  <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M14.158 12.332H10.7V11.275H14.158V12.332Z" fill="#333333"></path></svg>
-                </button>
-                <span data-v-7d194230 className='action__value'>1</span>
-                <button data-v-7d194230 type='button' className='action_plus'>
-                  <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M15.406 11.772H12.557V14.782H11.535V11.772H8.7V10.827H11.535V7.838H12.557V10.827H15.406V11.772Z" fill="#333333"></path></svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>`;
-      }
-    } else {
-      item = `<div>
-        <p>Product Name: ${addedItem.name}</p>
-        <p>Product Variant: ${addedItem.variant}</p>
-        <p>Product Price: ${addedItem.price}</p>
-      </div>`;
-
-    }
-
-    return item;
-  }
-
-  const key = process.env.REACT_APP_FLWT_PUBLIC_KEY
-  // console.log(key)
   // smallimg[0].onclick = function () {
   //     MainImg.src = smallimg[0].src;
   // }
@@ -231,148 +303,171 @@ function StoreProductDetailed() {
   // smallimg[3].onclick = function () {
   //     MainImg.src = smallimg[3].src;
   // }
-    const config = {
-      // public_key: process.env.FLUTTERWAVE_PUBLIC_API_KEY,
-      public_key: 'FLWPUBK_TEST-21c38cdcf4a96ed2f051470b7d362f30-X',
-      tx_ref: Date.now (),
-      amount: totalPrice,
-      currency: 'NGN',
-      payment_options: 'card,mobilemoney,ussd',
-      customer: {
-        email: email,
-        phone: phone,
-        name: firstanme + lastname
-        // email: email,
-        // phone_number: phone,
-        // name: name,
-      },
-      customizations: {
-        title: 'My store',
-        description: 'Payment for items in cart',
-        logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
-      },
-    };
 
-    const fwConfig = {
-      ...config,
-      text: 'Proceed to payment',
-      callback: response => {
-        console.log (response);
-        closePaymentModal (); // this will close the modal programmatically
-      },
-      onClose: () => {},
+  for (let i = 0; i < smallimg.length; i++) {
+    smallimg[i].onclick = function () {
+      MainImg.src = smallimg[i].src;
     };
+  }
+  
 
-    // const handleFlutterPayment = useFlutterwave(config);
+  const config = {
+    // public_key: process.env.FLUTTERWAVE_PUBLIC_API_KEY,
+    public_key: process.env.REACT_APP_FLTW_TEST_PUBLIC_KEY,
+    tx_ref: Date.now(),
+    amount: totalPrice,
+    currency: 'NGN',
+    payment_options: 'card,mobilemoney,ussd',
+    customer: {
+      email: customer_email,
+      phone: phone,
+      name: firstname + " " + lastname
+    },
+    customizations: {
+      title: 'My store',
+      description: 'Payment for items in cart',
+      logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
+    },
+  };
+
+  const fwConfig = {
+    ...config,
+    text: 'Proceed to payment',
+    callback: async (response) => {
+      console.log(response);
+      closePaymentModal(); // this will close the modal programmatically
+
+      const { tx_ref, amount, currency, transaction_id, status } = response;
+
+      try {
+        const response = await axios.post('http://localhost:9000/payment/new_payment', {
+          status,
+          transaction_id,
+          tx_ref,
+          amount,
+          currency,
+          customer_email,
+          email,
+          // Other necessary information about the customer
+          firstname,
+          lastname,
+        });
+
+        // Handle the response from your server if needed
+        console.log('POST request successful:', response.data);
+        window.location.href = `/Store/${store}`
+      }
+      catch (error) {
+        console.error('POST request error:', error.message);
+      }
+    },
+    onClose: () => { },
+  };
+
+  // const handleFlutterPayment = useFlutterwave(config);
 
   if (!error) {
     return (
       <div>
         <section id="header">
-          <a href="#"><img src="img/logo.png" class="logo" alt="" /></a>
+          <a href><img src="img/logo.png" class="logo" alt="" /></a>
           <h3 className='logo'>Star Tech</h3>
           <div>
             <ul id="navbar">
               <div data-v-7d194230 className='summary_body'>
                 <div data-v-7d194230 className='summary_cart'>
-
-                  
-
-           
-
-                
-                    <div data-v-7d194230 className='summary_cart_item'>
-                      {(Array.isArray(addedItem) && addedItem.length > 0) ? (
-                        <div data-v-7d194230 className='summary_cart_item'>
-                          {addedItem.map((info) => (
-                            <div key={info.created_at} data-v-7d194230 className='summary_cart_item_variants'>
-                              <div data-v-7d194230 className='summary_cart_item_product'>
-                                <div data-v-7d194230 className='summary_cart_item_product_details'>
-                                  <p data-v-7d194230 className='summary_cart_item_product_name'>
-                                    {info.name}
-                                  </p>
-                                  {size && (
+                  <div data-v-7d194230 className='summary_cart_item'>
+                    {Array.isArray(addedItem) && addedItem.length > 0 ? (
+                      <div data-v-7d194230 className='summary_cart_item'>
+                        {addedItem.map((info) => (
+                          <div key={info.created_at} data-v-7d194230 className='summary_cart_item_variants'>
+                            <div data-v-7d194230 className='summary_cart_item_product'>
+                              <div data-v-7d194230 className='summary_cart_item_product_details'>
+                                <p data-v-7d194230 className='summary_cart_item_product_name'>
+                                  {info.name}
+                                </p>
+                                {size && (
                                   <span data-v-7d194230 className='summary_cart_item_product_variant'>
                                     {size}
                                   </span>
-                                  )}
-                                  <span data-v-7d194230 className='summary_cart_item_product_price'>
-                                    NGN {info.price}
-                                  </span>
+                                )}
+                                <span data-v-7d194230 className='summary_cart_item_product_price'>
+                                  NGN {info.price.toLocaleString()}
+                                </span>
+                              </div>
+                              <div data-v-7d194230 className='summary__cart__item__product__cta'>
+                                <div data-v-7d194230 className='action'>
+                                  <button onClick={() => minusQuantity(info.id)} data-v-7d194230 type="button" className='action_minus'>
+                                    <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M14.158 12.332H10.7V11.275H14.158V12.332Z" fill="#333333"></path></svg>
+                                  </button>
+                                  <span data-v-7d194230 className='action__value'>{quantity}</span>
+                                  <button onClick={() => addQuantity(info.id)} data-v-7d194230 type='button' className='action_plus'>
+                                    <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M15.406 11.772H12.557V14.782H11.535V11.772H8.7V10.827H11.535V7.838H12.557V10.827H15.406V11.772Z" fill="#333333"></path></svg>
+                                  </button>
                                 </div>
-                                <div data-v-7d194230 className='summary__cart__item__product__cta'>
-                                  <div data-v-7d194230 className='action'>
-                                    <button data-v-7d194230 type="button" className='action_minus'>
-                                      <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M14.158 12.332H10.7V11.275H14.158V12.332Z" fill="#333333"></path></svg>
-                                    </button>
-                                    <span data-v-7d194230 className='action__value'>1</span>
-                                    <button data-v-7d194230 type='button' className='action_plus'>
-                                      <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M15.406 11.772H12.557V14.782H11.535V11.772H8.7V10.827H11.535V7.838H12.557V10.827H15.406V11.772Z" fill="#333333"></path></svg>
-                                    </button>
-                                  </div>
-                                </div>
+                                <i style={{ marginLeft: "65%", marginTop: "20%", cursor: "pointer" }} onClick={() => removeFromCart(info.id)} className="fa fa-trash" aria-hidden="true"></i>
                               </div>
                             </div>
-                          ))}
-                        </div>
-                        
-                      ) : null}
-
-                    </div>
-
-
-
-
- {/* Each child in a list should have a unique "key" prop. */}
-
-                  {!addedItem ? (<div className='summary_cart_empty'>
-                    <p className='summary_cart_empty_msg'>Your cart is currently empty</p>
-                    <button id='summary_emptyCart_button' className='btn btn--default btn--sm summary__cart__empty__btn'>CONTINUE SHOPPING</button>
-                  </div>) : (
-                    <div data-v-7d194230 className='summary__cart__cta'>
-                      <button type="button" className='summary__cart__cta__btn' onClick={emptyCart}>
-                        <svg data-v-7d194230="" viewBox="0 0 477.9 477.9" xmlns="http://www.w3.org/2000/svg" className="summary__cart__cta__btn__icon"><path data-v-7d194230="" d="M443.7 68.3H324.3V51.2c0-28.3-22.9-51.2-51.2-51.2H204.8c-28.3 0-51.2 22.9-51.2 51.2v17.1H34.1c-9.4 0-17.1 7.6-17.1 17.1S24.7 102.4 34.1 102.4h18.6l32.6 360c0.8 8.8 8.2 15.6 17.1 15.5h273.1c8.9 0 16.3-6.7 17.1-15.5L425.2 102.4h18.6c9.4 0 17.1-7.6 17.1-17.1S453.2 68.3 443.7 68.3zM187.7 51.2c0-9.4 7.6-17.1 17.1-17.1h68.3c9.4 0 17.1 7.6 17.1 17.1v17.1h-102.4V51.2zM359.9 443.7H118L87 102.4h83.6 220.2L359.9 443.7z"></path> <path data-v-7d194230="" d="M187.7 391.4c0 0 0 0 0-0.1l-17.1-238.9c-0.7-9.4-8.9-16.5-18.3-15.9 -9.4 0.7-16.5 8.9-15.9 18.3L153.6 393.7c0.6 8.9 8.1 15.9 17.1 15.9h1.2C181.3 408.9 188.4 400.8 187.7 391.4z"></path> <path data-v-7d194230="" d="M238.9 136.5c-9.4 0-17.1 7.6-17.1 17.1v238.9c0 9.4 7.6 17.1 17.1 17.1S256 402 256 392.5V153.6C256 144.2 248.4 136.5 238.9 136.5z"></path> <path data-v-7d194230="" d="M325.5 136.5c-9.4-0.7-17.6 6.4-18.3 15.9l-17.1 238.9c-0.7 9.4 6.4 17.6 15.8 18.3 0 0 0.1 0 0.1 0h1.2c9 0 16.4-6.9 17.1-15.9l17.1-238.9C342 145.4 334.9 137.2 325.5 136.5z"></path></svg>
-                        <span className='summary__list__cta__button__label'>
-                          Empty Cart
-                        </span>
-                      </button>
-                    </div>
-                  )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className='summary_cart_empty'>
+                        <p className='summary_cart_empty_msg'>Your cart is currently empty</p>
+                        <button id='summary_emptyCart_button' className='btn btn--default btn--sm summary__cart__empty__btn'>
+                          CONTINUE SHOPPING
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div data-v-7d194230 className='summary__footer'>
+              {Array.isArray(addedItem) && addedItem.length > 0 && (
+                <div data-v-7d194230 className='summary__footer'>
 
-                <div data-v-7d194230 className='summary__footer__item'>
-                  <div data-v-7d194230 className='summary_footer_item_name'>
-                    Items
+                  <div data-v-7d194230 className='summary__footer__item'>
+                    <div data-v-7d194230 className='summary_footer_item_name'>
+                      Items
+                    </div>
+                    <div data-v-7d194230 className='summary_footer_item_value'>
+                      <strong>NGN</strong> {sumPrice.toLocaleString()}
+                    </div>
                   </div>
-                  <div data-v-7d194230 className='summary_footer_item_value'>
-                    <strong>NGN</strong> {totalPrice.toLocaleString()}
+
+                  <div data-v-7d194230 className='summary__footer__item'>
+                    <div data-v-7d194230 className='summary_footer_item_name'>
+                      Shipping
+                    </div>
+                    <div data-v-7d194230 className='summary_footer_item_value'>
+                      <strong>NGN</strong> {shippingMoney}
+                    </div>
+                  </div>
+
+                  <div data-v-7d194230 className='summary__footer__item'>
+                    <div data-v-7d194230 className='summary__footer__item__name'>
+                      Total
+                    </div>
+                    <div data-v-7d194230 className='summary__footer__item__value--2'>
+                      <strong>NGN</strong> {totalPrice.toLocaleString()}
+                    </div>
+                  </div>
+
+                  <div data-v-7d194230 className='summary__footer__item'>
+                    <button type="" id='infoNav' className='btn_cart btn--primary btn--block'>Continue</button>
                   </div>
                 </div>
-
-                <div data-v-7d194230 className='summary__footer__item'>
-                  <div data-v-7d194230 className='summary__footer__item__name'>
-                    Total
-                  </div>
-                  <div data-v-7d194230 className='summary__footer__item__value--2'>
-                  <strong>NGN</strong> {totalPrice.toLocaleString()}
-                  </div>
-                </div>
-
-                <div data-v-7d194230 className='summary__footer__item'>
-                  <button type=""  id='infoNav' className='btn btn--primary btn--block'>Continue</button>
-                </div>
-              </div>
+              )}
 
               <AiOutlineShoppingCart className='cartDesktop' /><p className='cartNumber'>{cartItemCount}</p>
               <GrClose id='close' />
-              <ul id='payment_process' className='payment_process'>
-                <li style={{color: "blue"}}>Cart</li>
-                <li>Information</li>
-                <li>Shipping</li>
-              </ul>
+              {Array.isArray(addedItem) && addedItem.length > 0 && (
+                <ul id='payment_process' className='payment_process'>
+                  <li style={{ color: "blue" }}>Cart</li>
+                  <li>Information</li>
+                  <li>Shipping</li>
+                </ul>
+              )}
             </ul>
 
             <ul id="navbar2">
@@ -381,25 +476,27 @@ function StoreProductDetailed() {
                 <div className='summary_form'>
                   <div className='form_item_flex'>
                     <div className='form_item'>
-                      <input className='form_input' placeholder="Firstname" onChange={e => setFirstname(e.target.value)}/>
+                      <input className='form_input' placeholder="Firstname" onChange={e => setFirstname(e.target.value)} />
                     </div>
                     <div className='form_item'>
-                      <input className='form_input' placeholder="Lastname" onChange={e => setLastname(e.target.value)}/>
+                      <input className='form_input' placeholder="Lastname" onChange={e => setLastname(e.target.value)} />
                     </div>
                   </div>
                   <div className='form_item'>
-                    <input className='form_input' placeholder="e.g myemail@gmail.com" onChange={e => setEmail(e.target.value)}/>
+                    <input className='form_input' placeholder="myemail@gmail.com"
+                      onChange={e => setCustomerEmail(e.target.value)}
+                    />
                   </div>
 
                   <div className='form_item'>
-                    <input className='form_input' placeholder="+234" type='number' onChange={e => setPhone(e.target.value)}/>
+                    <input className='form_input' placeholder="+234" type='number' onChange={e => setPhone(e.target.value)} />
                   </div>
 
                   <div data-v-7ef2909e className='discount_group'>
                     <input data-v-7ef2909e id='discountCode' className='form_input' placeholder="Optional" />
                     <button data-v-7ef2909e className='btn discount_cta' type="">Apply</button>
                   </div>
-
+                  {/* {isEmpty && <p style={{ color: 'red' }}>Inputs must not be empty</p>} */}
                 </div>
 
               </div>
@@ -410,7 +507,16 @@ function StoreProductDetailed() {
                     Items
                   </div>
                   <div data-v-7d194230 className='summary_footer_item_value'>
-                  <strong>NGN</strong> {totalPrice.toLocaleString()}
+                    <strong>NGN</strong> {sumPrice.toLocaleString()}
+                  </div>
+                </div>
+
+                <div data-v-7d194230 className='summary__footer__item'>
+                  <div data-v-7d194230 className='summary_footer_item_name'>
+                    Shipping
+                  </div>
+                  <div data-v-7d194230 className='summary_footer_item_value'>
+                    <strong>NGN</strong> {shippingMoney}
                   </div>
                 </div>
 
@@ -419,19 +525,19 @@ function StoreProductDetailed() {
                     Total
                   </div>
                   <div data-v-7d194230 className='summary__footer__item__value--2'>
-                  <strong>NGN</strong> {totalPrice.toLocaleString()}
+                    <strong>NGN</strong> {totalPrice.toLocaleString()}
                   </div>
                 </div>
 
                 <div data-v-7d194230 className='summary__footer__item'>
-                  <button type="" id='shippingNav' className='btn btn--primary blocks'><span className='btn-span'>Continue to shipping</span></button>
+                  <button type="" id='shippingNav' className='btn_info btn--primary blocks'><span className='btn-span'>Continue to shipping</span></button>
                 </div>
               </div>
 
               <GrClose id='close2' />
               <ul id='payment_process2' className='payment_process'>
                 <li id="back_Cart">Cart</li>
-                <li style={{color: "blue"}}>Information</li>
+                <li style={{ color: "blue" }}>Information</li>
                 <li>Shipping</li>
               </ul>
             </ul>
@@ -444,29 +550,67 @@ function StoreProductDetailed() {
                 <div className='summary_form'>
                   <div className='form_item'>
                     <label for="country">Country</label>
-                    <input className='form_input' placeholder="e.g myemail@gmail.com" />
+                    <select
+                      // value={selectedCountry}
+                      style={{ width: "90%" }}
+                      className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '
+                    // onChange={handleCountryChange}
+                    >
+                      {/* {countries.map((country) => ( */}
+                      <option>
+                        Nigeria
+                      </option>
+                      {/* ))} */}
+                    </select>
+                  </div>
+
+                  <div className='form_item'>
+                    <label for="country">State</label>
+                    <select
+                      // value={selectedState}
+                      style={{ width: "90%" }}
+                      className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '
+                      // onChange={(e) => setSelectedState(e.target.value)}
+                      onChange={handleSelect}
+                    >
+                      {states.map((state, index) => (
+                        <option key={index}>
+                          {state}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className='form_item_flex'>
                     <div className='form_item'>
                       <label for="state">State</label>
-                      <input className='form_input' placeholder="" />
+                      <input className='form_input' placeholder=""
+                      // onChange={e => setState(e.target.value)} 
+                      />
                     </div>
                     <div className='form_item'>
                       <label for="city">City</label>
-                      <input className='form_input' placeholder="city" />
+                      <input className='form_input' placeholder="city"
+                      // onChange={e => setCity(e.target.value)} 
+                      />
                     </div>
                   </div>
 
 
                   <div className='form_item'>
                     <label for="delivery_address">Delivery Address</label>
-                    <input className='form_input' placeholder="+234" type='number' />
+                    <input className='form_input' type='text' />
                   </div>
+
+                  {/* <select style={{width: "90%"}} className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '>
+                    {shpping?.map((result, index) => (
+                    <option key={[index]}>{result}</option>
+                    ))}
+                  </select> */}
 
                   <div className='form_item'>
                     <label for="delivery_note">Delivery Note</label>
-                    <textarea className='form_textarea' rows="" cols="" />
+                    <textarea className='form_textarea' value={deliveryNote} rows="" cols="" onChange={e => setDeliveryNote(e.target.value)} />
                   </div>
 
                 </div>
@@ -479,7 +623,16 @@ function StoreProductDetailed() {
                     Items
                   </div>
                   <div data-v-7d194230 className='summary_footer_item_value'>
-                  <strong>NGN</strong> {totalPrice.toLocaleString()}
+                    <strong>NGN</strong> {sumPrice.toLocaleString()}
+                  </div>
+                </div>
+
+                <div data-v-7d194230 className='summary__footer__item'>
+                  <div data-v-7d194230 className='summary_footer_item_name'>
+                    Shipping
+                  </div>
+                  <div data-v-7d194230 className='summary_footer_item_value'>
+                    <strong>NGN</strong> {shippingMoney}
                   </div>
                 </div>
 
@@ -488,7 +641,7 @@ function StoreProductDetailed() {
                     Total
                   </div>
                   <div data-v-7d194230 className='summary__footer__item__value--2'>
-                  <strong>NGN</strong> {totalPrice.toLocaleString()}
+                    <strong>NGN</strong> {totalPrice.toLocaleString()}
                   </div>
                 </div>
 
@@ -506,7 +659,7 @@ function StoreProductDetailed() {
                       })
                     }}
                     >PLACE YOUR ORDER</button> */}
-                    <FlutterWaveButton type="submit"  className="btn btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton>
+                  <FlutterWaveButton type="submit" className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton>
                 </div>
               </div>
 
@@ -514,7 +667,7 @@ function StoreProductDetailed() {
               <ul id='payment_process3' className='payment_process'>
                 <li id="back_Info">Cart</li>
                 <li>Information</li>
-                <li style={{color: "blue"}}>Shipping</li>
+                <li style={{ color: "blue" }}>Shipping</li>
               </ul>
             </ul>
           </div>
@@ -528,44 +681,44 @@ function StoreProductDetailed() {
             <div className="single-pro-image">
               <img src={result.image.split('\r\n')[0]} width="100%" id="MainImg" alt="" />
               {/* {result.image.length > 1 && ( */}
-                <div className="small-img-group">
-                  <div className="small-img-col">
-                    <img
-                      src={result.image.split('\r\n')[0]}
-                      width="100%"
-                      className="small-img"
-                      alt=""
-                    />
-                  </div>
-
-                  <div className="small-img-col">
-                    <img
-                      src={result.image.split('\r\n')[1]}
-                      width="100%"
-                      className="small-img"
-                      alt=""
-                    />
-                  </div>
-
-                  <div className="small-img-col">
-                    <img
-                      src={result.image.split('\r\n')[2]}
-                      width="100%"
-                      className="small-img"
-                      alt=""
-                    />
-                  </div>
-
-                  <div className="small-img-col">
-                    <img
-                      src={result.image.split('\r\n')[3]}
-                      width="100%"
-                      className="small-img"
-                      alt=""
-                    />
-                  </div>
-
+              <div className="small-img-group">
+                <div className="small-img-col">
+                  <img
+                    src={result.image.split('\r\n')[0]}
+                    width="100%"
+                    className="small-img"
+                    alt=""
+                  />
                 </div>
+
+                <div className="small-img-col">
+                  <img
+                    src={result.image.split('\r\n')[1]}
+                    width="100%"
+                    className="small-img"
+                    alt=""
+                  />
+                </div>
+
+                <div className="small-img-col">
+                  <img
+                    src={result.image.split('\r\n')[2]}
+                    width="100%"
+                    className="small-img"
+                    alt=""
+                  />
+                </div>
+
+                <div className="small-img-col">
+                  <img
+                    src={result.image.split('\r\n')[3]}
+                    width="100%"
+                    className="small-img"
+                    alt=""
+                  />
+                </div>
+
+              </div>
               {/* // )} */}
             </div>
 
@@ -576,30 +729,57 @@ function StoreProductDetailed() {
               <h4>
                 {result.name}
               </h4>
-              <h2>
-                ₦
-                {result.price.toLocaleString()}
-              </h2>
+              <div className=' flex flex-wrap'>
+                <h2>
+                  NGN
+                  <span> {result.price.toLocaleString()}</span>
+                </h2>
+                {result.compare_price && (
+                  <h2 style={{ textDecoration: "line-through", marginLeft: "20px", color: "#828282" }}>
+                    NGN
+                    <span>{result.price.toLocaleString()}</span>
+                  </h2>
+                )}
+              </div>
               {/* <input type="number" value={quantity} onChange={e => setQuantity(e.target.value)}/> */}
               <div className='product_quantity'>
+                <label
+                  // className="block tracking-wide text-xs font-bold mb-2"
+                  htmlFor="price"
+                >
+                  Quantity:
+                </label>
                 <div className='action'>
-                  <button data-v-7be1d382 type="" className='action__btn action__minus' onClick={minusQuantity}>
+                  <button data-v-7be1d382 type="" className='action__btn action__minus' onClick={() => { minusQuantity(result.id); minusQuantity(result.id) }}>
                     <span data-v-7be1d382 className='action__btn_label'>-</span>
                   </button>
-                  <input data-v-7be1d382 type="" name="" value={quantity} className='action__value' onChange={e => setQuantity(e.target.value)} />
-                  <button data-v-7be1d382 type="" className='action__btn action__plus' onClick={addQuantity}>
+                  <input data-v-7be1d382 type="" name="" value={quantity} className='action__value' />
+                  <button data-v-7be1d382 type="" className='action__btn action__plus' onClick={() => { addQuantity(result.id); setQuantity(quantity + 1); }}>
                     <span className='action__btn_label'>+</span>
                   </button>
                 </div>
               </div>
-              <div className='select_option'>
-                <span className='select_option_name'>Size:</span>
-                <select onChange={e => setSize(e.target.value)}>
-                  {result.size.split(' ').map((size, index) => (
-                    <option key={index} className='select_option_value'>{size}</option>
-                  ))}
-                </select>
-              </div>
+
+              {result.size && (
+                <div className='select_option'>
+                  <label
+                    // className="block tracking-wide text-xs font-bold mb-2"
+                    htmlFor="price"
+                  >
+                    Size:
+                  </label>
+                  {/* <span className='select_option_name'>Size:</span> */}
+                  <select onChange={e => setSize(e.target.value)}>
+                    {result.size.split(' ').map((size, index) => (
+                      <option key={index} className='select_option_value'>{size}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* <div className='flex flex-wrap'>
+                
+              </div> */}
 
               {/* // onChange={e => setInput(e.target.value)}/ */}
               <button className="btn btn--primary btn--block" onClick={added} type='button'>Add To Cart</button>
@@ -611,9 +791,8 @@ function StoreProductDetailed() {
           </section>
         ))}
 
-        {/* {product &&
-        productData.map ((result, index) => ( */}
-        <section id="Product1" className="section-p1">
+
+        {/* <section id="Product1" className="section-p1">
           <h2>Featured Products</h2>
           <p>T-shirts, Shoes, And Others</p>
           <div className="pro-container">
@@ -647,9 +826,7 @@ function StoreProductDetailed() {
                 </div>
                 <h4>$35</h4>
               </div>
-              {/* <a href> */}
               <i className="bi bi-cart3" />
-              {/* </a> */}
             </div>
             <div className="pro">
               <img src="https://res.cloudinary.com/dlokxjygn/image/upload/v1678226677/qkhsunqqaocjc4hldm0x.jpg" alt="" />
@@ -685,9 +862,8 @@ function StoreProductDetailed() {
             </div>
 
           </div>
-        </section>
-        {/* <FlutterWaveButton type="submit"  className="normal" {...fwConfig} >Proceed to Payment</FlutterWaveButton> */}
-        {/* // ))} */}
+        </section> */}
+
 
       </div>
     );
@@ -701,67 +877,3 @@ function StoreProductDetailed() {
 }
 
 export default StoreProductDetailed;
-
-
-
-
-{/* <div>
-{data && data.length > 0 ? (
-  <ul>
-    {data.map((item, index) => (
-      <li key={index}>{item.name}</li>
-    ))}
-  </ul>
-) : (
-  <p>No data found.</p>
-)}
-</div> */}
-
-
-
-
-
-// {((addedItem || Array.isArray(addedItem)) || data.length > 0) && (
-//   <div data-v-7d194230 className='summary_cart_item'>
-//   {Array.isArray(addedItem) || data.length > 0 ? (
-//     (addedItem || data).map((item) => (
-//       <div key={item.id} data-v-7d194230 className='summary_cart_item_variants'>
-//         <div data-v-7d194230 className='summary_cart_item_product'>
-//           <div data-v-7d194230 className='summary_cart_item_product_details'>
-//             <p data-v-7d194230 className='summary_cart_item_product_name'>
-//               {item.name}
-//             </p>
-//             <span data-v-7d194230 className='summary_cart_item_product_variant'>
-//               {quantity}
-//             </span>
-//             <span data-v-7d194230 className='summary_cart_item_product_price'>
-//               NGN {item.price}
-//             </span>
-//           </div>
-//           <div data-v-7d194230 className='summary__cart__item__product__cta'>
-//             <div data-v-7d194230 className='action'>
-//               <button data-v-7d194230 type="button" className='action_minus'>
-//                 <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M14.158 12.332H10.7V11.275H14.158V12.332Z" fill="#333333"></path></svg>
-//               </button>
-//               <span data-v-7d194230 className='action__value'>1</span>
-//               <button data-v-7d194230 type='button' className='action_plus'>
-//                 <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M15.406 11.772H12.557V14.782H11.535V11.772H8.7V10.827H11.535V7.838H12.557V10.827H15.406V11.772Z" fill="#333333"></path></svg>
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     ))
-//   ) : (
-//     <div>
-//       {/* Render single item details */}
-//       <p>Product Name: {addedItem.name}</p>
-//       <p>Product Variant: {addedItem.variant}</p>
-//       <p>Product Price: {addedItem.price}</p>
-//     </div>
-//   )}
-
-//   {/* Render data details */}
-  
-// </div>
-// )}

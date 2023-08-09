@@ -1,6 +1,6 @@
 const express = require("express")
 const router  = express.Router()
-const adminController = require("../controllers/adminController")
+const paymentController = require("../controllers/paymentController")
 const bodyParser = require ('body-parser');
 const cors = require("cors");
 router.use (bodyParser.urlencoded ({extended: true}));
@@ -15,7 +15,12 @@ router.use(cors({
 }))
 
 
-router
-.get("/get-payments", adminController.getPayments)
 
-module.exports = router;
+router
+.post("/new_payment", paymentController.savePayment)
+
+router
+.get("/get_payment", paymentController.getPayments)
+
+
+module.exports = router

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BsTrashFill } from 'react-icons/bs';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -6,12 +6,16 @@ import { GrClose } from 'react-icons/gr';
 import { Link } from 'react-router-dom';
 import useFetchStore from '../../hooks/useFetchStore';
 import AsideBar from '../../components/AsideBar';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 const NewProduct = () => {
   const [showInputField, setShowInputField] = useState(false);
   const [showSecondInput, setShowSecondInput] = useState(false);
   const [showThirdInput, setShowThirdInput] = useState(false);
   const [name, setName] = useState('');
   const [price, setPrice] = useState('0.00');
+  const [comparePrice, setComparePrice] = useState("0.00")
   const [quantity, setQuantity] = useState('');
   const [description, setDescription] = useState('');
   const [weight, setWeight] = useState('');
@@ -23,9 +27,9 @@ const NewProduct = () => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [value, setValue] = useState('4');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const { email } = localStorage;
-  const { data, error, store } = useFetchStore("http://localhost:9000/store/get-store")
- 
+  const { email, token } = localStorage;
+  const { store, data } = useFetchStore("http://localhost:9000/store/get-store")
+
 
   const handleOptionChange = () => {
     setShowInputField(true);
@@ -134,32 +138,43 @@ const NewProduct = () => {
             quantity: quantity,
             weight: weight,
             price: price,
+            compare_price: comparePrice,
             image: imageUrl,
             style: style,
             size: size,
             colour: colour,
             email: email,
             store: store
-          })
+          },
+          {
+            headers: {
+              Authorization : `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+          } 
+          )
           .then(response => {
             console.log(response.data.message);
             setIsButtonDisabled(false);
 
-            const Toast = Swal.mixin ({
+            const Toast = Swal.mixin({
               toast: true,
               position: 'top-end',
               showConfirmButton: false,
               timer: 3000,
               timerProgressBar: true,
               didOpen: toast => {
-                toast.addEventListener ('mouseenter', Swal.stopTimer);
-                toast.addEventListener ('mouseleave', Swal.resumeTimer);
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
               },
             });
-            Toast.fire ({
+            Toast.fire({
               icon: 'success',
               title: "Product created succesfully",
-            }).then(window.location.href = "/products")
+            })
+            setTimeout(() => {
+              window.location.href = "/Products"
+            }, 3000)
           })
           .catch(error => {
             console.log("Log error for the post to the backend")
@@ -176,7 +191,7 @@ const NewProduct = () => {
           });
       })
       .catch(error => {
-        console.log("Log error for the image upload")      
+        console.log("Log error for the image upload")
         console.log(error);
         setIsButtonDisabled(false);
         Swal.fire({
@@ -225,18 +240,18 @@ const NewProduct = () => {
             console.log(response.data.message);
             setIsButtonDisabled(false);
 
-            const Toast = Swal.mixin ({
+            const Toast = Swal.mixin({
               toast: true,
               position: 'top-end',
               showConfirmButton: false,
               timer: 3000,
               timerProgressBar: true,
               didOpen: toast => {
-                toast.addEventListener ('mouseenter', Swal.stopTimer);
-                toast.addEventListener ('mouseleave', Swal.resumeTimer);
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
               },
             });
-            Toast.fire ({
+            Toast.fire({
               icon: 'success',
               title: "Product created succesfully",
             })
@@ -265,7 +280,7 @@ const NewProduct = () => {
           });
       })
       .catch(error => {
-        console.log("Log error for the image upload")      
+        console.log("Log error for the image upload")
         console.log(error);
         setIsButtonDisabled(false);
         Swal.fire({
@@ -295,8 +310,21 @@ const NewProduct = () => {
     }
   };
 
-  
-  if (!error) {
+
+  // React Quill
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      ['link', 'image'],
+    ],
+  };
+
+
+
+
+  if (data) {
     return (
       <div className="bg-white">
         <nav
@@ -304,7 +332,7 @@ const NewProduct = () => {
           className="relative flex flex-wrap items-center justify-between w-full px-0 py-2 mx-6 mt-6 transition-all shadow-none bg-gray-950/80 duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
           navbar-scroll="true"
         >
-          <div class="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
+          <div className=" start-0 flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit border-b border-solid border-black">
             <nav
               className="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
               navbar-main
@@ -313,11 +341,11 @@ const NewProduct = () => {
               <div className="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
                 <div className="flex items-center">
                   <Link to="/Products">
-                    <GrClose class="mr-4" style={{ cursor: 'pointer' }} />
+                    <GrClose className="mr-4" style={{ cursor: 'pointer' }} />
                   </Link>
-                  <h6 class="mb-0 font-bold capitalize">Add new product</h6>
+                  <h6 className="mb-0 font-bold capitalize">Add new product</h6>
                 </div>
-                <nav class="flex justify-end xl:margin: left-4">
+                <nav className=" start-0 flex justify-end xl:margin: left-4">
                   <button
                     type="button"
                     className="ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
@@ -340,7 +368,7 @@ const NewProduct = () => {
         </nav>
 
         <div className="container-fluid">
-          <div className=" mx-auto py-4 container-fluid">
+          <div className="flex flex-col lg:flex-row mx-auto container-fluid items-start p-[10px]">
             <div className="flex flex-row">
               <div className="w-full md:w-8/12 mx-2">
                 <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -374,14 +402,17 @@ const NewProduct = () => {
                         >
                           Description
                         </label>
-                        <textarea
-                          className="form-input focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
-                          id="description"
-                          rows="3"
-                          style={{ height: '200px' }}
-                          onChange={e => setDescription(e.target.value)}
+                        <ReactQuill
+                          // className="form-input focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
+                          // value={description}
+                          onChange={setDescription}
+                          modules={modules}
+                          placeholder="Type your text here..."
+                          style={{ height: "300px", marginBottom: "20%" }}
                         />
                       </div>
+
+                      
 
                       <div
                         className="w-full md:w-6/12 px-3 pb"
@@ -416,7 +447,8 @@ const NewProduct = () => {
                           className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                           id="price"
                           type="number"
-                          value="0.00"
+                          value={comparePrice}
+                          onChange={e => setComparePrice(e.target.value)}
                         />
                       </div>
 
@@ -468,7 +500,7 @@ const NewProduct = () => {
                         Group your products into collections to make it easier for customers to find. Great examples are: Women's wear, Kid’s wear, Electronics.
                       </p>
                       <div className="mb-4">
-                        <div class="mb-4">
+                        <div className="mb-4">
                           <select
                             className="focus:shadow-soft-primary-outline block w-full pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm "
                             id="validationState"
@@ -812,20 +844,21 @@ const NewProduct = () => {
               style={{
                 backgroundColor: '#f9f9f9',
                 color: '#828282',
-                marginTop: '8%',
+                padding: "30px"
+                // marginTop: '8%',
               }}
             >
               {selectedImages.map((imageUrl, index) => (
-                <div className="" key={index}>
+                <div className="multiple-image-upload__images__image-blk " key={index}>
                   <img
-                    className="card w-full h-full mb-4 hover:opacity-75"
+                    className="card w-full h-full mb-4 cursor-pointer object-cover object-center"
                     src={imageUrl}
                     alt={`Selected Img ${index}`}
                     style={{
                       width: '300px',
                       height: '300px',
-                      marginTop: "45px",
-                      marginLeft: '60px',
+                      // marginTop: "45px",
+                      // marginLeft: '60px',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
@@ -835,6 +868,10 @@ const NewProduct = () => {
                       Delete
                     </button>
                   </div> */}
+                  <div className="multiple-image-upload__images__image-overlay">
+                    <button className="btn--nostyle multiple-image-upload__images__delete-btn"><svg viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.33333 4.00065V2.66732C4.33333 1.93094 4.93029 1.33398 5.66667 1.33398H8.33333C9.06973 1.33398 9.66667 1.93094 9.66667 2.66732V4.00065M1 4.00065H13H1ZM2.33333 4.00065V13.334C2.33333 14.0704 2.93029 14.6673 3.66667 14.6673H10.3333C11.0697 14.6673 11.6667 14.0704 11.6667 13.334V4.00065H2.33333Z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path><path d="M8.3335 7.33398V11.334" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path><path d="M5.6665 7.33398V11.334" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+                    </button>
+                  </div>
                 </div>
               ))}
 
@@ -845,8 +882,8 @@ const NewProduct = () => {
                   width: '300px',
                   fontSize: '16px',
                   background: '#f9f9f9',
-                  marginLeft: '60px',
-                  marginTop: '45px',
+                  // marginLeft: '60px',
+                  // marginTop: '45px',
                   border: '1px dashed ',
                   display: 'flex',
                   alignItems: 'center',
@@ -907,30 +944,30 @@ const NewProduct = () => {
               </div>
 
             </div>
+          </div>
 
-            <div
-              className="flex ml-4 flex-row items-center mt-4"
-              style={{ marginTop: '15%', marginLeft: '30%' }}
+          <div
+            className="flex ml-4 flex-row items-center mt-4"
+            style={{ marginTop: '15%', marginLeft: '30%' }}
+          >
+            <button
+              type="button"
+              className="inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+              style={{ background: '#828282' }}
+              onClick={create}
+              disabled={isButtonDisabled ? true : false}
             >
-              <button
-                type="button"
-                className="inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
-                style={{ background: '#828282' }}
-                onClick={create}
-                disabled={isButtonDisabled ? true : false}
-              >
-                {isButtonDisabled ? 'Saving...' : 'Save & Preview'}
-              </button>
-              <button
-                type="button"
-                className="inline-block ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
-                style={{ background: '#FF9B00' }}
-                onClick={addAnother}
-                disabled={isButtonDisabled ? true : false}
-              >
-                {isButtonDisabled ? "Saving..." : "Add Product +"}
-              </button>
-            </div>
+              {isButtonDisabled ? 'Saving...' : 'Save & Preview'}
+            </button>
+            <button
+              type="button"
+              className="inline-block ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+              style={{ background: '#FF9B00' }}
+              onClick={addAnother}
+              disabled={isButtonDisabled ? true : false}
+            >
+              {isButtonDisabled ? "Saving..." : "Add Product +"}
+            </button>
           </div>
 
         </div>
@@ -944,28 +981,28 @@ const NewProduct = () => {
       <div>
         <AsideBar />
         <main className='ease-soft-in-out xl:ml-68.5 relative h-screen max-h-screen rounded-xl transition-all duration-200'>
-          <nav class='relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start'
+          <nav className='relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start'
             navbarmain='true' navbar-scroll='true'>
-            <div class='flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit'>
+            <div className='flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit'>
               <nav>
                 {/* <!-- breadcrumb --> */}
-                <ol class='flex flex-wrap pt-1 mr-12 bg-transparent rounded-lg sm:mr-16'>
-                  <li class='leading-normal text-sm'>
-                    <a class='opacity-50 text-slate-700' href>Store</a>
+                <ol className='flex flex-wrap pt-1 mr-12 bg-transparent rounded-lg sm:mr-16'>
+                  <li className='leading-normal text-sm'>
+                    <a className='opacity-50 text-slate-700' href>Store</a>
                   </li>
-                  <li class="text-sm pl-2 capitalize leading-normal text-slate-700 before:float-left before:pr-2 before:text-gray-600 before:content-['/']" aria-current='page'>
+                  <li className="text-sm pl-2 capitalize leading-normal text-slate-700 before:float-left before:pr-2 before:text-gray-600 before:content-['/']" aria-current='page'>
                     Create product
                   </li>
                 </ol>
-                <h6 class='mb-0 font-bold capitalize'>Create product</h6>
+                <h6 className='mb-0 font-bold capitalize'>Create product</h6>
               </nav>
-              <div class='flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto'>
-                <ul class='flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full'>
+              <div className='flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto'>
+                <ul className='flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full'>
                   {/* <!-- online builder btn  --> */}
-                  <li class='flex items-center pl-4 xl:hidden'>
-                    <a href class='block p-0 transition-all ease-nav-brand text-sm text-slate-500' sidenav-trigger>
-                      <div class='w-4.5 overflow-hidden'> <i class='ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all' /> <i class='ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all'
-                      /> <i class='ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all' /> </div>
+                  <li className='flex items-center pl-4 xl:hidden'>
+                    <a href className='block p-0 transition-all ease-nav-brand text-sm text-slate-500' sidenav-trigger>
+                      <div className='w-4.5 overflow-hidden'> <i className='ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all' /> <i className='ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all'
+                      /> <i className='ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all' /> </div>
                     </a>
                   </li>
                 </ul>
@@ -984,7 +1021,7 @@ const NewProduct = () => {
                 type=''
                 style={{ background: '#FF9B00' }}
               >
-               <Link to="/Store/new">Create Store</Link> 
+                <Link to="/Store/new">Create Store</Link>
               </button>
             </div>
           </section>
@@ -996,3 +1033,5 @@ const NewProduct = () => {
 };
 
 export default NewProduct;
+
+

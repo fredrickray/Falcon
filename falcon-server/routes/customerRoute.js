@@ -1,8 +1,9 @@
 const express = require("express")
 const router  = express.Router()
-const adminController = require("../controllers/adminController")
+const storeController = require("../controllers/storeControl")
 const bodyParser = require ('body-parser');
 const cors = require("cors");
+// const requireAuth  = require("../utls/authMiddleware");
 router.use (bodyParser.urlencoded ({extended: true}));
 router.use (bodyParser.json ());
 router.use (express.json ());
@@ -16,6 +17,6 @@ router.use(cors({
 
 
 router
-.get("/get-payments", adminController.getPayments)
+.get("/get-store/:store", storeController.getStore)
 
-module.exports = router;
+module.exports = router

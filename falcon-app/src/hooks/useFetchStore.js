@@ -4,27 +4,54 @@ import axios from 'axios';
 
 const useFetchStore = url => {
     const [data, setData] = useState (null);
-    const [error, setError] = useState (null);
     const { token, email } = localStorage
     const [store, setStore] = useState("")
+    const [link, setLink] = useState("")
 
     useEffect(() => {
         axios.post(url, {
           email
+        }, {
+          headers: {
+            Authorization : `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
         })
         .then(response => {
-            // console.log(response.data.response[0].name)
             setData(response.data)
             setStore(response.data.response[0].name)
+            setLink(response.data.response[0].link)
         })
         .catch(err => {
-          console.log(err.response.data.status)
-          console.log(err.response.data.message)
-          setError(err.response.data.status)
+          if (err.response.status === 401) {
+            Swal.fire({
+              position: 'top-end',
+              // icon: 'success',
+              toast: true,
+              color: 'red',
+              title: 'Authorization token required',
+              showConfirmButton: false,
+              timer: 3000,
+            });
+            setTimeout(() => {
+              window.location.href = '/Login';
+            }, 3000);
+          }
+          else {
+            // Handle other errors here, e.g., show an alert with the error message
+            Swal.fire({
+              position: 'top-end',
+              toast: true,
+              color: 'red',
+              text: "Retrieved Store for user",
+              showConfirmButton: false,
+              timer: 3000,
+            });
+          }
         })
       },
-      [ url, error, token ])
-      return { data, error, store }
+      [ url, token, link, email ])
+      return { data, store, link }
 }
 
 export default useFetchStore;

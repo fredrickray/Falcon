@@ -53,15 +53,15 @@ const Register = () => {
     // });
   };
 
-  const googleAuth = () => {
-    fetch("/auth/google/callback")
-      .then(response => {
-        console.log(response)
-      }) 
-      .catch(error => {
-        console.log(error)
-      })
-  }
+  // const googleAuth = () => {
+  //   fetch("/auth/google/callback")
+  //     .then(response => {
+  //       console.log(response)
+  //     }) 
+  //     .catch(error => {
+  //       console.log(error)
+  //     })
+  // }
 
   const register = () => {
     Axios.post (API_URL, {
@@ -124,7 +124,7 @@ const Register = () => {
   };
 
   return (
-    <div class="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
+    <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
 
       {/* <!-- Navbar --> */}
       <nav className="absolute top-0 z-30 flex flex-wrap items-center justify-between w-full px-4 py-2 mt-6 mb-4 shadow-none lg:flex-nowrap lg:justify-start">
@@ -157,22 +157,22 @@ const Register = () => {
             navbar-menu
             className="items-center flex-grow transition-all ease-soft duration-350 lg-max:bg-white lg-max:max-h-0 lg-max:overflow-hidden basis-full rounded-xl lg:flex lg:basis-auto"
           >
-            <ul class="flex flex-col pl-0 mx-auto mb-0 list-none lg:flex-row xl:ml-auto">
+            <ul className="flex flex-col pl-0 mx-auto mb-0 list-none lg:flex-row xl:ml-auto">
               <li>
                 <Link
-                  class="block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 lg-max:opacity-0 lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75"
+                  className="block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 lg-max:opacity-0 lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75"
                   to
                 >
-                  <i class="mr-1 text-white lg-max:text-slate-700 fas fa-user-circle opacity-60" />
+                  <i className="mr-1 text-white lg-max:text-slate-700 fas fa-user-circle opacity-60" />
                   Sign Up
                 </Link>
               </li>
               <li>
                 <Link
-                  class="block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 lg-max:opacity-0 lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75"
+                  className="block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 lg-max:opacity-0 lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75"
                   to="/Login"
                 >
-                  <i class="mr-1 text-white lg-max:text-slate-700 fas fa-key opacity-60" />
+                  <i className="mr-1 text-white lg-max:text-slate-700 fas fa-key opacity-60" />
                   Sign In
                 </Link>
               </li>
@@ -201,18 +201,18 @@ const Register = () => {
               </div>
             </div>
           </div>
-          <div class="container">
-            <div class="flex flex-wrap -mx-3 -mt-48 md:-mt-56 lg:-mt-48">
-              <div class="w-full max-w-full px-3 mx-auto mt-0 md:flex-0 shrink-0 md:w-7/12 lg:w-5/12 xl:w-4/12">
-                <div class="relative z-0 flex flex-col min-w-0 break-words bg-white border-0 shadow-soft-xl rounded-2xl bg-clip-border">
-                  <div class="p-6 mb-0 text-center bg-white border-b-0 rounded-t-2xl">
+          <div className="container">
+            <div className="flex flex-wrap -mx-3 -mt-48 md:-mt-56 lg:-mt-48">
+              <div className="w-full max-w-full px-3 mx-auto mt-0 md:flex-0 shrink-0 md:w-7/12 lg:w-5/12 xl:w-4/12">
+                <div className="relative z-0 flex flex-col min-w-0 break-words bg-white border-0 shadow-soft-xl rounded-2xl bg-clip-border">
+                  <div className="p-6 mb-0 text-center bg-white border-b-0 rounded-t-2xl">
                     <h5>Register with</h5>
                   </div>
-                  <div class="flex flex-wrap px-3 -mx-3 sm:px-6 xl:px-12">
-                    <div class="w-3/12 max-w-full px-1 ml-auto flex-0">
+                  <div className="flex flex-wrap px-3 -mx-3 sm:px-6 xl:px-12">
+                    <div className="w-3/12 max-w-full px-1 ml-auto flex-0">
                       <a
-                        class="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
-                        // href="/"
+                        className="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
+                        href
                       >
                         <svg width="24px" height="32px" viewBox="0 0 64 64"
                           onClick={facebookReg}>
@@ -242,10 +242,10 @@ const Register = () => {
                       </a>
                     </div>
 
-                    <div class="w-3/12 max-w-full px-1 flex-0">
+                    <div className="w-3/12 max-w-full px-1 flex-0">
                       <a
-                        class="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
-                        // href="/"
+                        className="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
+                        href
                       >
                         <svg width="24px" height="32px" viewBox="0 0 64 64"
                         onClick={appleReg}>
@@ -270,7 +270,7 @@ const Register = () => {
                     <div className="w-3/12 max-w-full px-1 mr-auto flex-0">
                       <a
                         className="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
-                        // href="/"
+                        href
                       >
                         <svg width="24px" height="32px" viewBox="0 0 64 64"
                         onClick={googleReg}>
@@ -306,15 +306,15 @@ const Register = () => {
                       </a>
                     </div>
 
-                    <div class="relative w-full max-w-full px-3 mt-2 text-center shrink-0">
-                      <p class="z-20 inline px-4 mb-2 font-semibold leading-normal bg-white text-sm text-slate-400">
+                    <div className="relative w-full max-w-full px-3 mt-2 text-center shrink-0">
+                      <p className="z-20 inline px-4 mb-2 font-semibold leading-normal bg-white text-sm text-slate-400">
                         or
                       </p>
                     </div>
                   </div>
-                  <div class="flex-auto p-6">
+                  <div className="flex-auto p-6">
                     <form>
-                      <div class="mb-4">
+                      <div className="mb-4">
                         <input
                           name="firstname"
                           type="text"
@@ -328,7 +328,7 @@ const Register = () => {
                         />
                       </div>
 
-                      <div class="mb-4">
+                      <div className="mb-4">
                         <input
                           name="lastname"
                           type="text"
@@ -342,7 +342,7 @@ const Register = () => {
                         />
                       </div>
 
-                      <div class="mb-4">
+                      <div className="mb-4">
                         <input
                           type="text"
                           name="username"
@@ -370,7 +370,7 @@ const Register = () => {
                         />
                       </div>
 
-                      <div class="mb-4">
+                      <div className="mb-4">
                         <input
                           type="password"
                           name="password"
@@ -384,7 +384,7 @@ const Register = () => {
                         />
                       </div>
 
-                      <div class="mb-4">
+                      <div className="mb-4">
                         <input
                           type="number"
                           name="phone"

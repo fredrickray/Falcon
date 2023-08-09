@@ -15,42 +15,26 @@ router.use(cors({
     allowedHeaders:  ["X-Requested-With", "Content-Type", "Authorization"],
 }))
 
+router
+.use(requireAuth)
 
-
-// const allowedOrigins = ["http://localhost:3000"];
-
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-//       // Allow requests with no origin (e.g., Postman) or requests from the allowed origins
-//       callback(null, true);
-//     } else {
-//       // Block requests from other origins
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   methods: ["GET", "POST", "UPDATE", "DELETE", "OPTIONS"],
-//   credentials: true,
-//   allowedHeaders: ["X-Requested-With", "Content-Type", "Authorization"],
-// };
-
-// router
-// .use(cors(corsOptions))
-
-// router
-// .use(requireAuth)
 
 router
-.post("Create-Store", storeController.createStore)
+.post("/Create-Store", storeController.createStore)
 
 router
 .post("/create-product", storeController.createProduct)
 
 router
-.post("/get-products", storeController.getProducts)
+.put("/update-product/:id", storeController.updateProduct)
 
 router
-.get("/get-store/:store", storeController.getStore)
+.post("/category/:category", storeController.getCategory)
+
+router
+.post("/get-products", storeController.getProducts)
+
+
 
 router
 .post("/get-store", storeController.checkStoreExist)
@@ -75,5 +59,7 @@ router
 
 router
 .delete("/delete-delivery/:id", storeController.deleteDelivery)
+
+
 
 module.exports = router

@@ -1,6 +1,9 @@
 const express = require ("express");
 const authR = require("./routes/authRoute")
+const adminR = require("./routes/adminRoute")
 const storeR = require("./routes/storeRoute")
+const customerRoute = require("./routes/customerRoute")
+const payRoute = require("./routes/paymentRoute")
 const openaiR = require("./routes/openaiRoute")
 require("dotenv").config()
 const session = require("express-session")
@@ -10,6 +13,8 @@ const port  = process.env.PORT || 9000
 const app = express()
 const cors = require("cors")
 
+
+app.use(cors())
 app.use(cors({
     origin: ["http://localhost:3000"],
     methods: ["GET", "POST", "UPDATE", "DELETE", "OPTIONS"],
@@ -27,13 +32,34 @@ app.use(
     })
 )
 
+// Middleware to handle preflight requests
+const handlePreflight = (req, res, next) => {
+    // Set the CORS headers for the preflight request
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // Replace * with your allowed origins
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Include your allowed methods
+    res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type"); // Include your allowed headers
+  
+    // Respond to the OPTIONS request with a 204 No Content status
+    if (req.method === "OPTIONS") {
+      return res.status(204).end();
+    }
+  
+    // Pass the request to the next middleware
+    next();
+};
+
+
+app.use(handlePreflight)
 // Initialize Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/auth", OauthRoute)
 app.use("/auth", authR)
+app.use("/admin", adminR)
 app.use("/store", storeR)
+app.use("/stores", customerRoute)
+app.use("/payment", payRoute)
 app.use("/openai", openaiR)
 // app.get("/auth", authR)
 
