@@ -1,13 +1,13 @@
 // sidenav transition-burger
-
-var sidenav = document.querySelector("aside");
-var sidenav_trigger = document.querySelector("[sidenav-trigger]");
-var sidenav_close_button = document.querySelector("[sidenav-close]");
-var burger = sidenav_trigger.firstElementChild;
-var top_bread = burger.firstElementChild;
-var bottom_bread = burger.lastElementChild;
+const sidenav = document.querySelector("aside");
+const sidenav_trigger = document.querySelector(".sidenav-trigger");
+const sidenav_close_button = document.querySelector("[sidenav-close]");
+const burger = sidenav_trigger.firstElementChild;
+const top_bread = burger.firstElementChild;
+const bottom_bread = burger.lastElementChild;
 
 sidenav_trigger.addEventListener("click", function () {
+  console.log("working")
   if (page == "virtual-reality") {
     sidenav.classList.toggle("xl:left-[18%]");
   }

@@ -4,12 +4,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // ------->> AUTH(Registration, Login) <<---------
 import Register from './pages/auth/Register';
 import Login from "./pages/auth/Login"
+// import NewPassword from './pages/auth/NewPassword';
+import PasswordReset from './pages/auth/PasswordReset';
 //------->> AUTH END <-----------
 
 
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import MyAI from './pages/MyAI';
+import ManageStore from './pages/store/ManageStore';
 
 // ------>> STORE <<-------
 import Products from './pages/store/Product';
@@ -21,7 +24,6 @@ import StorePreview from './pages/store/storePreview';
 import StoreProductDetailed from './pages/store/storeProductDetails';
 import StoreProduct from './pages/store/storeProduct';
 // ------>> STORE END <<-------
-import Test from './pages/Test';
 import NotFound from './components/notFound';
 import Tag from './pages/Tag';
 import "./assets/css/soft-ui-dashboard-tailwind.css"
@@ -31,9 +33,9 @@ const App = () => {
     <React.StrictMode>
       <BrowserRouter>
         <Routes>
-        <Route exact path="/Test" element={<Test />} />
         <Route exact path="/Register" element={<Register />} />
         <Route exact path="/Login" element={<Login />} />
+        <Route exact path="/Reset-password" element={<PasswordReset />} />
         <Route exact path="/Products" element={<Products />} />
         <Route exact path="/Store/new" element={<NewStore />} />
         <Route exact path="/Store/Product/:id" element={<StoreProduct />} />
@@ -44,6 +46,7 @@ const App = () => {
         <Route exact path="/store/shipping" element={<Shipping />} />
         <Route exact path="/Profile" element={<Profile />} />
         <Route exact path="/Home" element={<Home />} />
+        <Route exact path="/Store/setup" element={<ManageStore />} />
         <Route exact path="/MyAi" element={<MyAI />} />
         <Route exact path="/Tag" element={<Tag />} />
         {/* <Route exact path="/Store/View/:store" element={<StoreView />} /> */}

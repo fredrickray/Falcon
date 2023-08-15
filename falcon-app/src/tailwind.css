@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.hover-underline {
+    @apply relative inline-block;
+  
+    &::after {
+      @apply absolute bottom-0 left-0 w-full h-2 bg-blue-500 opacity-0 transition-opacity ease-in-out duration-300;
+      content: '';
+    }
+  
+    &:hover::after {
+      @apply opacity-100;
+    }
+  }

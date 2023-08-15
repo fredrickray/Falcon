@@ -25,7 +25,12 @@ router
 .get("/getUser", authController.getUser)
 
 router
-.post("/update", authController.update)
+.put("/update", authController.update)
+
+
+
+router
+.post("/password_reset", authController.passwordReset)
 
 router
 .post("/socials", authController.social)

@@ -1,79 +1,62 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 // import { axiosInstance } from '../services/axiosHandler';
 const useFetch = url => {
-  const [data, setData] = useState (null);
-  const [error, setError] = useState (null);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
   const [count, setCount] = useState(0)
+  // const [location, setLocation] = useState("")
+  // const [fee, setFee] = useState("")
   const { email } = localStorage;
-  
-  // axiosInstance.interceptors.request.use( async(config) => {
-  //   config.headers.Authorization = `Bearer ${token}`
-  //   return config
-  // })
-
-  // const config = {
-  //   headers: {
-  //     Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjg5OTYxODQzLCJleHAiOjE2OTAxMzQ2NDN9.ZpjgZGUOUVkJlHnMNVBwesysUm9rBCzMnOHbwa1pCFA",
-  //   },
-  // };
-   
-  // const axiosInstance = axios.create();
-
-  //  // Add an interceptor to set the "Authorization" header with the token
-  //  axiosInstance.interceptors.request.use((config) => {
-  //   const {token} = localStorage;
-  //   if (token) {
-  //     config.headers["Authorization"] = `Bearer ${token}`;
-  //   }
-  //   return config;
-  // });
 
 
-  // let config = axios.create({
-  //   headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  // })
-
-  // console.log(token)
 
 
-  useEffect (
+  useEffect(
     () => {
-      axios.post (url, {email} )
-        .then (response => {
-          console.log (response);
+      axios.post(url, { email }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`,
+          "Content-Type": "application/json"
+        },
+      })
+        .then(response => {
+          // console.log (response.data.data2.fee);
           // console.log(token)
           let data = response.data.data2;
           // console.log(data)
-          setData (data);
+          setData(data);
           setCount(data.length)
+          // setFee(data.data2.slice(0,3).fee)
+          // setLocation(data.data2.location)
         })
-        .catch (err => {
-          // console.log (err.d);
-          console.log(err.response.data.error)
-          if(err.response.data.error) {
-            Swal.fire ({
+        .catch(err => {
+          //  console.log(err)
+          // if(err.response.data.message) {
+          //   console.log(err.response.data.message)
+          // }
+      
+          if (err.response.data.error) {
+            console.log(err.response.data.error)
+            Swal.fire({
               position: 'top-end',
               // icon: 'success',
               toast: true,
               color: "red",
               title: 'Authorization token required',
               showConfirmButton: false,
-              timer: 2500,
+              timer: 3000,
             })
-            // .then(
-            //   window.location.href = "/Login"
-            // )
-            setError (error);
-            
+            setTimeout(() => {
+              window.location.href = "/Login"
+            }, 3000)
+            setError(error);
+
           }
-        //   console.log(token)
         });
     },
-    [url, error]
+    [url, error, email]
   );
   return { data, count };
 };
