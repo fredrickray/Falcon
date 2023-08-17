@@ -22,5 +22,14 @@ router
 router
 .get("/get_payment", paymentController.getPayments)
 
+router
+.post("/orders", paymentController.getAllOrders)
+
+router
+.get("/orders/:tx_ref", paymentController.getOrdersByTxRef)
+
+router
+.get("/order/order_details/:tx_ref", paymentController.getItemsByTxRef)
+
 
 module.exports = router

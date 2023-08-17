@@ -62,8 +62,129 @@ const Register = () => {
   //       console.log(error)
   //     })
   // }
+  const response = (message) => {
+    Swal.fire ({
+      position: 'top-end',
+      color: "red",
+      toast: true,
+      title: message,
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  }
 
   const register = () => {
+    if (fnameReg.length === 0) {
+      response('First Name field can not be empty')
+      // alert('Invalid Form, First Name can not be empty')
+      return
+    }
+
+    if (lnameReg.length === 0) {
+      response("Last Name field must not be empty")
+      // alert('Invalid Form, Last Name can not be empty')
+      return
+    }
+
+    if (username.length === 0) {
+      response("Username field can not be empty")
+      return
+    }
+
+    // Check if the Email is an Empty string or not.
+
+    if (emailReg.length === 0) {
+      response('Email Address can not be empty')
+      return
+    }
+
+    // check if the passwordReg follows constraints or not.
+
+    // if passwordReg length is less than 8 characters, alert invalid form.
+
+    if (passwordReg.length < 8) {
+      response(
+        'Password must contain greater than or equal to 8 characters.',
+      )
+      return
+    }
+
+    // variable to count upper case characters in the passwordReg.
+    let countUpperCase = 0
+    // variable to count lowercase characters in the passwordReg.
+    let countLowerCase = 0
+    // variable to count digit characters in the passwordReg.
+    let countDigit = 0
+    // variable to count special characters in the passwordReg.
+    let countSpecialCharacters = 0
+
+    for (let i = 0; i < passwordReg.length; i++) {
+      const specialChars = [
+        '!',
+        '@',
+        '#',
+        '$',
+        '%',
+        '^',
+        '&',
+        '*',
+        '(',
+        ')',
+        '_',
+        '-',
+        '+',
+        '=',
+        '[',
+        '{',
+        ']',
+        '}',
+        ':',
+        ';',
+        '<',
+        '>',
+      ]
+
+      if (specialChars.includes(passwordReg[i])) {
+        // this means that the character is special, so increment countSpecialCharacters
+        countSpecialCharacters++
+      } else if (!isNaN(passwordReg[i] * 1)) {
+        // this means that the character is a digit, so increment countDigit
+        countDigit++
+      } else {
+        if (passwordReg[i] === passwordReg[i].toUpperCase()) {
+          // this means that the character is an upper case character, so increment countUpperCase
+          countUpperCase++
+        }
+        if (passwordReg[i] === passwordReg[i].toLowerCase()) {
+          // this means that the character is lowercase, so increment countUpperCase
+          countLowerCase++
+        }
+      }
+    }
+
+    if (countLowerCase === 0) {
+      // invalid form, 0 lowercase characters
+      response('Invalid Form, 0 lower case characters in passwordReg')
+      return
+    }
+
+    if (countUpperCase === 0) {
+      // invalid form, 0 upper case characters
+      response('Invalid Form, 0 upper case characters in passwordReg')
+      return
+    }
+
+    if (countDigit === 0) {
+      // invalid form, 0 digit characters
+      response('Invalid Form, 0 digit characters in passwordReg')
+      return
+    }
+
+    if (countSpecialCharacters === 0) {
+      // invalid form, 0 special characters characters
+      response('Invalid Form, 0 special characters in passwordReg')
+      return
+    }
     Axios.post (API_URL, {
       fname: fnameReg,
       lname: lnameReg,
@@ -73,8 +194,8 @@ const Register = () => {
       phone: phone,
     })
       .then (response => {
-        console.log (response.data.message);
-        if (response.data.message === 'Registration was successful') {
+        // console.log (response.data);
+        if (response.data.status === "success") {
           localStorage.setItem ('firstname', fnameReg);
           localStorage.setItem ('lastname', lnameReg);
           localStorage.setItem ('email', emailReg);
@@ -93,32 +214,32 @@ const Register = () => {
           });
           Toast.fire ({
             icon: 'success',
-            title: `Account created successfully`,
+            title: response.data.message,
           }).then ((window.location.href = '/Home'));
         } 
         else {
-          Swal.fire ({
-            position: 'top-end',
-            // icon: 'success',
-            title: response.data.message,
-            toast: true,
-            color: 'red',
-            showConfirmButton: false,
-            timer: 1500,
-          });
+          console.log(response)
+          // Swal.fire ({
+          //   position: 'top-end',
+          //   // icon: 'success',
+          //   title: response.data.message,
+          //   toast: true,
+          //   color: 'red',
+          //   showConfirmButton: false,
+          //   timer: 1500,
+          // });
         }
       })
       .catch (err => {
         console.log ('ERROR', err.message);
-        // Swal.fire ({
-        //   position: 'top-end',
-        //   icon: 'error',
-        //   iconHtml: '🙄',
-        //   toast: true,
-        //   title: err.message,
-        //   showConfirmButton: false,
-        //   timer: 2500,
-        // });
+        Swal.fire ({
+          position: 'top-end',
+          icon: 'error',
+          toast: true,
+          title: err.message,
+          showConfirmButton: false,
+          timer: 2500,
+        });
         console.log (err.config.data);
       });
   };
@@ -372,12 +493,12 @@ const Register = () => {
 
                       <div className="mb-4">
                         <input
-                          type="password"
-                          name="password"
+                          type="passwordReg"
+                          name="passwordReg"
                           className="text-sm focus:shadow-soft-primary-outline leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:bg-white focus:text-gray-700 focus:outline-none focus:transition-shadow"
                           placeholder="Password"
                           aria-label="Password"
-                          aria-describedby="password-addon"
+                          aria-describedby="passwordReg-addon"
                           required
                           onChange={e => setPasswordReg(e.target.value)}
                           // onChange={handleForm}

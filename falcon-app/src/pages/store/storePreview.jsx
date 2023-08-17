@@ -8,24 +8,39 @@ import { BiMinus } from "react-icons/bi"
 import { GrClose } from 'react-icons/gr';
 import Swal from 'sweetalert2';
 import { FlutterWaveButton, closePaymentModal } from 'flutterwave-react-v3';
+import axios from "axios"
+
 
 function StorePreview() {
 
   const { store } = useParams();
   const { data: storeData } = useProductId(`http://localhost:9000/stores/get-store/${store}`)
-  const [firstanme, setFirstname] = useState("")
+  const [firstname, setFirstname] = useState("")
   const [lastname, setLastname] = useState("")
-  const [email, setEmail] = useState("")
+  const [customer_email, setCustomerEmail] = useState("")
   const [phone, setPhone] = useState("")
+  const [discount, setDiscount] = useState("")
+  const state = ["Abia", "Abuja", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"]
+  const [selectedState, setSelectedState] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("")
+  const [deliveryNote, setDeliveryNote] = useState("")
+  const [shippingMoney, setShippingMoney] = useState(0.00)
+  const [deliveryInfo, setDeliveryInfo] = useState([])
   const [cartItemCount, setCartItemCount] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [size, setSize] = useState(() => {
-    const storedSize = localStorage.getItem("size")
-    return storedSize ? setSize(storedSize) : null
-  })
+  // const [size, setSize] = useState(() => {
+  //   const storedSize = localStorage.getItem("size")
+  //   return storedSize ? storedSize : null
+  // })
+
+  // console.log(storeData)
   // console.log(productDetail)
   const [addedItem, setAddedItem] = useState([])
-  const totalPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
+  const GET_DELIVERY_URL = "http://localhost:9000/store/get-delivery"
+  const { email, token, size } = localStorage
+  let sumPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
+  sumPrice = sumPrice * quantity
+  const totalPrice = sumPrice + shippingMoney
 
 
   const added = (item) => {
@@ -48,71 +63,95 @@ function StorePreview() {
     });
     setCartItemCount(cartItemCount + 1);
     // setIsButtonDisabled(false)
-    localStorage.setItem("size", size)
+    // localStorage.setItem("size", size)
   };
 
-  // to add to quantity function
-  const addQuantity = () => {
-    // setCartAdd(cartAdd + 1);
+  const addQuantity = (id) => {
+    // setQuantity(id.target.value(quantity + 1))
     setQuantity(quantity + 1)
-  };
 
-  // to remove from quantity function
+  }
+
   const minusQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
     }
   };
 
-  // const minus = () => {
-  //   if (quantity > 0) {
-  //     const Toast = Swal.mixin({
-  //       toast: true,
-  //       position: 'top-end',
-  //       showConfirmButton: false,
-  //       timer: 3000,
-  //       timerProgressBar: true,
-  //       didOpen: toast => {
-  //         toast.addEventListener('mouseenter', Swal.stopTimer);
-  //         toast.addEventListener('mouseleave', Swal.resumeTimer);
-  //       },
-  //     });
-
-  //     Toast.fire({
-  //       icon: 'success',
-  //       title: 'Item removed from cart',
-  //     });
-
-  //     setCartAdd(cartAdd - 1);
-  //     setQuantityAdd(quantityAdd - 1);
-  //   }
-  // };
 
   useEffect(() => {
     if (addedItem.length > 0) {
       localStorage.setItem('cartItem', JSON.stringify(addedItem));
+      // localStorage.setItem("quantity", quantity)
     }
   }, [addedItem]);
 
   useEffect(() => {
     const cartItem = localStorage.getItem("cartItem");
+    // const itemQuantity = localStorage.getItem("quantity")
     const parsedArray = cartItem ? JSON.parse(cartItem) : [];
     if (parsedArray) {
       const itemCount = parsedArray.length;
       // console.log(itemCount);
-      console.log(parsedArray);
+      console.log(parsedArray[0]);
       // setData(parsedArray);
       setAddedItem(parsedArray)
+      // setQuantity(itemQuantity)
       setCartItemCount(itemCount);
+      // setQuantity(parsedArray)
     }
 
   }, []);
 
+  useEffect(() => {
+    fetchSavedValues();
+  }, []);
+
+  const fetchSavedValues = async () => {
+    try {
+      const response = await axios.post(GET_DELIVERY_URL, { email },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      )
+      const shipping = response.data.data2
+      const newShiping = shipping.map((item) => ({ location: item.location, fee: item.fee }))
+      setDeliveryInfo(newShiping)
+    }
+    catch (error) {
+      console.error(error.message);
+    }
+  };
 
 
-  const emptyCart = () => {
-    localStorage.removeItem("cartItems")
+  const handleStateChange = (e) => {
+    const { value } = e.target
+    const nes = deliveryInfo.find(item => item.location.toLowerCase() === value.toLowerCase())
+    const result = nes ? nes.fee : 0.00
+    setShippingMoney(result)
+    setSelectedState(e.target.value);
   }
+
+  const removeFromCart = (itemId) => {
+    // Remove the item from addedItem state
+    setAddedItem((prevCartItems) => prevCartItems.filter((item) => item.id !== itemId));
+
+    // Update the cart item count
+    setCartItemCount((prevCount) => prevCount - 1);
+
+    // Remove the item from localStorage
+    const cartItems = JSON.parse(localStorage.getItem('cartItem')) || [];
+    const updatedCartItems = cartItems.filter((item) => item.id !== itemId);
+    localStorage.setItem('cartItem', JSON.stringify(updatedCartItems));
+  };
+
+
+  // const emptyCart = () => {
+  //   localStorage.removeItem("cartItems")
+  // }
   // SideBar toggle function
   const bar = document.getElementById('cart');
   const close = document.getElementById('close');
@@ -182,20 +221,25 @@ function StorePreview() {
     });
   }
 
+  const selectedItemsData = addedItem.map(item => ({
+    product_Id: item.id,
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity,
+    image: item.image
+  }));
+
   const config = {
     // public_key: process.env.FLUTTERWAVE_PUBLIC_API_KEY,
-    public_key: 'FLWPUBK_TEST-21c38cdcf4a96ed2f051470b7d362f30-X',
+    public_key: process.env.REACT_APP_FLTW_TEST_PUBLIC_KEY,
     tx_ref: Date.now(),
     amount: totalPrice,
     currency: 'NGN',
     payment_options: 'card,mobilemoney,ussd',
     customer: {
-      email: email,
+      email: customer_email,
       phone: phone,
-      name: firstanme + lastname
-      // email: email,
-      // phone_number: phone,
-      // name: name,
+      name: firstname + " " + lastname
     },
     customizations: {
       title: 'My store',
@@ -207,30 +251,95 @@ function StorePreview() {
   const fwConfig = {
     ...config,
     text: 'Proceed to payment',
-    callback: response => {
+    callback: async (response) => {
       console.log(response);
       closePaymentModal(); // this will close the modal programmatically
+
+      const { tx_ref, amount, currency, transaction_id, status } = response;
+      const mainData = { email, firstname, lastname, customer_email, tx_ref, shipping_money: shippingMoney, amount, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, status, currency, transaction_id }
+      try {
+        const response = await axios.post('http://localhost:9000/payment/new_payment', {
+          mainData,
+          itemsData: selectedItemsData
+        });
+
+        // Handle the response from your server if needed
+        console.log('POST request successful:', response.data);
+        window.location.href = `/Store/${store}`
+      }
+      catch (error) {
+        console.error('POST request error:', error.message);
+      }
     },
     onClose: () => { },
   };
 
+  const itemsToDisplay = [];
+
+  storeData?.forEach((result) => {
+    if (result.quantity === 0) {
+      itemsToDisplay.push(
+        <div key={result.id} class="soldout-container">
+          <div class="sold-out">SOLD OUT!</div>
+          <div class="divider"></div>
+          <div class="deets">Next session date: 2 February</div>
+        </div>
+      );
+    } else {
+      itemsToDisplay.push(
+        <div className="pro"
+          key=
+          {result.id}
+        >
+          <Link to={`/Store/Product/Details/${result.id}`}>
+            <img src=
+              {result.image.split('\r\n')[0]}
+              alt="" />
+            <div className="des">
+              <span><b>
+                {result.name}
+              </b></span>
+              <h5>
+                {result.description}
+              </h5>
+              <div className="star">
+                <i className="mdi mdi-star" />
+                <i className="mdi mdi-star" />
+                <i className="mdi mdi-star" />
+                <i className="mdi mdi-star" />
+                <i className="mdi mdi-star" />
+              </div>
+              <h4>₦
+                {result.price.toLocaleString()}
+              </h4>
+            </div>
+          </Link>
+          <div className='proItems'>
+
+            <div>
+              <button
+                onClick={() => added(storeData.id)}
+                style={{ backgroundColor: '#0a0e27', color: "white", padding: "15px", paddingRight: "35px", paddingLeft: "35px", paddingTop: "10px", paddingBottom: "10px", borderRadius: "8px", marginLeft: "5px" }}>
+                Quick Add
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  });
+
   return (
     <div>
       <section id="header">
-        <a href><img src="img/logo.png" class="logo" alt="" /></a>
-        <h3 className='logo'>Star Tech</h3>
+        {/* <a href><img src="img/logo.png" class="logo" alt="" /></a> */}
+        <h3 className='logo'>{store}</h3>
         <div>
           <ul id="navbar">
             <div data-v-7d194230 className='summary_body'>
               <div data-v-7d194230 className='summary_cart'>
-
-
-
-
-
-
                 <div data-v-7d194230 className='summary_cart_item'>
-                  {(Array.isArray(addedItem) && addedItem.length > 0) ? (
+                  {Array.isArray(addedItem) && addedItem.length > 0 ? (
                     <div data-v-7d194230 className='summary_cart_item'>
                       {addedItem.map((info) => (
                         <div key={info.created_at} data-v-7d194230 className='summary_cart_item_variants'>
@@ -245,82 +354,82 @@ function StorePreview() {
                                 </span>
                               )}
                               <span data-v-7d194230 className='summary_cart_item_product_price'>
-                                NGN {info.price}
+                                NGN {info.price.toLocaleString()}
                               </span>
                             </div>
                             <div data-v-7d194230 className='summary__cart__item__product__cta'>
                               <div data-v-7d194230 className='action'>
-                                <button data-v-7d194230 type="button" className='action_minus'>
+                                <button onClick={() => minusQuantity(info.id)} data-v-7d194230 type="button" className='action_minus'>
                                   <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M14.158 12.332H10.7V11.275H14.158V12.332Z" fill="#333333"></path></svg>
                                 </button>
                                 <span data-v-7d194230 className='action__value'>{quantity}</span>
-                                <button data-v-7d194230 type='button' className='action_plus'>
+                                <button onClick={() => addQuantity(info.id)} data-v-7d194230 type='button' className='action_plus'>
                                   <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M15.406 11.772H12.557V14.782H11.535V11.772H8.7V10.827H11.535V7.838H12.557V10.827H15.406V11.772Z" fill="#333333"></path></svg>
                                 </button>
                               </div>
+                              <i style={{ marginLeft: "65%", marginTop: "20%", cursor: "pointer" }} onClick={() => removeFromCart(info.id)} className="fa fa-trash" aria-hidden="true"></i>
                             </div>
                           </div>
                         </div>
                       ))}
                     </div>
-
-                  ) : null}
-
+                  ) : (
+                    <div className='summary_cart_empty'>
+                      <p className='summary_cart_empty_msg'>Your cart is currently empty</p>
+                      <button id='summary_emptyCart_button' className='btn btn--default btn--sm summary__cart__empty__btn'>
+                        CONTINUE SHOPPING
+                      </button>
+                    </div>
+                  )}
                 </div>
+              </div>
+            </div>
 
+            {Array.isArray(addedItem) && addedItem.length > 0 && (
+              <div data-v-7d194230 className='summary__footer'>
 
-
-
-                {/* Each child in a list should have a unique "key" prop. */}
-
-                {!addedItem ? (<div className='summary_cart_empty'>
-                  <p className='summary_cart_empty_msg'>Your cart is currently empty</p>
-                  <button id='summary_emptyCart_button' className='btn btn--default btn--sm summary__cart__empty__btn'>CONTINUE SHOPPING</button>
-                </div>) : (
-                  <div data-v-7d194230 className='summary__cart__cta'>
-                    <button type="button" className='summary__cart__cta__btn' onClick={emptyCart}>
-                      <svg data-v-7d194230="" viewBox="0 0 477.9 477.9" xmlns="http://www.w3.org/2000/svg" className="summary__cart__cta__btn__icon"><path data-v-7d194230="" d="M443.7 68.3H324.3V51.2c0-28.3-22.9-51.2-51.2-51.2H204.8c-28.3 0-51.2 22.9-51.2 51.2v17.1H34.1c-9.4 0-17.1 7.6-17.1 17.1S24.7 102.4 34.1 102.4h18.6l32.6 360c0.8 8.8 8.2 15.6 17.1 15.5h273.1c8.9 0 16.3-6.7 17.1-15.5L425.2 102.4h18.6c9.4 0 17.1-7.6 17.1-17.1S453.2 68.3 443.7 68.3zM187.7 51.2c0-9.4 7.6-17.1 17.1-17.1h68.3c9.4 0 17.1 7.6 17.1 17.1v17.1h-102.4V51.2zM359.9 443.7H118L87 102.4h83.6 220.2L359.9 443.7z"></path> <path data-v-7d194230="" d="M187.7 391.4c0 0 0 0 0-0.1l-17.1-238.9c-0.7-9.4-8.9-16.5-18.3-15.9 -9.4 0.7-16.5 8.9-15.9 18.3L153.6 393.7c0.6 8.9 8.1 15.9 17.1 15.9h1.2C181.3 408.9 188.4 400.8 187.7 391.4z"></path> <path data-v-7d194230="" d="M238.9 136.5c-9.4 0-17.1 7.6-17.1 17.1v238.9c0 9.4 7.6 17.1 17.1 17.1S256 402 256 392.5V153.6C256 144.2 248.4 136.5 238.9 136.5z"></path> <path data-v-7d194230="" d="M325.5 136.5c-9.4-0.7-17.6 6.4-18.3 15.9l-17.1 238.9c-0.7 9.4 6.4 17.6 15.8 18.3 0 0 0.1 0 0.1 0h1.2c9 0 16.4-6.9 17.1-15.9l17.1-238.9C342 145.4 334.9 137.2 325.5 136.5z"></path></svg>
-                      <span className='summary__list__cta__button__label'>
-                        Empty Cart
-                      </span>
-                    </button>
+                <div data-v-7d194230 className='summary__footer__item'>
+                  <div data-v-7d194230 className='summary_footer_item_name'>
+                    Items
                   </div>
-                )}
-              </div>
-            </div>
-
-            <div data-v-7d194230 className='summary__footer'>
-
-              <div data-v-7d194230 className='summary__footer__item'>
-                <div data-v-7d194230 className='summary_footer_item_name'>
-                  Items
+                  <div data-v-7d194230 className='summary_footer_item_value'>
+                    <strong>NGN</strong> {sumPrice.toLocaleString()}
+                  </div>
                 </div>
-                <div data-v-7d194230 className='summary_footer_item_value'>
-                  <strong>NGN</strong> {totalPrice.toLocaleString()}
-                </div>
-              </div>
 
-              <div data-v-7d194230 className='summary__footer__item'>
-                <div data-v-7d194230 className='summary__footer__item__name'>
-                  Total
+                <div data-v-7d194230 className='summary__footer__item'>
+                  <div data-v-7d194230 className='summary_footer_item_name'>
+                    Shipping
+                  </div>
+                  <div data-v-7d194230 className='summary_footer_item_value'>
+                    <strong>NGN</strong> {shippingMoney}
+                  </div>
                 </div>
-                <div data-v-7d194230 className='summary__footer__item__value--2'>
-                  <strong>NGN</strong> {totalPrice.toLocaleString()}
-                </div>
-              </div>
 
-              <div data-v-7d194230 className='summary__footer__item'>
-                <button type="" id='infoNav' className='btn_cart btn--primary btn--block'>Continue</button>
+                <div data-v-7d194230 className='summary__footer__item'>
+                  <div data-v-7d194230 className='summary__footer__item__name'>
+                    Total
+                  </div>
+                  <div data-v-7d194230 className='summary__footer__item__value--2'>
+                    <strong>NGN</strong> {totalPrice.toLocaleString()}
+                  </div>
+                </div>
+
+                <div data-v-7d194230 className='summary__footer__item'>
+                  <button type="" id='infoNav' className='btn_cart btn--primary btn--block'>Continue</button>
+                </div>
               </div>
-            </div>
+            )}
 
             <AiOutlineShoppingCart className='cartDesktop' /><p className='cartNumber'>{cartItemCount}</p>
             <GrClose id='close' />
-            <ul id='payment_process' className='payment_process'>
-              <li style={{ color: "blue" }}>Cart</li>
-              <li>Information</li>
-              <li>Shipping</li>
-            </ul>
+            {Array.isArray(addedItem) && addedItem.length > 0 && (
+              <ul id='payment_process' className='payment_process'>
+                <li style={{ color: "blue" }}>Cart</li>
+                <li>Information</li>
+                <li>Shipping</li>
+              </ul>
+            )}
           </ul>
 
           <ul id="navbar2">
@@ -329,25 +438,32 @@ function StorePreview() {
               <div className='summary_form'>
                 <div className='form_item_flex'>
                   <div className='form_item'>
+                    <label for="firstname">Firstname</label>
                     <input className='form_input' placeholder="Firstname" onChange={e => setFirstname(e.target.value)} />
                   </div>
                   <div className='form_item'>
+                    <label for="lastname">Lastname</label>
                     <input className='form_input' placeholder="Lastname" onChange={e => setLastname(e.target.value)} />
                   </div>
                 </div>
                 <div className='form_item'>
-                  <input className='form_input' placeholder="e.g myemail@gmail.com" onChange={e => setEmail(e.target.value)} />
+                  <label for="email">Email</label>
+                  <input className='form_input' placeholder="myemail@gmail.com"
+                    onChange={e => setCustomerEmail(e.target.value)}
+                  />
                 </div>
 
                 <div className='form_item'>
-                  <input className='form_input' placeholder="+234" type='number' onChange={e => setPhone(e.target.value)} />
+                  <label for="phone">Phone</label>
+                  <input className='form_input' type='number' onChange={e => setPhone(e.target.value)} />
                 </div>
 
+                <label for="discount">Discount</label>
                 <div data-v-7ef2909e className='discount_group'>
-                  <input data-v-7ef2909e id='discountCode' className='form_input' placeholder="Optional" />
+                  <input data-v-7ef2909e id='discountCode' className='form_input' placeholder="Optional" onChange={e => setDiscount(e.target.value)} />
                   <button data-v-7ef2909e className='btn discount_cta' type="">Apply</button>
                 </div>
-
+                {/* {isEmpty && <p style={{ color: 'red' }}>Inputs must not be empty</p>} */}
               </div>
 
             </div>
@@ -358,7 +474,16 @@ function StorePreview() {
                   Items
                 </div>
                 <div data-v-7d194230 className='summary_footer_item_value'>
-                  <strong>NGN</strong> {totalPrice.toLocaleString()}
+                  <strong>NGN</strong> {sumPrice.toLocaleString()}
+                </div>
+              </div>
+
+              <div data-v-7d194230 className='summary__footer__item'>
+                <div data-v-7d194230 className='summary_footer_item_name'>
+                  Shipping
+                </div>
+                <div data-v-7d194230 className='summary_footer_item_value'>
+                  <strong>NGN</strong> {shippingMoney}
                 </div>
               </div>
 
@@ -392,29 +517,51 @@ function StorePreview() {
               <div className='summary_form'>
                 <div className='form_item'>
                   <label for="country">Country</label>
-                  <input className='form_input' placeholder="e.g myemail@gmail.com" />
+                  <select
+                    // value={selectedCountry}
+                    style={{ width: "90%" }}
+                    className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '
+                  // onChange={handleCountryChange}
+                  >
+                    {/* {countries.map((country) => ( */}
+                    <option>
+                      Nigeria
+                    </option>
+                    {/* ))} */}
+                  </select>
                 </div>
 
-                <div className='form_item_flex'>
-                  <div className='form_item'>
-                    <label for="state">State</label>
-                    <input className='form_input' placeholder="" />
-                  </div>
-                  <div className='form_item'>
-                    <label for="city">City</label>
-                    <input className='form_input' placeholder="city" />
-                  </div>
+                <div className='form_item'>
+                  <label for="state">State</label>
+                  <select
+                    value={selectedState}
+                    style={{ width: "90%" }}
+                    className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '
+                    onChange={handleStateChange}
+                  >
+                    <option value="">Select a state...</option>
+                    {state.map((state, index) => (
+                      <option key={index} value={state}>
+                        {state}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-
 
                 <div className='form_item'>
                   <label for="delivery_address">Delivery Address</label>
-                  <input className='form_input' placeholder="+234" type='number' />
+                  <input className='form_input' type='text' onChange={e => setDeliveryAddress(e.target.value)} />
                 </div>
+
+                {/* <select style={{width: "90%"}} className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '>
+                    {shpping?.map((result, index) => (
+                    <option key={[index]}>{result}</option>
+                    ))}
+                  </select> */}
 
                 <div className='form_item'>
                   <label for="delivery_note">Delivery Note</label>
-                  <textarea className='form_textarea' rows="" cols="" />
+                  <textarea className='form_textarea' value={deliveryNote} rows="" cols="" onChange={e => setDeliveryNote(e.target.value)} />
                 </div>
 
               </div>
@@ -427,7 +574,16 @@ function StorePreview() {
                   Items
                 </div>
                 <div data-v-7d194230 className='summary_footer_item_value'>
-                  <strong>NGN</strong> {totalPrice.toLocaleString()}
+                  <strong>NGN</strong> {sumPrice.toLocaleString()}
+                </div>
+              </div>
+
+              <div data-v-7d194230 className='summary__footer__item'>
+                <div data-v-7d194230 className='summary_footer_item_name'>
+                  Shipping
+                </div>
+                <div data-v-7d194230 className='summary_footer_item_value'>
+                  <strong>NGN</strong> {shippingMoney}
                 </div>
               </div>
 
@@ -478,66 +634,62 @@ function StorePreview() {
       {/* {store && storeData.map((result, index) => ( */}
       <section id="Product1" className="section-p1">
         <div className="pro-container">
-          {storeData?.map((result) => (
-            <div className="pro"
-              key=
-              {result.id}
-            >
-              <Link to={`/Store/Product/Details/${result.id}`}>
-                <img src=
-                  {result.image.split('\r\n')[0]}
-                  alt="" />
-                <div className="des">
-                  <span><b>
-                    {result.name}
-                  </b></span>
-                  <h5>
-                    {result.description}
-                  </h5>
-                  <div className="star">
-                    <i className="mdi mdi-star" />
-                    <i className="mdi mdi-star" />
-                    <i className="mdi mdi-star" />
-                    <i className="mdi mdi-star" />
-                    <i className="mdi mdi-star" />
-                  </div>
-                  <h4>₦
-                    {result.price.toLocaleString()}
-                  </h4>
-                </div>
-              </Link>
-              <div className='proItems'>
-                <div className='minus'>
-                  <div className='minus-icon' onClick={() => minusQuantity(result.id)}>
-                    <BiMinus className='minus-icon__svg' />
-                  </div>
-                </div>
-                <p className='proValue'>{quantity}</p>
-                <div className='add'>
-                  <div className='add-icon' onClick={() => addQuantity(result.id)}>
-                    <GrAdd className='add-icon__svg' />
-                  </div>
-                </div>
-                <div>
-                  <button
-                    onClick={() => added(storeData.id)}
-                    style={{ backgroundColor: '#61e361', padding: "15px", paddingRight: "35px", paddingLeft: "35px", paddingTop: "10px", paddingBottom: "10px", borderRadius: "8px", marginLeft: "5px" }}>Add</button>
-                </div>
-              </div>
-            </div>
-          ))}
+          {itemsToDisplay.map(item => item)}
         </div>
       </section>
+
+      <div class="soldout-container">
+        <div class="sold-out">SOLD OUT!</div>
+        <div class="divider"></div>
+        <div class="deets">Next session date: 2 February</div>
+      </div>
     </div>
   );
-  // }
-
-  // else{
-  //   return(
-  //     <NotFound />
-  //   )
-  // }
-
 }
 
 export default StorePreview;
+
+
+// {
+//   storeData?.map((result) => (
+
+//     <div className="pro"
+//       key=
+//       {result.id}
+//     >
+//       <Link to={`/Store/Product/Details/${result.id}`}>
+//         <img src=
+//           {result.image.split('\r\n')[0]}
+//           alt="" />
+//         <div className="des">
+//           <span><b>
+//             {result.name}
+//           </b></span>
+//           <h5>
+//             {result.description}
+//           </h5>
+//           <div className="star">
+//             <i className="mdi mdi-star" />
+//             <i className="mdi mdi-star" />
+//             <i className="mdi mdi-star" />
+//             <i className="mdi mdi-star" />
+//             <i className="mdi mdi-star" />
+//           </div>
+//           <h4>₦
+//             {result.price.toLocaleString()}
+//           </h4>
+//         </div>
+//       </Link>
+//       <div className='proItems'>
+
+//         <div>
+//           <button
+//             onClick={() => added(storeData.id)}
+//             style={{ backgroundColor: '#0a0e27', color: "white", padding: "15px", paddingRight: "35px", paddingLeft: "35px", paddingTop: "10px", paddingBottom: "10px", borderRadius: "8px", marginLeft: "5px" }}>
+//             Quick Add
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   ))
+// }

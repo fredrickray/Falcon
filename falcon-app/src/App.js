@@ -13,10 +13,13 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import MyAI from './pages/MyAI';
 import ManageStore from './pages/store/ManageStore';
+import ManageStoreEdit from './pages/store/ManageStoreEdit';
 
 // ------>> STORE <<-------
 import Products from './pages/store/Product';
+import Payments from './pages/store/Payments';
 import Orders from './pages/store/Order';
+import OrderDetail from './pages/store/OrderDetail';
 import NewProduct from './pages/store/NewProduct';
 import NewStore from './pages/store/NewStore';
 import Shipping from './pages/store/Shipping';
@@ -41,12 +44,15 @@ const App = () => {
         <Route exact path="/Store/Product/:id" element={<StoreProduct />} />
         <Route exact path="/Store/:store" element={<StorePreview />} />
         <Route exact path="/Store/Product/Details/:id" element={<StoreProductDetailed />} />
+        <Route exact path="/Payments" element={<Payments />} />
         <Route exact path="/Orders" element={<Orders />} />
+        <Route exact path="/Orders/detail/:tx_ref" element={<OrderDetail />} />
         <Route exact path="/store/Products/new" element={<NewProduct />} />
         <Route exact path="/store/shipping" element={<Shipping />} />
         <Route exact path="/Profile" element={<Profile />} />
         <Route exact path="/Home" element={<Home />} />
         <Route exact path="/Store/setup" element={<ManageStore />} />
+        <Route exact path="/Store/setup/edit" element={<ManageStoreEdit />} />
         <Route exact path="/MyAi" element={<MyAI />} />
         <Route exact path="/Tag" element={<Tag />} />
         {/* <Route exact path="/Store/View/:store" element={<StoreView />} /> */}

@@ -23,6 +23,9 @@ router
 .post("/Create-Store", storeController.createStore)
 
 router
+.put("/update-store/:id", storeController.updateStore)
+
+router
 .post("/create-product", storeController.createProduct)
 
 router
@@ -35,7 +38,8 @@ router
 .post("/get-products", storeController.getProducts)
 
 
-
+router
+.post("/store", storeController.store)
 router
 .post("/get-store", storeController.checkStoreExist)
 

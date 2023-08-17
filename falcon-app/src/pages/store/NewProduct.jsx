@@ -8,6 +8,7 @@ import useFetchStore from '../../hooks/useFetchStore';
 import AsideBar from '../../components/AsideBar';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import DOMPurify from 'dompurify';
 
 const NewProduct = () => {
   const [showInputField, setShowInputField] = useState(false);
@@ -28,9 +29,9 @@ const NewProduct = () => {
   const [value, setValue] = useState('4');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const { email, token } = localStorage;
-  const { store, data } = useFetchStore("http://localhost:9000/store/get-store")
-
-
+  const { store } = useFetchStore("http://localhost:9000/store/store")
+  // const { store } = useFetch("http://localhost:9000/store/get-products")
+  // console.log(description)
   const handleOptionChange = () => {
     setShowInputField(true);
   };
@@ -114,17 +115,57 @@ const NewProduct = () => {
     'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
   const PRODUCT_URL = 'http://localhost:9000/store/create-product';
 
+  const response = (message) => {
+    Swal.fire ({
+      position: 'top-end',
+      color: "red",
+      toast: true,
+      title: message,
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  }
+
   const create = () => {
     const formData = new FormData();
     formData.append('file', image);
     formData.append('upload_preset', 'b74r48f2');
-    setIsButtonDisabled(true);
-    // const headers = {
-    //   'Content-Type': 'application/json',
-    //   Authorization: `Bearer ${token}`,
-    //   'Access-Control-Allow-Origin': "https://api.cloudinary.com/v1_1/dlokxjygn/image/upload' ",
-    // };
 
+    const sanitizedDescription = DOMPurify.sanitize(description, { ALLOWED_TAGS: [] });
+    
+
+    if(name.length === 0) {
+      response("Name field must not be empty")
+      return
+    }
+
+    if(description.length === 0) {
+      response("Description field must not be empty")
+      return
+    }
+
+    if(price.length === 0) {
+      response("Price field must not be empty")
+      return
+    }
+
+    if(weight.length === 0) {
+      response("Weight field must not be empty")
+      return
+    }
+
+    if(quantity.length === 0) {
+      response("Quantity field must not be empty")
+      return
+    }
+
+    
+    if(selectedImages.length === 0) {
+      response("An Image must be selected")
+      return
+    }
+
+    setIsButtonDisabled(true);
     axios
       .post(CLOUDINARY_API, formData)
       .then(imageResponse => {
@@ -134,7 +175,7 @@ const NewProduct = () => {
         axios
           .post(PRODUCT_URL, {
             name: name,
-            description: description,
+            description: sanitizedDescription,
             quantity: quantity,
             weight: weight,
             price: price,
@@ -172,9 +213,9 @@ const NewProduct = () => {
               icon: 'success',
               title: "Product created succesfully",
             })
-            setTimeout(() => {
+            // setTimeout(() => {
               window.location.href = "/Products"
-            }, 3000)
+            // }, 3000)
           })
           .catch(error => {
             console.log("Log error for the post to the backend")
@@ -322,9 +363,38 @@ const NewProduct = () => {
   };
 
 
+  // const [store, setStore] = useState(null)
 
+  // useEffect(() => {
+  //   response()
+  // }, [])
 
-  if (data) {
+  // const response = async() => {
+  //   try {
+  //     const result = await axios.post("http://localhost:9000/store/store", { email }, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json"
+  //       }
+  //     })
+  //     if(result.status === 200) {
+  //       console.log(result.data.response)
+  //       setStore(result.data.response[0].name)
+  //     }
+  //     return 
+  //   } 
+  //   catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+
+  // console.log(description)
+
+  const handleDescriptionChange = (content) => {
+    setDescription(content);
+  };
+
+  if (store) {
     return (
       <div className="bg-white">
         <nav
@@ -404,8 +474,8 @@ const NewProduct = () => {
                         </label>
                         <ReactQuill
                           // className="form-input focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
-                          // value={description}
-                          onChange={setDescription}
+                          value={description}
+                          onChange={handleDescriptionChange}
                           modules={modules}
                           placeholder="Type your text here..."
                           style={{ height: "300px", marginBottom: "20%" }}

@@ -1,63 +1,23 @@
 // const nodemailer = require ('nodemailer');
 const saltRounds = 10;
 const bcrypt = require ('bcrypt');
-const jwt = require ('jsonwebtoken');
 const express = require ('express');
 // const session = require ('express-session');
 const cookieParser = require ('cookie-parser');
 const sendEmail = require ('../utls/sendEmail');
-const crypto = require ('crypto');
+// const crypto = require ('crypto');
 const app = express ();
 const knex = require("../knex-db/knex")
 const {createToken, maxAge} = require("../utls/createToken")
 app.use (cookieParser ());
 
 
-// to use the passport oauth
-
-// Creating tokens
-// const maxAge = 3 * 24 * 60 * 60;
-// const createToken = id => {
-//   return jwt.sign ({id}, process.env.SECRET, {
-//     expiresIn: maxAge,
-//   });
-// };
-
 
 //Registering merchant
-exports.register = async (req, res) => {
+const register = async (req, res) => {
   bcrypt.hash (req.body.password, saltRounds, async (err, hash) => {
     const {fname, lname, email, phone, username} = req.body;
     const password = hash;
-    let emailCheck = await knex ('Merchants').where ({email}).first ();
-    // let emailCheck = await knex("").where({email: email})
-    if (fname == '') {
-      res.send ({message: 'Firstname field must not be empty'});
-    } else if (fname.length < 4) {
-      res.send ({message: 'Firname, a minimum of 4 chracters'});
-    } else if (lname == '') {
-      res.send ({message: 'Lastname field must not be empty'});
-    } else if (lname.length <= 4) {
-      res.send ({message: 'Lastname, a minimum of 4 chracters'});
-    } else if (username == '') {
-      res.send ({message: 'Username field must not be empty'});
-    } else if (username.length < 2) {
-      res.send ({
-        message: 'Username field must have a minimum of 2 characters',
-      });
-    } else if (email == '') {
-      res.send ({meesage: 'Email field must not be empty'});
-    } else if (emailCheck == email) {
-      res.send ({message: 'Email already exist, try another one'});
-    } else if (password == '') {
-      res.send ({message: 'Password field must not be empty'});
-    } else if (password.length <= 4) {
-      res.send ({message: 'A mininmum of 8 chracters is required'});
-    } else if (phone == '') {
-      res.send ({message: 'Enter a valid phone number'});
-    } else if (phone.length < 11 || phone.length > 11) {
-      res.send ({message: 'Phone number must be 11 digits'});
-    } else {
       try {
         let user = await knex ('Merchants').insert ({
           email,
@@ -94,14 +54,13 @@ exports.register = async (req, res) => {
         console.log (error);
         res
           .status (500)
-          .json ({status: 'Server Error', message: 'There was a server error', error});
+          .json ({status: 'Error', message: 'Internal server error', error});
       }
-    }
   });
 };
 
 //To Login a Merchant
-exports.login = async (req, res) => {
+const login = async (req, res) => {
   const {email, password} = req.body;
 
   try {
@@ -138,7 +97,7 @@ exports.login = async (req, res) => {
 };
 
 
-exports.update = async (req, res) =>{
+const update = async (req, res) =>{
   const { image, email, username } = req.body
 
   try {
@@ -166,7 +125,7 @@ exports.update = async (req, res) =>{
 }
 
 // Adding Social details to user
-exports.social = async (req, res) => {
+const social = async (req, res) => {
   const {instagram, tiktok, twitter, email} = req.body;
 
   try {
@@ -185,7 +144,7 @@ exports.social = async (req, res) => {
   }
 };
 
-exports.getUser = async (req, res) => {
+const getUser = async (req, res) => {
   const { email } = req.body
 
   try {
@@ -204,7 +163,7 @@ exports.getUser = async (req, res) => {
   }
 }
 // To get all Merchants
-exports.users = async (req, res) => {
+const users = async (req, res) => {
   const id = req.body.id;
 
   try {
@@ -222,7 +181,7 @@ exports.users = async (req, res) => {
 };
 
 // To Update Merchant's Password
-exports.passwordReset = async (req, res) => {
+const passwordReset = async (req, res) => {
   const { email, password } = req.body;
 
   // Check if email and password are provided
@@ -265,3 +224,14 @@ exports.passwordReset = async (req, res) => {
     });
   }
 };
+
+
+module.exports= {
+  register,
+  login,
+  update,
+  social,
+  getUser,
+  users,
+  passwordReset
+}

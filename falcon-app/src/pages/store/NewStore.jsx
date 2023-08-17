@@ -131,7 +131,7 @@ const NewStore = () => {
           showConfirmButton: false,
           timer: 2500,
         })
-        // .then(window.location.href = "/store/products/new")
+        .then(window.location.href = "/store/products/new")
       })
       .catch(error => {
         console.log("Log error for the post to the backend on the else statement")

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { GiClothes, GiArtificialIntelligence } from 'react-icons/gi';
+import { GiClothes, GiArtificialIntelligence, GiTakeMyMoney } from 'react-icons/gi';
 import { AiOutlineDown, AiOutlineUp } from 'react-icons/ai';
 import { MdLocalShipping, MdManageAccounts } from 'react-icons/md';
+import { TiShoppingCart } from "react-icons/ti"
+import { ImScissors } from "react-icons/im"
+import { FaStoreAlt } from "react-icons/fa"
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Logout from './LogOut';
@@ -47,11 +50,6 @@ const AsideBar = () => {
           className="block px-8 py-6 m-0 text-sm whitespace-nowrap text-slate-700"
           href
         >
-          <img
-            src="../assets/img/logo-ct.png"
-            className="inline h-full max-w-full transition-all duration-200 ease-nav-brand max-h-8"
-            alt="main_logo"
-          />
           <span className="ml-1 font-semibold transition-all duration-200 ease-nav-brand">
            {username}'s Dashboard
           </span>
@@ -67,8 +65,8 @@ const AsideBar = () => {
               className="py-2.7  text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap rounded-lg bg-white px-4 font-semibold text-slate-700 transition-colors"
               to="/Home"
             >
-              <div className="bg-gradient-to-tl from-purple-700 to-pink-500 shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                <GiClothes size="500%" style={{height: '100%'}} />
+              <div className="bg-black shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg  bg-center stroke-0 text-center xl:p-2.5">
+                <GiClothes size="500%" style={{height: '100%', color: "white"}} />
 
               </div>
               <span className="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
@@ -95,7 +93,7 @@ const AsideBar = () => {
           <li onClick={handleClick} className="mt-0.5 w-full">
             <Link className="py-2.7 shadow-soft-2xl text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors cursor-pointer">
               <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                <GiClothes size="500%" style={{height: '100%'}} />
+                <FaStoreAlt size="500%" style={{height: '100%'}} />
               </div>
               <span className="flex-grow ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
                 Store
@@ -138,10 +136,29 @@ const AsideBar = () => {
                 to="/store/products/new"
               >
                 <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                  <GiClothes size="500%" style={{height: '100%'}} />
+                  <ImScissors size="500%" style={{height: '100%'}} />
                 </div>
                 <span className="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
                   Create product
+                </span>
+              </Link>
+            </li>}
+
+            {show &&
+            <li
+              id="myDiv"
+              className="mt-0.5 w-full transition-all ease-soft-in-out duration-500"
+              section-content
+            >
+              <Link
+                className="py-2.7 shadow-soft-xl text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors"
+                to="/Payments"
+              >
+                <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+                  <GiTakeMyMoney size="500%" style={{height: '100%'}} />
+                </div>
+                <span className="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
+                  payments
                 </span>
               </Link>
             </li>}
@@ -157,7 +174,7 @@ const AsideBar = () => {
                 to="/Orders"
               >
                 <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
-                  <GiClothes size="500%" style={{height: '100%'}} />
+                  <TiShoppingCart size="500%" style={{height: '100%'}} />
                 </div>
                 <span className="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
                   Orders
@@ -300,7 +317,7 @@ const AsideBar = () => {
       </div>
 
       <div className="mx-4">
-        <button className="inline-block w-full px-6 py-3 my-4 font-bold text-center text-white uppercase align-middle transition-all ease-in border-0 rounded-lg select-none shadow-soft-md bg-150 bg-x-25 leading-pro text-xs bg-gradient-to-tl from-purple-700 to-pink-500 hover:shadow-soft-2xl hover:scale-102"
+        <button className="inline-block w-full px-6 py-3 my-4 font-bold text-center text-white uppercase align-middle transition-all ease-in border-0 rounded-lg select-none shadow-soft-md bg-150 bg-x-25 leading-pro text-xs bg-black  hover:shadow-soft-2xl hover:scale-102"
           onClick={Logout}>
           Logout{' '}
         </button>

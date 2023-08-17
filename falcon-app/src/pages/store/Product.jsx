@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AsideBar from '../../components/AsideBar';
 import useFetch from '../../hooks/useFetch';
-import useFetchStore from '../../hooks/useFetchStore';
 import CopyToClipboardLink from '../../components/ClipBoard';
 
 const Products = () => {
   const [searchItem, setSearchItem] = useState("")
-  const { store } = useFetchStore("http://localhost:9000/store/get-store")
-  const { data: products, count } = useFetch("http://localhost:9000/store/get-products")
-  const { data } = useFetchStore("http://localhost:9000/store/get-store")
+  const { data: products, count, store } = useFetch("http://localhost:9000/store/get-products")
   const filteredProducts = products?.filter((data) =>
     data.name.toLowerCase().includes(searchItem.toLowerCase())
   );
@@ -24,7 +21,7 @@ const Products = () => {
 
   const textToCopy = link
 
-  if (data) {
+  if (store) {
     return (
       <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
         <AsideBar />
@@ -208,7 +205,7 @@ const Products = () => {
           <section className='min-h-screen mb-32' style={{ marginLeft: '21%', marginTop: '10%' }}>
             {/* {handleShipping && ( */}
             <div style={{ marginTop: '3%' }}>
-              <h1 className='text-lg md:text-sm'>You have not created a store yet</h1>
+              <h1 className='text-lg md:text-sm'>You have not created a product yet</h1>
               <h5 className='leading-tight text-xs text-slate-400'>
                 Begin right away!!
               </h5>
@@ -217,7 +214,7 @@ const Products = () => {
                 type=''
                 style={{ background: '#FF9B00' }}
               >
-                <Link to="/Store/new">Create Store</Link>
+                <Link to="/store/products/new">Create Product</Link>
               </button>
             </div>
           </section>
