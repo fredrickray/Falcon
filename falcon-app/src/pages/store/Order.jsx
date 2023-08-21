@@ -1,80 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import AsideBar from '../../components/AsideBar';
 import axios from "axios";
-import Swal from 'sweetalert2';
-// import { useNavigate } from 'react-router-dom';
+// import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 const Orders = () => {
 
-  const [data, setData] = useState("")
+  const [data, setData] = useState(null)
   const { email } = localStorage
   const [searchItem, setSearchItem] = useState("")
   const [filteredProducts, setFilteredProducts] = useState([]);
-  // const navigate = useNavigate()
 
+  const navigate = useNavigate()
   useEffect(() => {
-    handleGetPayments()
-  }, [email])
+    result()
+  })
 
-  const handleGetPayments = async () => {
-    try {
-      const response = await axios.get('http://localhost:9000/payment/get_payment', {
-        params: {
-          email,
-        },
-      });
-
-      console.log(response.data)
-
-      if (response.data.message === 'No transactions found for this email') {
-        Swal.fire({
-          position: 'center',
-          toast: true,
-          title: response.data.message,
-          color: 'red',
-          showConfirmButton: false,
-          timer: 2500,
-        });
-      }
-      else {
-        Swal.fire({
-          position: 'top-end',
-          toast: true,
-          title: response.data.message,
-          showConfirmButton: false,
-          timer: 2500,
-        });
-        setData(response.data.response)
-      }
-    }
-    catch (error) {
-      Swal.fire({
-        position: 'top-end',
-        toast: true,
-        title: error.response.data.message,
-        color: 'red',
-        showConfirmButton: false,
-        timer: 2500,
-      });
-      console.error(error.response.data.message);
-    }
-  };
+  const result = () => {
+    axios.post("http://localhost:9000/payment/orders", { my_email: email })
+      .then(response => {
+        // console.log(response.data.orderItems)
+        setData(response.data.orderItems)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
 
   useEffect(() => {
     if (data) {
       // Filter the data and update filteredProducts
       const filtered = data.filter(item =>
         item.firstname.toLowerCase().includes(searchItem.toLowerCase()) ||
-        item.lastname.toLowerCase().includes(searchItem.toLowerCase())  
+        item.lastname.toLowerCase().includes(searchItem.toLowerCase())
         // item.customer_emai.toLowerCase().includes(searchItem.toLowerCase())
       );
       setFilteredProducts(filtered);
     }
   }, [data, searchItem]);
 
-  
+
 
   return (
-    <div className="sm-0 font-sans antialiased font-normal text-base leading-default bg-gray-50 text-slate-500">
+    <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
       {/* <!-- sidenav  --> */}
       <AsideBar />
       {/* <!-- end sidenav --> */}
@@ -292,8 +259,8 @@ const Orders = () => {
           <div className="flex flex-wrap -mx-3 mt-5%" style={{ marginTop: '5%' }}>
             <div className="flex-none w-full max-w-full px-3">
               <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
-              <div className="p-6 pb-0 mb-0 bg-white border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
-                  <h6>{data.length} Transactions</h6>
+                <div className="p-6 pb-0 mb-0 bg-white border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
+                  <h6>{data.length} Orders</h6>
                 </div>
                 <div className="flex-auto px-0 pt-0 pb-2">
                   <div className="p-0 overflow-x-auto">
@@ -307,7 +274,7 @@ const Orders = () => {
                             Amount
                           </th>
                           <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900">
-                            Trasaction_id
+                            Status
                           </th>
                           <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900">
                             Tx_Ref
@@ -317,14 +284,16 @@ const Orders = () => {
                           </th>
                         </tr>
                       </thead>
-
+                      {filteredProducts?.length === 0 ? (
+                        <p style={{ marginLeft: "140%", fontSize: "20px" }} className='p-2 align-middle bg-transparent whitespace-nowrap shadow-transparent'>No item found</p>
+                      ) : (
                       <tbody>
                         {filteredProducts?.map((result) => (
                           <tr
                             key={result.id}
-                            // onClick={() => navigate(`/Store/Product/${result.id}`)}
+                            onClick={() => navigate(`/Orders/detail/${result.tx_ref}`)}
                             className='cursor-pointer'>
-                              
+
                             <td className="p-2 px-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                               <p className=" px-4 mb-0 font-semibold leading-tight text-xs">
                                 {result.firstname} {result.lastname}
@@ -333,13 +302,13 @@ const Orders = () => {
 
                             <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                               <p className="mb-0 font-semibold leading-tight text-xs">
-                                ₦{result.amount.toLocaleString()}
+                                ₦{result.total_amount.toLocaleString()}
                               </p>
                             </td>
 
                             <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                               <span className="font-semibold leading-tight text-xs text-black-400">
-                                {result.transaction_id}
+                                {result.status}
                               </span>
                             </td>
 
@@ -357,7 +326,7 @@ const Orders = () => {
                           </tr>
                         ))}
                       </tbody>
-                      {/* // )} */}
+                      )}
                     </table>
                   </div>
                 </div>
@@ -365,6 +334,7 @@ const Orders = () => {
             </div>
           </div>
         )}
+
       </main>
 
     </div>

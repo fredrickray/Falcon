@@ -30,22 +30,44 @@ exports.createStore = async (req, res) => {
   }
 };
 
+exports.updateStore = async (req, res) => {
+  const { id } = req.params; 
+  const { name, link, logo, email } = req.body;
+  
+  try {
+    const existingProduct = await knex('Products')
+      .where({ email })
+      .first();
+
+    if (!existingProduct) {
+      return res.status(404).json({ message: 'No product found with the specified email' });
+    }
+
+    const updatedRows = await knex('Store')
+      .where({ id })
+      .update({ name, link, logo });
+
+    await knex("Products")
+      .where({ email })
+      .update({ store: name });
+
+    if (updatedRows === 1) {
+      res.status(200).json({ message: 'Store updated successfully', updatedRows });
+    } else {
+      res.status(404).json({ message: 'The store with this id was not found' });
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send({ message: 'Internal server error', err: error.message });
+  }
+};
+
+
+
 //creating products
 exports.createProduct = async (req, res) => {
   const { name, description, price, compare_price, email, weight, quantity, image, category, style, size, colour, store } = req.body;
-  if (name == '') {
-    res.send({ message: 'Name field must not be empty' });
-  } else if (description == '') {
-    res.send({ message: 'Description field must not be empty' });
-  } else if (price == '') {
-    res.send({ message: 'Price field must not be empty' });
-  }
-  else if (quantity == '') {
-    res.send({ message: 'Quantity field must not be empty' });
-  } else if (!image || image == "") {
-    res.send({ message: "Please select an image" })
-  }
-  else {
+
     knex('Products')
       .insert({
         name,
@@ -68,12 +90,13 @@ exports.createProduct = async (req, res) => {
           .json({ message: 'Product created succesfully', status: 'Success', response });
       })
       .catch(err => {
+        console.log(err.message)
         res
           .status(500)
-          .json({ message: 'There was a server error', status: 'Server error', err });
+          .json({ message: 'Internal server error', status: 'error', err: err.message });
       });
-  }
 };
+
 
 exports.updateProduct = async (req, res) => {
   const { id } = req.params;
@@ -84,7 +107,7 @@ exports.updateProduct = async (req, res) => {
     const updatedRows = await knex('Products')
       .where({ id }) // Assuming your product table has an 'id' column
       .update({ name, price, compare_price, quantity, description, weight, image, category, style, colour, size });
-
+      
     if (updatedRows === 1) {
       // Product updated successfully
       res.status(200).json({ message: 'Product updated successfully', updatedRows });
@@ -143,7 +166,26 @@ exports.getProducts = async (req, res) => {
   }
 }
 
-// getting the store of a merchant
+// getting store for the merchant
+exports.store = async (req, res) => {
+  const { email } = req.body
+
+  try {
+    const response = await knex("Store").where({ email })
+    if(response.length === 0) {
+      return res.status(404).json({ message: 'Store not found for this email' });
+    }
+    return res.status(200).json({
+      message: 'Store retrieved successfully',
+      response
+    });
+  } 
+  catch (error) {
+    res.send({message: "Internal server error", err: error,message})
+  }
+}
+
+// getting the store of a merchant for the customer
 exports.getStore = async (req, res) => {
   const name = req.params.store;
 
@@ -301,6 +343,11 @@ exports.itemPurchased = async (req, res) => {
   }
 }
 
+
+exports.createOrders = async (req, res) => {
+  const { orderID, totalAmount, status, deliveryFee, paymentMethod, paidBy, date } = req.body
+}
+
 //delivery information
 exports.createDelivery = async (req, res) => {
   const { location, fee, email } = req.body;
@@ -354,24 +401,6 @@ exports.deleteDelivery = async (req, res) => {
   catch (error) {
     console.error('Error deleting item:', error.message);
     return res.status(500).json({ message: 'Internal server error', err: error.message });
-  }
-}
-
-
-
-
-
-exports.getPayments = async (req, res) => {
-  const { email } = req.body
-
-  try {
-    const response = await knex("Transactions").where({ email })
-    // console.log(response)
-    res.send(response)
-  }
-  catch (error) {
-    console.log(error)
-    res.status(500).send({ message: "Internal server error", error })
   }
 }
 

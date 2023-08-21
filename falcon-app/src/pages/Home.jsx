@@ -96,7 +96,7 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="px-3 text-right basis-1/3">
-                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
                         <i className="ni leading-none ni-money-coins text-lg relative top-3.5 text-white" />
                       </div>
                     </div>
@@ -124,7 +124,7 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="px-3 text-right basis-1/3">
-                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
                         <i className="ni leading-none ni-world text-lg relative top-3.5 text-white" />
                       </div>
                     </div>
@@ -152,7 +152,7 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="px-3 text-right basis-1/3">
-                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
                         <i className="ni leading-none ni-paper-diploma text-lg relative top-3.5 text-white" />
                       </div>
                     </div>
@@ -180,7 +180,7 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="px-3 text-right basis-1/3">
-                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
                         <i className="ni leading-none ni-cart text-lg relative top-3.5 text-white" />
                       </div>
                     </div>
@@ -215,7 +215,7 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="max-w-full px-3 mt-12 ml-auto text-center lg:mt-0 lg:w-5/12 lg:flex-none">
-                      <div className="h-full bg-gradient-to-tl from-purple-700 to-pink-500 rounded-xl">
+                      <div className="h-full bg-black rounded-xl">
                         <img
                           src="../assets/img/shapes/waves-white.svg"
                           className="absolute top-0 hidden w-1/2 h-full lg:block"
@@ -510,7 +510,7 @@ const Home = () => {
                     </div>
                     <div className="relative mb-4 after:clear-both after:table after:content-['']">
                       <span className="w-6.5 h-6.5 text-base absolute left-4 z-10 inline-flex -translate-x-1/2 items-center justify-center rounded-full bg-white text-center font-semibold">
-                        <i className="relative z-10 text-transparent ni ni-key-25 leading-pro bg-gradient-to-tl from-purple-700 to-pink-500 bg-clip-text fill-transparent" />
+                        <i className="relative z-10 text-transparent ni ni-key-25 leading-pro bg-black bg-clip-text fill-transparent" />
                       </span>
                       <div className="ml-11.252 pt-1.4 lg:max-w-120 relative -top-1.5 w-auto">
                         <h6 className="mb-0 font-semibold leading-normal text-sm text-slate-700">

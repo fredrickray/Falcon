@@ -359,8 +359,9 @@ svg:not(:root) {
   color: #fff;
   flex: 0 0 auto;
   margin-left: 10px;
+  margin-right: 32px;
   text-transform: capitalize;
-  padding: 10px 20px 5px 20px;
+  padding: 7px 20px 5px 20px;
   font-size: 20px;
   border: #050402;
   border-radius: 5px;
@@ -637,6 +638,44 @@ svg:not(:root) {
 
 
   /* shop page Beginning*/
+  .soldout-container {
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    width:320px;
+    border:3px solid #f15c60;
+    border-radius:10px;
+    color:#f15c60;
+    font-size:20px;
+    transform:rotate(15deg) translateY(15px);
+  }
+  .soldout-container > * {
+    opacity:0.8;
+  }
+  .soldout-container > div:nth-child(2) {
+    background-color:#f15c60;  
+  }
+  .soldout-container .sold-out {
+    font-size:1.5em;
+    font-weight:700;
+  }
+  .soldout-container .divider {
+    height:2px;
+    width:98%;
+  }
+  .deets {
+    opacity:1;
+    background-color:rgba(255,255,255,0.5);
+  }
+  .almost {
+    font-size:13px;
+    border:3px solid #337ab7;  
+    color:#337ab7;
+  }
+  .almost > div:nth-child(2) {
+    background-color:#337ab7;    
+  }
 
   .section-p1 {
       padding: 40px 80px;
@@ -686,7 +725,7 @@ svg:not(:root) {
   
   #Product1 .pro .des span {
       color: blue;
-      font-size: 12px;
+      font-size: 20px;
   }
   
   #Product1 .pro .des h5 {

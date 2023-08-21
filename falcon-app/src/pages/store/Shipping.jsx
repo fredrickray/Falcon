@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import AsideBar from '../../components/AsideBar'
-import { useParams } from 'react-router-dom'
 import axios from "axios"
-
+import useFetch from '../../hooks/useFetch'
 
 const Shipping = () => {
-    const { store } = useParams()
     const [handleShipping, setHandleShipping] = useState(false)
     const [showInputField, setShowInputField] = useState(false)
     const [regionsValue, setRegionsValue] = useState('');
     const [priceValue, setPriceValue] = useState('');
     const [savedValues, setSavedValues] = useState([]);
+    const { store } = useFetch("http://localhost:9000/store/get-products")
     const { email, token } = localStorage
     const CREATE_DELIVERY_URL = "http://localhost:9000/store/create-delivery"
     const GET_DELIVERY_URL = "http://localhost:9000/store/get-delivery"
@@ -73,29 +72,26 @@ const Shipping = () => {
                 email: email
             };
             try {
-                const response = await axios.post(CREATE_DELIVERY_URL, newItem,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json"
-                        },
-                    }); // Replace with your server endpoint
-                const data =  response
-                console.log(data)
-                console.log(response)
-                setSavedValues([...savedValues, response.data]);
+                const response = await axios.post(CREATE_DELIVERY_URL, newItem, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                });
+                const createdItem = response.data; // Assuming the server responds with the created item data
+                setSavedValues([...savedValues, createdItem]);
                 setRegionsValue('');
                 setPriceValue('');
-            }
-            catch (error) {
+            } catch (error) {
                 console.error('Error saving the item:', error);
             }
         }
     };
+    
 
-    useEffect(() => {
-        console.log(savedValues)
-    }, [savedValues])
+    // useEffect(() => {
+    //     console.log(savedValues)
+    // }, [savedValues])
     const handleRemove = async (id) => {
         try {
             await axios.delete(`http://localhost:9000/store/delete-delivery/${id}`,
@@ -199,7 +195,7 @@ const Shipping = () => {
                     )}
 
                     {handleShipping && (
-                        <div className='flex flex-wrap mt-4'>
+                        <div className='flex mt-4'>
                             {showInputField &&
                                 <div
                                     className="w-full md:w-4/12 px-3 pb"

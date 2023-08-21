@@ -3,10 +3,13 @@ import AsideBar from '../../components/AsideBar';
 import CopyToClipboardLink from '../../components/ClipBoard';
 import useFetchStore from '../../hooks/useFetchStore';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 const ManageStore = () => {
-    const { store, data } = useFetchStore("http://localhost:9000/store/get-store")
+    const { store, data } = useFetchStore(`http://localhost:9000/store/get-store/`)
     const link = `http://localhost:3000/Store/${store}`
     const textToCopy = link
+    const navigate = useNavigate()
 
     if (data) {
         return (
@@ -49,6 +52,7 @@ const ManageStore = () => {
                             type="button"
                             className="inline-block ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
                             style={{ background: '#FF9B00', marginRight: "4%" }}
+                            onClick={() => navigate('/Store/setup/edit')}
                         >
                             Edit store
                         </button>

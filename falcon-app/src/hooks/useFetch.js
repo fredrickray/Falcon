@@ -6,6 +6,7 @@ const useFetch = url => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [count, setCount] = useState(0)
+  const [store, setStore] = useState("")
   // const [location, setLocation] = useState("")
   // const [fee, setFee] = useState("")
   const { email } = localStorage;
@@ -25,9 +26,10 @@ const useFetch = url => {
           // console.log (response.data.data2.fee);
           // console.log(token)
           let data = response.data.data2;
-          // console.log(data)
+          // console.log(data[0].store)
           setData(data);
           setCount(data.length)
+          setStore(data[0].store)
           // setFee(data.data2.slice(0,3).fee)
           // setLocation(data.data2.location)
         })
@@ -58,7 +60,7 @@ const useFetch = url => {
     },
     [url, error, email]
   );
-  return { data, count };
+  return { data, count, store };
 };
 
 export default useFetch;
