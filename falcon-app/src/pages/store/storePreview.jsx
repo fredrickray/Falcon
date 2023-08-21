@@ -3,8 +3,6 @@ import { Link, useParams } from "react-router-dom"
 import "../../App.css";
 import useProductId from '../../hooks/useProductID';
 import { AiOutlineShoppingCart } from "react-icons/ai"
-import { GrAdd } from "react-icons/gr"
-import { BiMinus } from "react-icons/bi"
 import { GrClose } from 'react-icons/gr';
 import Swal from 'sweetalert2';
 import { FlutterWaveButton, closePaymentModal } from 'flutterwave-react-v3';
@@ -279,10 +277,42 @@ function StorePreview() {
   storeData?.forEach((result) => {
     if (result.quantity === 0) {
       itemsToDisplay.push(
-        <div key={result.id} class="soldout-container">
-          <div class="sold-out">SOLD OUT!</div>
-          <div class="divider"></div>
-          <div class="deets">Next session date: 2 February</div>
+        <div className="pro"
+          key=
+          {result.id}
+        >
+          <Link to={`/Store/Product/Details/${result.id}`}>
+            <img src=
+              {result.image.split('\r\n')[0]}
+              alt="" />
+            <div className="des">
+              <span><b>
+                {result.name}
+              </b></span>
+              <h5>
+                {result.description}
+              </h5>
+              <div className="star">
+                <i className="mdi mdi-star" />
+                <i className="mdi mdi-star" />
+                <i className="mdi mdi-star" />
+                <i className="mdi mdi-star" />
+                <i className="mdi mdi-star" />
+              </div>
+              <h4>₦
+                {result.price.toLocaleString()}
+              </h4>
+            </div>
+          </Link>
+          <div className='proItems'>
+
+            <div>
+              <button
+                style={{ cursor: "not-allowed", backgroundColor: 'rgb(130, 130, 130', color: "white", padding: "15px", paddingRight: "35px", paddingLeft: "35px", paddingTop: "10px", paddingBottom: "10px", borderRadius: "8px", marginLeft: "5px" }}>
+                Out of Stock
+              </button>
+            </div>
+          </div>
         </div>
       );
     } else {
@@ -693,3 +723,70 @@ export default StorePreview;
 //     </div>
 //   ))
 // }
+
+
+// const itemsToDisplay = [];
+
+//   storeData?.forEach((result) => {
+//     if (result.status == "active") {
+//       itemsToDisplay.push(
+//         <div key={result.id} class="soldout-container">
+//           <img src="" alt="" />
+//           <div class="sold-out">Active div</div>
+//           <div class="divider"></div>
+//           <div class="deets">Active info</div>
+//         </div>
+//       );
+//     } else if(result.status == "unknown") {
+//       itemsToDisplay.push(
+//         <div key={result.id} class="soldout-container">
+//           <img src="" alt="" />
+//           <div class="sold-out">Active div</div>
+//           <div class="divider"></div>
+//           <div class="deets">Active info</div>
+//         </div>
+//       )
+//     }
+//     else {
+//       itemsToDisplay.push(
+//         <div className="pro"
+//           key=
+//           {result.id}
+//         >
+//           <Link to={`/Store/Product/Details/${result.id}`}>
+//             <img src=
+//               {result.image.split('\r\n')[0]}
+//               alt="" />
+//             <div className="des">
+//               <span><b>
+//                 {result.name}
+//               </b></span>
+//               <h5>
+//                 {result.description}
+//               </h5>
+//               <div className="star">
+//                 <i className="mdi mdi-star" />
+//                 <i className="mdi mdi-star" />
+//                 <i className="mdi mdi-star" />
+//                 <i className="mdi mdi-star" />
+//                 <i className="mdi mdi-star" />
+//               </div>
+//               <h4>₦
+//                 {result.price.toLocaleString()}
+//               </h4>
+//             </div>
+//           </Link>
+//           <div className='proItems'>
+
+//             <div>
+//               <button
+//                 onClick={() => added(storeData.id)}
+//                 style={{ backgroundColor: '#0a0e27', color: "white", padding: "15px", paddingRight: "35px", paddingLeft: "35px", paddingTop: "10px", paddingBottom: "10px", borderRadius: "8px", marginLeft: "5px" }}>
+//                 Quick Add
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       );
+//     }
+//   });

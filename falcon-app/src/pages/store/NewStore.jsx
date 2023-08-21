@@ -12,6 +12,7 @@ const NewStore = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false)
   const [showFormField, setShowFormField] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isNavOpen, setIsNavOpen] = useState(false)
   const CLOUDINARY_API = process.env.REACT_APP_CLOUDINARY_API;
   const { data } = useFetchStore("http://localhost:9000/store/get-store")
 
@@ -149,6 +150,8 @@ const NewStore = () => {
     }
   };
 
+  const handleNavOpen = () =>  setIsNavOpen(prev => !prev)
+
   
 
 
@@ -156,7 +159,7 @@ const NewStore = () => {
 
   return (
     <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
-      <AsideBar />
+      <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen}/>
       <main className="ease-soft-in-out xl:ml-68.5 relative h-screen max-h-screen rounded-xl transition-all duration-200">
 
         <nav
@@ -182,7 +185,7 @@ const NewStore = () => {
             </nav>
 
             <div className="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
-              <ul className="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
+              <ul style={{marginLeft: "70%"}} className="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
                 {/* <!-- online builder btn  --> */}
                 <li className="flex items-center pl-4 xl:hidden">
                   <a
@@ -190,7 +193,7 @@ const NewStore = () => {
                     className="block p-0 transition-all ease-nav-brand text-sm text-slate-500"
                     sidenav-trigger
                   >
-                    <div className="w-4.5 overflow-hidden">
+                    <div className="w-4.5 overflow-hidden" onClick={handleNavOpen}>
                       <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
                       <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
                       <i className="ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all" />

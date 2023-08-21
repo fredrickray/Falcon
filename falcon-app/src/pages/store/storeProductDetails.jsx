@@ -26,7 +26,7 @@ function StoreProductDetailed() {
   const [cartItemCount, setCartItemCount] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isQuantityZero, setIsQuantityZero] = useState(false)
-  const { error, data: productDetail, store } = useProductId(`http://localhost:9000/store/get-product/${id}`)
+  const { error, data: productDetail, store } = useProductId(`http://localhost:9000/stores/get-product/${id}`)
   const GET_DELIVERY_URL = "http://localhost:9000/store/get-delivery"
   const [size, setSize] = useState(() => {
     const storedSize = localStorage.getItem("size")
@@ -211,27 +211,41 @@ function StoreProductDetailed() {
     // const itemQuantity = localStorage.getItem("quantity")
     const parsedArray = cartItem ? JSON.parse(cartItem) : [];
     console.log(parsedArray)
+    // console.log(productDetail)
     if (parsedArray) {
       const itemCount = parsedArray.length;
-      if (productDetail && parsedArray.length > 0 && productDetail.length > 0 ) {
+      // if (productDetail && parsedArray) {
+      // console.log("asasas")
 
-        const updatedItems = parsedArray?.filter(item => {
-          if (item.id === productDetail[0].id) {
-            // If the IDs match, update the quantity
-            setIsQuantityZero(true)
-            // return false;
-            return { ...item, quantity: productDetail[0].quantity };
-          }
-          setIsQuantityZero(false);
-          return item;
-        });
+      const updatedArray = parsedArray.filter(result => result.quantity !== 0);
 
-        // Update the localStorage with the updated array
-        localStorage.setItem('cartItem', JSON.stringify(updatedItems));
-        setAddedItem(updatedItems)
-        setCartItemCount(itemCount);
-        console.log(updatedItems)
+      // Check if productDetail quantity is 0 and remove the item from updatedArray if it matches
+      if (productDetail && productDetail[0].quantity === 0) {
+        const productIdToRemove = productDetail[0].id;
+        const filteredArray = updatedArray.filter(result => result.id !== productIdToRemove);
+        console.log(filteredArray)
+        localStorage.setItem("cartItem", JSON.stringify(filteredArray));
       }
+
+      // const updatedItem = parsedArray?.filter(result =>  result.quantity !== 0) // return result.quantity !== 0;
+      //   if(updatedItem.id === productDetail[0].id) {
+      //     if(productDetail && productDetail[0].quantity === 0) {
+      //       console.log(updatedItem)
+      //       setIsQuantityZero(true)
+      //     }
+      //     console.log("Quantity is not equal to zero")
+      //   }
+      //   else{
+      //     console.log("results where id does not match")
+      //   }
+
+      // Update the localStorage with the updated array
+      // localStorage.setItem('cartItem', JSON.stringify(parsedArray));
+      setIsQuantityZero(false)
+      setAddedItem(parsedArray)
+      setCartItemCount(itemCount);
+      // console.log(updatedItems)
+      // }
       // console.log(itemCount);
       // console.log(updatedItems);
       // setData(parsedArray);
@@ -241,6 +255,10 @@ function StoreProductDetailed() {
     }
 
   }, []);
+
+  useEffect(() => {
+    localStorage.removeItem("")
+  })
 
   // useEffect(() => {
   //   if (!error && productDetail) {
@@ -877,7 +895,7 @@ function StoreProductDetailed() {
               </div> */}
 
               {/* // onChange={e => setInput(e.target.value)}/ */}
-              <button disabled={isQuantityZero} style={{backgroundColor: isQuantityZero ? "rgb(130, 130, 130)" : "", cursor: isQuantityZero ? "not-allowed" : ""}} className={`btn ${isQuantityZero ? "rgb(130, 130, 130)" : "btn--primary"}  btn--block`} onClick={added} type='button'>{isQuantityZero ? "Out of Stock" : "Add To Cart"}</button>
+              <button disabled={isQuantityZero} style={{ backgroundColor: isQuantityZero ? "rgb(130, 130, 130)" : "", cursor: isQuantityZero ? "not-allowed" : "" }} className={`btn ${isQuantityZero ? "rgb(130, 130, 130)" : "btn--primary"}  btn--block`} onClick={added} type='button'>{isQuantityZero ? "Out of Stock" : "Add To Cart"}</button>
               <h4>Product Details</h4>
               <span>
                 {result.description}

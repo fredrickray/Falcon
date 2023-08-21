@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AsideBar from '../../components/AsideBar';
 import CopyToClipboardLink from '../../components/ClipBoard';
 import useFetchStore from '../../hooks/useFetchStore';
@@ -8,13 +8,17 @@ import { useNavigate } from 'react-router-dom';
 const ManageStore = () => {
     const { store, data } = useFetchStore(`http://localhost:9000/store/get-store/`)
     const link = `http://localhost:3000/Store/${store}`
+    const [isNavOpen, setIsNavOpen] = useState(false)
     const textToCopy = link
     const navigate = useNavigate()
+
+    const handleNavOpen = () => setIsNavOpen(prev => !prev)
+      
 
     if (data) {
         return (
             <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
-                <AsideBar />
+                <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen}/>
                 <main className="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen rounded-xl transition-all duration-200">
                     <nav className="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start" navbar-main navbar-scroll="true">
                         <div className="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
@@ -34,7 +38,7 @@ const ManageStore = () => {
                                 <ul className="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
                                     <li className="flex items-center pl-4 xl:hidden">
                                         <a href className="block p-0 transition-all ease-nav-brand text-sm text-slate-500" sidenav-trigger>
-                                            <div className="w-4.5 overflow-hidden">
+                                            <div className="w-4.5 overflow-hidden" onClick={handleNavOpen}>
                                                 <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all"></i>
                                                 <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all"></i>
                                                 <i className="ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all"></i>

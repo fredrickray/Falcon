@@ -181,7 +181,7 @@ exports.store = async (req, res) => {
     });
   } 
   catch (error) {
-    res.send({message: "Internal server error", err: error,message})
+    res.send({message: "Internal server error", err: error})
   }
 }
 

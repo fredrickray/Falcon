@@ -10,6 +10,7 @@ const OrderDetail = () => {
     const [orderDetail, setOrderDetail] = useState(null)
     const [filteredProducts, setFilteredProducts] = useState([]);
     // console.log(orderDetail)
+    const [isNavOpen, setIsNavOpen] = useState(false)
     const [searchItem, setSearchItem] = useState("")
     useEffect(() => {
         fetchData()
@@ -31,7 +32,7 @@ const OrderDetail = () => {
         }
     }
    
-    const check = () => console.log("Clicking")
+    // const check = () => console.log("Clicking")
 
     useEffect(() => {
         if (orderDetail) {
@@ -45,10 +46,12 @@ const OrderDetail = () => {
         }
     }, [orderDetail, searchItem]);
 
+    const handleNavOpen = () =>  setIsNavOpen(prev => !prev)
+
     if (store) {
         return (
             <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
-                <AsideBar />
+                <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen}/>
 
                 <main className="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen rounded-xl transition-all duration-200">
                     <nav
@@ -105,7 +108,7 @@ const OrderDetail = () => {
                                             className="block p-0 transition-all ease-nav-brand text-sm text-slate-500"
                                             sidenav-trigger
                                         >
-                                            <div onClick={check} className="w-4.5 overflow-hidden">
+                                            <div onClick={handleNavOpen} className="w-4.5 overflow-hidden">
                                                 <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
                                                 <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
                                                 <i className="ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
