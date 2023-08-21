@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 import Logout from './LogOut';
 
 
-const AsideBar = () => {
+const AsideBar = ({isNavOpen, handleNavOpen}) => {
   const [show, setShow] = useState (false);
   const handleClick = () => {
     setShow (!show);
@@ -40,7 +40,7 @@ const AsideBar = () => {
   const { username } = localStorage
 
   return (
-    <aside className="max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 my-4 ml-4 block w-full -translate-x-full flex-wrap items-center justify-between overflow-y-auto rounded-2xl border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-transparent">
+    <aside className={`max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 my-4 ml-4 block w-full ${isNavOpen ? "translate-x-0" : "-translate-x-full"} flex-wrap items-center justify-between overflow-y-auto rounded-2xl border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-transparent`}>
       <div className="h-19.5">
         <i
           className="absolute top-0 right-0 hidden p-4 opacity-50 cursor-pointer fas fa-times text-slate-400 xl:hidden"
@@ -65,7 +65,7 @@ const AsideBar = () => {
               className="py-2.7  text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap rounded-lg bg-white px-4 font-semibold text-slate-700 transition-colors"
               to="/Home"
             >
-              <div className="bg-black shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg  bg-center stroke-0 text-center xl:p-2.5">
+              <div className="bg-black shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg  bg-center stroke-0 text-center xl:p-2.5 p-2">
                 <GiClothes size="500%" style={{height: '100%', color: "white"}} />
 
               </div>
@@ -80,7 +80,7 @@ const AsideBar = () => {
               className="py-2.7  text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap rounded-lg bg-white px-4 font-semibold text-slate-700 transition-colors"
               // to="/MyAi"
             >
-              <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+              <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5 p-2">
                 <GiArtificialIntelligence size="500%" style={{height: '100%'}} />
 
               </div>
@@ -92,7 +92,7 @@ const AsideBar = () => {
 
           <li onClick={handleClick} className="mt-0.5 w-full">
             <Link className="py-2.7 shadow-soft-2xl text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors cursor-pointer">
-              <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+              <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5 p-2">
                 <FaStoreAlt size="500%" style={{height: '100%'}} />
               </div>
               <span className="flex-grow ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
@@ -116,7 +116,7 @@ const AsideBar = () => {
                 className="py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors"
                 to="/Store/new"
               >
-                <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+                <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5 p-2">
                   <GiClothes size="500%" style={{height: '100%'}} />
                 </div>
                 <span className="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
@@ -135,7 +135,7 @@ const AsideBar = () => {
                 className="py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors"
                 to="/store/products/new"
               >
-                <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+                <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5 p-2">
                   <ImScissors size="500%" style={{height: '100%'}} />
                 </div>
                 <span className="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
@@ -154,7 +154,7 @@ const AsideBar = () => {
                 className="py-2.7 shadow-soft-xl text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors"
                 to="/Payments"
               >
-                <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+                <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5 p-2">
                   <GiTakeMyMoney size="500%" style={{height: '100%'}} />
                 </div>
                 <span className="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
@@ -173,7 +173,7 @@ const AsideBar = () => {
                 className="py-2.7 shadow-soft-xl text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors"
                 to="/Orders"
               >
-                <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+                <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5 p-2">
                   <TiShoppingCart size="500%" style={{height: '100%'}} />
                 </div>
                 <span className="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
@@ -188,7 +188,7 @@ const AsideBar = () => {
                 className="py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors"
                 to="/products"
               >
-                <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+                <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5 p-2">
                   <svg width="12px" height="12px" viewBox="0 0 42 42">
                     <title>office</title>
                     <g
@@ -251,7 +251,7 @@ const AsideBar = () => {
               className="py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors"
               to="/store/shipping"
             >
-              <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+              <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5 p-2">
                 <MdLocalShipping />
               </div>
               <span className="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
@@ -273,7 +273,7 @@ const AsideBar = () => {
               className="py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors"
               to="/profile"
             >
-              <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5">
+              <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5 p-2">
                 <svg width="12px" height="12px" viewBox="0 0 46 42">
                   <title>customer-support</title>
                   <g

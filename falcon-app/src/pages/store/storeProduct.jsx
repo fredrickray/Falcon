@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BsTrashFill } from 'react-icons/bs';
 import axios from 'axios';
@@ -32,6 +32,7 @@ const StoreProduct = () => {
   const [value, setValue] = useState('4');
   const email = localStorage.email;
   // const token = localStorage.token;
+  // useEffect(() => setWeight())
 
   const { data: productDetail } = useProductId(`http://localhost:9000/store/get-product/${id}`)
   const { store } = useFetchStore("http://localhost:9000/store/get-store")
@@ -227,6 +228,8 @@ const StoreProduct = () => {
     ],
   };
 
+  console.log(weight)
+
   return (
     <div className="bg-white">
       <nav
@@ -368,7 +371,9 @@ const StoreProduct = () => {
                           className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                           id="quantity"
                           type="number"
+                          // value={weight}
                           value={result.weight}
+                          // value={parseFloat(result.weight) + parseFloat(weight)}
                           onChange={e => setWeight(e.target.value)}
                         />
                       </div>

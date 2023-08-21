@@ -2,13 +2,29 @@ import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
+import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs"
 // import jwt_decode from "jwt-decode";
 
 const Login = () => {
   const [email, setEmail] = useState ('');
   const [password, setPassword] = useState ('');
   const [isButtonDisabled, setIsButtonDisabled] = useState (false);
+  const [isOpen, setIsOpen] = useState(false)
+  // const [isNavOpen, setIsNavOpen] = useState(false)
   const LOGIN_URL = 'http://localhost:9000/auth/login';
+
+  const response = (message) => {
+    Swal.fire ({
+      position: 'top-end',
+      // icon: 'success',
+      toast: true,
+      title: message,
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  }
+
+  // const handleNavOpen = () => setIsNavOpen(prev => !prev)
   // const [user, setUser] = useState({});
 
   // const handleCallbackResponse = (response) => {
@@ -73,50 +89,21 @@ const Login = () => {
       })
       .catch (err => {
         console.log (err.response.data);
-        // console.log (err.request.data.message);
-        Swal.fire ({
-          position: 'top-end',
-          toast: true,
-          title: err.response.data.message,
-          color: 'red',
-          showConfirmButton: false,
-          timer: 2500,
-        });
+        response(err.response.data.message)
         setIsButtonDisabled (false);
       });
   };
 
   const facebookReg = () => {
-    Swal.fire ({
-      position: 'top-end',
-      // icon: 'success',
-      toast: true,
-      title: 'FaceBook authentication is disabled',
-      showConfirmButton: false,
-      timer: 2500,
-    });
+    response('FaceBook authentication is disabled')
   };
 
   const appleReg = () => {
-    Swal.fire ({
-      position: 'top-end',
-      // icon: 'success',
-      toast: true,
-      title: 'Apple authentication is disabled',
-      showConfirmButton: false,
-      timer: 2500,
-    });
+    response('Apple authentication is disabled')
   };
 
   const googleReg = () => {
-    Swal.fire ({
-      position: 'top-end',
-      // icon: 'success',
-      toast: true,
-      title: 'Google authentication, coming soon!!!',
-      showConfirmButton: false,
-      timer: 2500,
-    });
+    response('Google authentication, coming soon!!!')
   };
 
   return (
@@ -128,6 +115,7 @@ const Login = () => {
             <nav className="absolute top-0 left-0 right-0 z-30 flex flex-wrap items-center px-4 py-2 mx-6 my-4 shadow-soft-2xl rounded-blur bg-white/80 backdrop-blur-2xl backdrop-saturate-200 lg:flex-nowrap lg:justify-start">
               <div className="flex items-center justify-between w-full p-0 pl-6 mx-auto flex-wrap-inherit">
                 <button
+                  // onClick={handleNavOpen}
                   navbar-trigger
                   className="px-3 py-1 ml-2 leading-none transition-all bg-transparent border border-transparent border-solid rounded-lg shadow-none cursor-pointer text-lg ease-soft-in-out lg:hidden"
                   type="button"
@@ -152,7 +140,7 @@ const Login = () => {
                 </button>
                 <div
                   navbar-menu
-                  className="items-center flex-grow overflow-hidden transition-all duration-500 ease-soft lg-max:max-h-0 basis-full lg:flex lg:basis-auto"
+                  className={`items-center flex-grow  transition-all duration-500 ease-soft lg-max:max-h-0 basis-full lg:flex lg:basis-auto`}
                 >
                   <ul className="flex flex-col pl-0 mx-auto mb-0 list-none lg:flex-row xl:ml-auto">
                     <li>
@@ -322,9 +310,9 @@ const Login = () => {
                         <label className="mb-2 ml-1 font-bold text-xs text-slate-700">
                           Password
                         </label>
-                        <div className="mb-4">
+                        <div className="mb-4 relative flex">
                           <input
-                            type="password"
+                            type={`${isOpen ? "text" : "password"}`}
                             className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                             placeholder="Password"
                             aria-label="Password"
@@ -332,6 +320,9 @@ const Login = () => {
                             onChange={e => setPassword (e.target.value)}
                             required
                           />
+                          <div onClick={() => setIsOpen(prevState => !prevState)} className="absolute inset-y-0 left-3 flex items-center" style={{marginLeft: "90%"}}>
+                          {isOpen ? <BsEyeFill /> : <BsEyeSlashFill />}
+                        </div>
                         </div>
 
                         <div className="text-center">
@@ -369,7 +360,7 @@ const Login = () => {
                     <div
                       className="absolute inset-x-0 top-0 z-0 h-full -ml-16 bg-cover skew-x-10"
                       style={{
-                        backgroundImage: "url('../assets/img/curved-images/curved6.jpg')",
+                        backgroundImage: "url('../assets/img/curved-images/curved8.jpg')",
                       }}
                     />
                   </div>

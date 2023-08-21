@@ -63,6 +63,11 @@ app.use("/payment", payRoute)
 app.use("/openai", openaiR)
 // app.get("/auth", authR)
 
+
+app.get((req, res) => {
+    res.send("Server is live and running")
+})
+
 app.listen(port, () => {
     console.log(`Server is running on port http://localhost:${port}`)
 })

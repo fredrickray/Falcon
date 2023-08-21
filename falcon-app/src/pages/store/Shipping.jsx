@@ -9,6 +9,7 @@ const Shipping = () => {
     const [regionsValue, setRegionsValue] = useState('');
     const [priceValue, setPriceValue] = useState('');
     const [savedValues, setSavedValues] = useState([]);
+    const [isNavOpen, setIsNavOpen] = useState(false)
     const { store } = useFetch("http://localhost:9000/store/get-products")
     const { email, token } = localStorage
     const CREATE_DELIVERY_URL = "http://localhost:9000/store/create-delivery"
@@ -27,6 +28,10 @@ const Shipping = () => {
     const handleShippingChange = (e) => {
         setHandleShipping(e.target.value === 'handle');
     };
+
+    const handleNavOpen = () => {
+        setIsNavOpen(prev => !prev)
+    }
 
     // const handleSave = () => {
     //     if (regionsValue !== '' && priceValue !== '') {
@@ -87,7 +92,7 @@ const Shipping = () => {
             }
         }
     };
-    
+
 
     // useEffect(() => {
     //     console.log(savedValues)
@@ -130,7 +135,7 @@ const Shipping = () => {
 
     return (
         <div>
-            <AsideBar />
+            <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen} />
             <main className='ease-soft-in-out xl:ml-68.5 relative h-screen max-h-screen rounded-xl transition-all duration-200'>
                 <nav className='relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start'
                     navbarmain='true' navbar-scroll='true'>
@@ -148,18 +153,22 @@ const Shipping = () => {
                             <h6 className='mb-0 font-bold capitalize'>Shipping</h6>
                         </nav>
                         <div className='flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto'>
-                            <ul className='flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full'>
+                            <ul style={{marginLeft: "50%"}} className='flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full'>
                                 {/* <!-- online builder btn  --> */}
                                 <li className='flex items-center pl-4 xl:hidden'>
                                     <a href className='block p-0 transition-all ease-nav-brand text-sm text-slate-500' sidenav-trigger>
-                                        <div className='w-4.5 overflow-hidden'> <i className='ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all' /> <i className='ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all'
-                                        /> <i className='ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all' /> </div>
+                                        <div className='w-4.5 overflow-hidden' onClick={handleNavOpen} > 
+                                            <i className='ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all' />
+                                            <i className='ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all'/> 
+                                            <i className='ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all' /> 
+                                        </div>
                                     </a>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </nav>
+
                 <section className='min-h-screen mb-32' style={{ marginLeft: '7%', marginTop: '3%' }}>
                     <div>
                         <h5>Shipping setup for {store}</h5>

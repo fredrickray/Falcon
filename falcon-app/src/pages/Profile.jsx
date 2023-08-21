@@ -15,6 +15,7 @@ const Profile = () => {
   const [showSecondInput, setShowSecondInput] = useState(false);
   const [showThirdInput, setShowThirdInput] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false)
   const [image, setImage] = useState(
     'https://res.cloudinary.com/dlokxjygn/image/upload/v1684341637/utxs0yadssiqbxjre0ev.jpg'
   );
@@ -170,11 +171,12 @@ const Profile = () => {
     }
   };
 
+  const handleNavOpen = () =>  setIsNavOpen(prev => !prev)
 
 
   return (
     <div className="m-0 font-sans antialiased font-normal text-base leading-default bg-gray-50 text-slate-500">
-      <AsideBar />
+      <AsideBar  handleNavOpen={handleNavOpen} isNavOpen={isNavOpen}/>
       <div className="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen bg-gray-50 transition-all duration-200">
 
         <nav className="absolute z-20 flex flex-wrap items-center justify-between w-full px-6 py-2 text-white transition-all shadow-none duration-250 ease-soft-in lg:flex-nowrap lg:justify-start" navbar-profile navbar-scroll="true">
@@ -194,16 +196,11 @@ const Profile = () => {
               <ul className="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
                 <li className="flex items-center pl-4 xl:hidden">
                   <a href className="block p-0 text-white transition-all ease-soft-in-out text-sm" sidenav-trigger>
-                    <div className="w-4.5 overflow-hidden">
+                    <div className="w-4.5 overflow-hidden" onClick={handleNavOpen}>
                       <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-white transition-all"></i>
                       <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-white transition-all"></i>
                       <i className="ease-soft relative block h-0.5 rounded-sm bg-white transition-all"></i>
                     </div>
-                  </a>
-                </li>
-                <li className="flex items-center px-4">
-                  <a href className="p-0 text-white transition-all text-sm ease-soft-in-out">
-                    <i fixed-plugin-button-nav className="cursor-pointer fa fa-cog" aria-hidden="true"></i>
                   </a>
                 </li>
               </ul>

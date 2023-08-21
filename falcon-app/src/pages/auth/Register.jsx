@@ -1,23 +1,26 @@
-import React, {useState} from 'react';
-import {Link} from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Axios from 'axios';
+import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs"
 // import dotenv from "dotenv"
 // dotenv.config()
 const Register = () => {
-  const [fnameReg, setFnameReg] = useState ('');
-  const [lnameReg, setLnameReg] = useState ('');
-  const [username, setUsername] = useState ('');
-  const [emailReg, setEmailReg] = useState ('');
-  const [passwordReg, setPasswordReg] = useState ('');
-  const [phone, setPhone] = useState ('');
-  
-  
+  const [fnameReg, setFnameReg] = useState('');
+  const [lnameReg, setLnameReg] = useState('');
+  const [username, setUsername] = useState('');
+  const [emailReg, setEmailReg] = useState('');
+  const [passwordReg, setPasswordReg] = useState('');
+  const [phone, setPhone] = useState('');
+  const [isOpen, setIsOpen] = useState(false)
+
+  // const check = () => setIsOpen(!true)
+
   const API_URL = 'http://localhost:9000/auth/register';
 
-  
+
   const facebookReg = () => {
-    Swal.fire ({
+    Swal.fire({
       position: 'top-end',
       // icon: 'success',
       toast: true,
@@ -28,7 +31,7 @@ const Register = () => {
   };
 
   const appleReg = () => {
-    Swal.fire ({
+    Swal.fire({
       position: 'top-end',
       // icon: 'success',
       toast: true,
@@ -39,7 +42,7 @@ const Register = () => {
   };
 
   const googleReg = () => {
-    window.open (
+    window.open(
       `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'http://localhost:9000'}/auth/google/callback`,
       '_self'
     );
@@ -63,7 +66,7 @@ const Register = () => {
   //     })
   // }
   const response = (message) => {
-    Swal.fire ({
+    Swal.fire({
       position: 'top-end',
       color: "red",
       toast: true,
@@ -185,7 +188,7 @@ const Register = () => {
       response('Invalid Form, 0 special characters in passwordReg')
       return
     }
-    Axios.post (API_URL, {
+    Axios.post(API_URL, {
       fname: fnameReg,
       lname: lnameReg,
       username: username,
@@ -193,30 +196,30 @@ const Register = () => {
       password: passwordReg,
       phone: phone,
     })
-      .then (response => {
+      .then(response => {
         // console.log (response.data);
         if (response.data.status === "success") {
-          localStorage.setItem ('firstname', fnameReg);
-          localStorage.setItem ('lastname', lnameReg);
-          localStorage.setItem ('email', emailReg);
-          localStorage.setItem ('username', username);
-          localStorage.setItem ('phone', phone);
-          const Toast = Swal.mixin ({
+          localStorage.setItem('firstname', fnameReg);
+          localStorage.setItem('lastname', lnameReg);
+          localStorage.setItem('email', emailReg);
+          localStorage.setItem('username', username);
+          localStorage.setItem('phone', phone);
+          const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
             didOpen: toast => {
-              toast.addEventListener ('mouseenter', Swal.stopTimer);
-              toast.addEventListener ('mouseleave', Swal.resumeTimer);
+              toast.addEventListener('mouseenter', Swal.stopTimer);
+              toast.addEventListener('mouseleave', Swal.resumeTimer);
             },
           });
-          Toast.fire ({
+          Toast.fire({
             icon: 'success',
             title: response.data.message,
-          }).then ((window.location.href = '/Home'));
-        } 
+          }).then((window.location.href = '/Home'));
+        }
         else {
           console.log(response)
           // Swal.fire ({
@@ -230,9 +233,9 @@ const Register = () => {
           // });
         }
       })
-      .catch (err => {
-        console.log ('ERROR', err.message);
-        Swal.fire ({
+      .catch(err => {
+        console.log('ERROR', err.message);
+        Swal.fire({
           position: 'top-end',
           icon: 'error',
           toast: true,
@@ -240,7 +243,7 @@ const Register = () => {
           showConfirmButton: false,
           timer: 2500,
         });
-        console.log (err.config.data);
+        console.log(err.config.data);
       });
   };
 
@@ -369,7 +372,7 @@ const Register = () => {
                         href
                       >
                         <svg width="24px" height="32px" viewBox="0 0 64 64"
-                        onClick={appleReg}>
+                          onClick={appleReg}>
                           <g
                             stroke="none"
                             strokeWidth="1"
@@ -394,7 +397,7 @@ const Register = () => {
                         href
                       >
                         <svg width="24px" height="32px" viewBox="0 0 64 64"
-                        onClick={googleReg}>
+                          onClick={googleReg}>
                           <g
                             stroke="none"
                             stroke-width="1"
@@ -445,7 +448,7 @@ const Register = () => {
                           aria-describedby="email-addon"
                           required
                           // onChange={handleForm}
-                          onChange={e => setFnameReg (e.target.value)}
+                          onChange={e => setFnameReg(e.target.value)}
                         />
                       </div>
 
@@ -458,7 +461,7 @@ const Register = () => {
                           aria-label="LastName"
                           aria-describedby="email-addon"
                           // onChange={handleForm}
-                          onChange={e => setLnameReg (e.target.value)}
+                          onChange={e => setLnameReg(e.target.value)}
                           required
                         />
                       </div>
@@ -473,7 +476,7 @@ const Register = () => {
                           aria-describedby="email-addon"
                           required
                           onChange={e => setUsername(e.target.value)}
-                          // onChange={handleForm}
+                        // onChange={handleForm}
                         />
                       </div>
 
@@ -487,13 +490,13 @@ const Register = () => {
                           aria-describedby="email-addon"
                           required
                           onChange={e => setEmailReg(e.target.value)}
-                          // onChange={handleForm}
+                        // onChange={handleForm}
                         />
                       </div>
 
-                      <div className="mb-4">
+                      <div className="mb-4 relative flex">
                         <input
-                          type="passwordReg"
+                          type={`${isOpen ? "text" : "password"}`}
                           name="passwordReg"
                           className="text-sm focus:shadow-soft-primary-outline leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:bg-white focus:text-gray-700 focus:outline-none focus:transition-shadow"
                           placeholder="Password"
@@ -501,9 +504,12 @@ const Register = () => {
                           aria-describedby="passwordReg-addon"
                           required
                           onChange={e => setPasswordReg(e.target.value)}
-                          // onChange={handleForm}
                         />
+                        <div onClick={() => setIsOpen(prevState => !prevState)} className="absolute inset-y-0 left-3 flex items-center" style={{marginLeft: "90%"}}>
+                          {isOpen ? <BsEyeFill /> : <BsEyeSlashFill />}
+                        </div>
                       </div>
+
 
                       <div className="mb-4">
                         <input
@@ -515,7 +521,7 @@ const Register = () => {
                           aria-describedby="email-addon"
                           required
                           onChange={e => setPhone(e.target.value)}
-                          // onChange={handleForm}
+                        // onChange={handleForm}
                         />
                       </div>
 
