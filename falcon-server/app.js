@@ -64,7 +64,7 @@ app.use("/openai", openaiR)
 // app.get("/auth", authR)
 
 
-app.get((req, res) => {
+app.get("/", (req, res) => {
     res.send("Server is live and running")
 })
 
