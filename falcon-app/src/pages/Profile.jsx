@@ -25,11 +25,11 @@ const Profile = () => {
   const [instagram, setInstagram] = useState('');
   const [twitter, setTwitter] = useState('');
   const [tiktok, setTikTok] = useState('');
-  const URL = 'http://localhost:9000/auth/socials';
-  const UPDATE_URL = 'http://localhost:9000/auth/update';
+  const URL = 'https://falcon-server-jaek.onrender.com/auth/socials';
+  const UPDATE_URL = 'https://falcon-server-jaek.onrender.com/auth/update';
   const CLOUDINARY_API = 'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
 
-  const { data } = useFetch("http://localhost:9000/store/get-products")
+  const { data } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
 
   const profileImgAdd = event => {
     const file = event.target.files[0];
