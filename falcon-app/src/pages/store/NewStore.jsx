@@ -14,7 +14,7 @@ const NewStore = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isNavOpen, setIsNavOpen] = useState(false)
   const CLOUDINARY_API = process.env.REACT_APP_CLOUDINARY_API;
-  const { data } = useFetchStore("http://localhost:9000/store/get-store")
+  const { data } = useFetchStore("https://falcon-server-jaek.onrender.com/store/get-store")
 
   const showForm = () => {
     setShowFormField(!showFormField)
@@ -37,7 +37,7 @@ const NewStore = () => {
     }
   };
 
-  const CREATE_STORE_URL = 'http://localhost:9000/store/Create-Store';
+  const CREATE_STORE_URL = 'https://falcon-server-jaek.onrender.com/store/Create-Store';
 
   const create = () => {
     const formData = new FormData();

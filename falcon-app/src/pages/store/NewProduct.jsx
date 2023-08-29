@@ -29,7 +29,7 @@ const NewProduct = () => {
   const [value, setValue] = useState('4');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const { email, token } = localStorage;
-  const { store } = useFetchStore("http://localhost:9000/store/store")
+  const { store } = useFetchStore("https://falcon-server-jaek.onrender.com/store/store")
   // const { store } = useFetch("http://localhost:9000/store/get-products")
   // console.log(description)
   const handleOptionChange = () => {
@@ -113,7 +113,7 @@ const NewProduct = () => {
   };
   const CLOUDINARY_API =
     'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
-  const PRODUCT_URL = 'http://localhost:9000/store/create-product';
+  const PRODUCT_URL = 'https://falcon-server-jaek.onrender.com/store/create-product';
 
   const response = (message) => {
     Swal.fire({
@@ -146,11 +146,6 @@ const NewProduct = () => {
 
     if (price.length === 0) {
       response("Price field must not be empty")
-      return
-    }
-
-    if (weight.length === 0) {
-      response("Weight field must not be empty")
       return
     }
 
