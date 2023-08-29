@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 
 const Home = () => {
-    const { count, data: product } = useFetch("http://localhost:9000/store/get-products")
+    const { count, data: product } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
     const [isNavOpen, setIsNavOpen] = useState(false)
     const [totalMoney, setTotalMoney] = useState(0.00)
     const { email } = localStorage
@@ -28,7 +28,7 @@ const Home = () => {
   }, [])
   const retrieveMoneyMade = async () => {
     try {
-      const response = await axios.get('http://localhost:9000/payment/get_payment', {
+      const response = await axios.get('https://falcon-server-jaek.onrender.com/payment/get_payment', {
           params: {
               email,
           },

@@ -12,7 +12,7 @@ import axios from "axios"
 function StorePreview() {
 
   const { store } = useParams();
-  const { data: storeData } = useProductId(`http://localhost:9000/stores/get-store/${store}`)
+  const { data: storeData } = useProductId(`https://falcon-server-jaek.onrender.com/stores/get-store/${store}`)
   const [firstname, setFirstname] = useState("")
   const [lastname, setLastname] = useState("")
   const [customer_email, setCustomerEmail] = useState("")
@@ -34,7 +34,7 @@ function StorePreview() {
   // console.log(storeData)
   // console.log(productDetail)
   const [addedItem, setAddedItem] = useState([])
-  const GET_DELIVERY_URL = "http://localhost:9000/store/get-delivery"
+  const GET_DELIVERY_URL = "https://falcon-server-jaek.onrender.com/store/get-delivery"
   const { email, token, size } = localStorage
   let sumPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
   sumPrice = sumPrice * quantity

@@ -1,13 +1,4 @@
-const knex = require('knex')({
-  client: 'mysql',
-  connection: {
-    host: 'localhost',
-    port: 8889,
-    user: 'root',
-    password: 'root',
-    database: 'Falcon',
-  },
-});
+const knex = require("../knex-db/knex")
 
 
 
