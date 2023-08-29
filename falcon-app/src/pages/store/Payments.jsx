@@ -40,37 +40,14 @@ const Payments = () => {
 
             if (response.data.message === 'No transactions found for this email') {
                 popUp("center", response.data.message)
-                // Swal.fire({
-                //     position: 'center',
-                //     toast: true,
-                //     title: response.data.message,
-                //     color: 'red',
-                //     showConfirmButton: false,
-                //     timer: 2500,
-                // });
             }
             else {
                 popUp("top-end", response.data.message)
-                // Swal.fire({
-                //     position: 'top-end',
-                //     toast: true,
-                //     title: response.data.message,
-                //     showConfirmButton: false,
-                //     timer: 2500,
-                // });
                 setData(response.data.response)
             }
         }
         catch (error) {
             popUp("top-end", error.response.data.message, "red")
-            // Swal.fire({
-            //     position: 'top-end',
-            //     toast: true,
-            //     title: error.response.data.message,
-            //     color: 'red',
-            //     showConfirmButton: false,
-            //     timer: 2500,
-            // });
             console.error(error.response.data.message);
         }
     };
@@ -146,9 +123,9 @@ const Payments = () => {
                                         sidenav-trigger
                                     >
                                         <div className="w-4.5 overflow-hidden" onClick={handleNavOpen}>
+                                            <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`} />
                                             <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
-                                            <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
-                                            <i className="ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
+                                            <i className={`ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`} />
                                         </div>
                                     </a>
                                 </li>

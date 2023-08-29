@@ -1,12 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AsideBar from '../components/AsideBar';
 import useFetch from '../hooks/useFetch';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import axios from 'axios';
+
 const Home = () => {
     const { count, data: product } = useFetch("http://localhost:9000/store/get-products")
     const [isNavOpen, setIsNavOpen] = useState(false)
+    const [totalMoney, setTotalMoney] = useState(0.00)
+    const { email } = localStorage
 
     const handleNavOpen = () =>  setIsNavOpen(prev => !prev)
+    const popUp = ( position , message, color ) => {
+      Swal.fire({
+          position: position,
+          toast: true,
+          title: message,
+          color: color,
+          showConfirmButton: false,
+          timer: 2500,
+      });
+  }
+
+  useEffect(() => {
+    retrieveMoneyMade()
+  }, [])
+  const retrieveMoneyMade = async () => {
+    try {
+      const response = await axios.get('http://localhost:9000/payment/get_payment', {
+          params: {
+              email,
+          },
+      });
+
+      // console.log(response.data)
+
+      if (response.data.message === 'No transactions found for this email') {
+          popUp("center", response.data.message)
+      }
+      else {
+          const transactions = response.data.response;
+          const totalAmount = transactions.reduce((total, transaction) => {
+            return total + transaction.amount;
+          }, 0);
+          const formattedTotalAmount = totalAmount.toLocaleString(); 
+          setTotalMoney(formattedTotalAmount);
+      }
+  }
+  catch (error) {
+      popUp("top-end", error.response.data.message, "red")
+      console.error(error.response.data.message);
+  }
+  }
 
   return (
     <div className="m-0 font-sans antialiased font-normal text-base leading-default  text-slate-500"
@@ -47,9 +93,9 @@ const Home = () => {
                     
                   >
                     <div className="w-4.5 overflow-hidden" onClick={handleNavOpen}>
+                      <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`} />
                       <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
-                      <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
-                      <i className="ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
+                      <i className={`ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`} />
                     </div>
                   </a>
                 </li>
@@ -72,13 +118,13 @@ const Home = () => {
                     <div className="flex-none w-2/3 max-w-full px-3">
                       <div>
                         <p className="mb-0 font-sans font-semibold leading-normal text-sm">
-                          Today's Money
+                          Total Money
                         </p>
                         <h5 className="mb-0 font-bold">
-                          $53,000
-                          <span className="leading-normal text-sm font-weight-bolder text-lime-500">
+                          {totalMoney}
+                          {/* <span className="leading-normal text-sm font-weight-bolder text-lime-500">
                             +55%
-                          </span>
+                          </span> */}
                         </h5>
                       </div>
                     </div>
@@ -104,9 +150,9 @@ const Home = () => {
                         </p>
                         <h5 className="mb-0 font-bold">
                           {count}
-                          <span className="leading-normal text-sm font-weight-bolder text-lime-500">
+                          {/* <span className="leading-normal text-sm font-weight-bolder text-lime-500">
                             +3%
-                          </span>
+                          </span> */}
                         </h5>
                       </div>
                     </div>
@@ -132,9 +178,9 @@ const Home = () => {
                         </p>
                         <h5 className="mb-0 font-bold">
                           +3,462
-                          <span className="leading-normal text-red-600 text-sm font-weight-bolder">
+                          {/* <span className="leading-normal text-red-600 text-sm font-weight-bolder">
                             -2%
-                          </span>
+                          </span> */}
                         </h5>
                       </div>
                     </div>
@@ -160,9 +206,9 @@ const Home = () => {
                         </p>
                         <h5 className="mb-0 font-bold">
                           $103,430
-                          <span className="leading-normal text-sm font-weight-bolder text-lime-500">
+                          {/* <span className="leading-normal text-sm font-weight-bolder text-lime-500">
                             +5%
-                          </span>
+                          </span> */}
                         </h5>
                       </div>
                     </div>
@@ -308,101 +354,10 @@ const Home = () => {
                               </div>
                             </div>
                           </td>
-                          <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap">
-                            <div className="mt-2 avatar-group">
-                              <a
-                                href
-                                className="relative z-20 inline-flex items-center justify-center w-6 h-6 text-white transition-all duration-200 border-2 border-white border-solid rounded-full ease-soft-in-out text-xs hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  src="../assets/img/team-1.jpg"
-                                  className="w-full rounded-full"
-                                  alt="team1"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                className="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Ryan Tompson
-                                <div
-                                  className="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                              <a
-                                href
-                                className="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid rounded-full ease-soft-in-out text-xs hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  src="../assets/img/team-2.jpg"
-                                  className="w-full rounded-full"
-                                  alt="team2"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                className="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Romina Hadid
-                                <div
-                                  className="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                              <a
-                                href
-                                className="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid rounded-full ease-soft-in-out text-xs hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  src="../assets/img/team-3.jpg"
-                                  className="w-full rounded-full"
-                                  alt="team3"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                className="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Alexander Smith
-                                <div
-                                  className="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                              <a
-                                href
-                                className="relative z-20 inline-flex items-center justify-center w-6 h-6 -ml-4 text-white transition-all duration-200 border-2 border-white border-solid rounded-full ease-soft-in-out text-xs hover:z-30"
-                                data-target="tooltip_trigger"
-                                data-placement="bottom"
-                              >
-                                <img
-                                  src="../assets/img/team-4.jpg"
-                                  className="w-full rounded-full"
-                                  alt="team4"
-                                />
-                              </a>
-                              <div
-                                data-target="tooltip"
-                                className="hidden px-2 py-1 text-white bg-black rounded-lg text-sm"
-                                role="tooltip"
-                              >
-                                Jessica Doe
-                                <div
-                                  className="invisible absolute h-2 w-2 bg-inherit before:visible before:absolute before:h-2 before:w-2 before:rotate-45 before:bg-inherit before:content-['']"
-                                  data-popper-arrow
-                                />
-                              </div>
-                            </div>
+                          <td className="p-2 leading-normal text-center align-middle bg-transparent border-b text-sm whitespace-nowrap">
+                            <span className="font-semibold leading-tight text-xs">
+                              {result.quantity}
+                            </span>
                           </td>
                           <td className="p-2 leading-normal text-center align-middle bg-transparent border-b text-sm whitespace-nowrap">
                             <span className="font-semibold leading-tight text-xs">

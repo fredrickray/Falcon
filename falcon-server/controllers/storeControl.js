@@ -68,33 +68,27 @@ exports.updateStore = async (req, res) => {
 exports.createProduct = async (req, res) => {
   const { name, description, price, compare_price, email, weight, quantity, image, category, style, size, colour, store } = req.body;
 
-    knex('Products')
-      .insert({
-        name,
-        price,
-        compare_price,
-        email,
-        quantity,
-        description,
-        weight,
-        image,
-        category,
-        style,
-        colour,
-        size,
-        store
-      })
-      .then(response => {
-        res
-          .status(201)
-          .json({ message: 'Product created succesfully', status: 'Success', response });
-      })
-      .catch(err => {
-        console.log(err.message)
-        res
-          .status(500)
-          .json({ message: 'Internal server error', status: 'error', err: err.message });
-      });
+  try {
+    const response = await  knex('Products').insert({
+      name,
+      price,
+      compare_price,
+      email,
+      quantity,
+      description,
+      weight,
+      image,
+      category,
+      style,
+      colour,
+      size,
+      store
+    })
+    res.status(201).send({message: "Product created succesfully", status: "Success", response})
+  } 
+  catch (error) {
+    res.status(500).send({message: "Internal serer error", err: error.message})
+  }
 };
 
 
@@ -344,9 +338,52 @@ exports.itemPurchased = async (req, res) => {
 }
 
 
-exports.createOrders = async (req, res) => {
-  const { orderID, totalAmount, status, deliveryFee, paymentMethod, paidBy, date } = req.body
+exports.createDiscount = async (req, res) => {
+  const { email, name, price } = req.body
+
+  try {
+    const response = await knex("Discounts").insert({ name, price, email })
+    console.log(response)
+    res.send(response)
+  }
+  catch (error) {
+    console.log(error)
+    res.status(500).send({ message: "Internal server error", error })
+  }
 }
+
+exports.getDiscounts = async (req, res) => {
+  const { email } = req.body; // Assuming the email is passed as a parameter
+
+  try {
+    const discounts = await knex("Discounts").where({ email });
+
+    if (discounts.length === 0) {
+      res.status(404).json({ message: "No discounts found for the provided email" });
+    } else {
+      console.log(discounts)
+      res.status(200).json({ message: "Discounts retrieved successfully", discounts });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", err: error.message });
+  }
+};
+
+
+exports.deleteDiscount = async (req, res) => {
+  const { id } = req.params; // Assuming the discount's unique identifier is passed as a parameter
+
+  try {
+    const response = await knex("Discounts").where({ id: id }).del();
+    if (response === 0) {
+      res.status(404).json({ message: "Discount not found" });
+    } else {
+      res.status(200).send({message: "Discount deleted"}); // Status 204 means "No Content" after successful deletion
+    }
+  } catch (error) {
+    res.status(500).json({ status: "Server Error", message: "There was an error in the server" });
+  }
+};
 
 //delivery information
 exports.createDelivery = async (req, res) => {

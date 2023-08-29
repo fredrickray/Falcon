@@ -56,6 +56,15 @@ router
 .get("/delete-product/:id", storeController.deleteProduct)
 
 router
+.post("/create-discount", storeController.createDiscount)
+
+router
+.post("/get-discount", storeController.getDiscounts)
+
+router
+.delete("/delete-discount/:id", storeController.deleteDiscount)
+
+router
 .post("/create-delivery", storeController.createDelivery)
 
 router

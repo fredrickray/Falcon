@@ -65,9 +65,9 @@ const Products = () => {
                   <li className="flex items-center pl-4 xl:hidden">
                     <a href className="block p-0 transition-all ease-nav-brand text-sm text-slate-500" sidenav-trigger>
                       <div className="w-4.5 overflow-hidden" onClick={handleNavOpen}>
+                        <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`}></i>
                         <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all"></i>
-                        <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all"></i>
-                        <i className="ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all"></i>
+                        <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`}></i>
                       </div>
                     </a>
                   </li>
@@ -82,8 +82,8 @@ const Products = () => {
                   <h6>{count} Product</h6>
                   <div className='flex flex-wrap'>
                     <label className='font-bold capitalize text-slate-900'>Link:</label>
-                    <p className='cursor-pointer underline' style={{ color: "blue", marginLeft: "20px" }}>{link}</p>
-                    <CopyToClipboardLink text={textToCopy}>
+                  <CopyToClipboardLink text={textToCopy} title={"Link copied to ClipBoard"}><p className='cursor-pointer underline' style={{ color: "blue", marginLeft: "20px" }}>{link}</p></CopyToClipboardLink> 
+                    <CopyToClipboardLink text={textToCopy} title={"Link copied to ClipBoard"}>
                       <i
                         style={{ marginLeft: "15px", cursor: "pointer" }}
                         className="fa fa-clone"
@@ -145,7 +145,7 @@ const Products = () => {
                               </td>
                               <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                                 <span className="font-semibold leading-tight text-xs text-black-400">
-                                  0 / {result.quantity}
+                                  {result.quantity > 0 ? `0 / ${result.quantity}` : "Out of Stock"}
                                 </span>
                               </td>
                               <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">

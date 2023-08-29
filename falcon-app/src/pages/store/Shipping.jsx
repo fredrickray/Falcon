@@ -70,21 +70,21 @@ const Shipping = () => {
 
 
     const handleSave = async () => {
-        if (regionsValue !== '' && priceValue !== '') {
+        if (regionsValue.trim() !== '' && priceValue !== '') {
             const newItem = {
                 location: regionsValue,
                 fee: priceValue,
-                email: email
+                email
             };
             try {
-                const response = await axios.post(CREATE_DELIVERY_URL, newItem, {
+                 await axios.post(CREATE_DELIVERY_URL, newItem, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json"
                     },
                 });
-                const createdItem = response.data; // Assuming the server responds with the created item data
-                setSavedValues([...savedValues, createdItem]);
+                const createdItem =  fetchSavedValues()// Assuming the server responds with the created item data
+                setSavedValues(createdItem);
                 setRegionsValue('');
                 setPriceValue('');
             } catch (error) {
@@ -153,14 +153,14 @@ const Shipping = () => {
                             <h6 className='mb-0 font-bold capitalize'>Shipping</h6>
                         </nav>
                         <div className='flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto'>
-                            <ul style={{marginLeft: "50%"}} className='flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full'>
+                            <ul style={{ marginLeft: "50%" }} className='flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full'>
                                 {/* <!-- online builder btn  --> */}
                                 <li className='flex items-center pl-4 xl:hidden'>
                                     <a href className='block p-0 transition-all ease-nav-brand text-sm text-slate-500' sidenav-trigger>
-                                        <div className='w-4.5 overflow-hidden' onClick={handleNavOpen} > 
+                                        <div className='w-4.5 overflow-hidden' onClick={handleNavOpen} >
+                                            <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`} />
                                             <i className='ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all' />
-                                            <i className='ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all'/> 
-                                            <i className='ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all' /> 
+                                            <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`} />
                                         </div>
                                     </a>
                                 </li>
@@ -204,83 +204,99 @@ const Shipping = () => {
                     )}
 
                     {handleShipping && (
-                        <div className='flex mt-4'>
+                        <div className='mt-4'>
                             {showInputField &&
-                                <div
-                                    className="w-full md:w-4/12 px-3 pb"
-                                    style={{ marginTop: '5%' }}
-                                >
-                                    <label
-                                        className="block  tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                        htmlFor="price"
+                                <div className='flex sm:block'>
+                                    <div
+                                        className="w-full md:w-4/12 px-3 pb"
+                                        style={{ marginTop: '5%' }}
                                     >
-                                        Regions
-                                    </label>
+                                        <label
+                                            className="block  tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                            htmlFor="price"
+                                        >
+                                            Regions
+                                        </label>
 
-                                    <input
-                                        className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-3 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
-                                        type="text"
-                                        id='regions'
-                                        value={regionsValue}
-                                        onChange={(e) => setRegionsValue(e.target.value)}
-                                    />
-                                </div>}
-                            {showInputField &&
-                                <div
-                                    className="flex items-center  w-full md:w-8/12 px-3 pb"
-                                    style={{ marginTop: '2%' }}
-                                >
-                                    <label
-                                        className="block  tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                        htmlFor="price"
+                                        <input
+                                            className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-3 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
+                                            type="text"
+                                            id='regions'
+                                            value={regionsValue}
+                                            onChange={(e) => setRegionsValue(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div
+                                        className="flex items-center  w-full md:w-8/12 px-3 pb"
+                                        style={{ marginTop: '2%' }}
                                     >
-                                        Price
-                                    </label>
-                                    <input
-                                        className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-3 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
-                                        id="Style"
-                                        type="number"
-                                        style={{ marginTop: '8%' }}
-                                        value={priceValue}
-                                        onChange={(e) => setPriceValue(e.target.value)} />
-                                    <button
-                                        className="inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
-                                        type="button"
-                                        style={{ background: '#FF9B00' }}
-                                        onClick={handleSave}
-                                    >Save
-                                    </button>
-                                    <div className="mt-4 cursor-pointer">
-                                        <p className='cursor-pointer text-red-500' onClick={removeInput}>Remove</p>
-                                        {/* <BsTrashFill onClick={removeInput} /> */}
+                                        <label
+                                            className="block  tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                            htmlFor="price"
+                                        >
+                                            Price
+                                        </label>
+                                        <input
+                                            className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-3 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
+                                            id="Style"
+                                            type="number"
+                                            style={{ marginTop: '8%' }}
+                                            value={priceValue}
+                                            onChange={(e) => setPriceValue(e.target.value)} />
+                                        <button
+                                            className="inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+                                            type="button"
+                                            style={{ background: '#FF9B00' }}
+                                            onClick={handleSave}
+                                        >Save
+                                        </button>
+                                        <div className="mt-4 cursor-pointer">
+                                            <p className='cursor-pointer text-red-500' onClick={removeInput}>Remove</p>
+                                            {/* <BsTrashFill onClick={removeInput} /> */}
+                                        </div>
                                     </div>
                                 </div>}
 
 
                             {savedValues.length > 0 && (
-                                <div className="mt-4">
-                                    <div className=''>
-                                        <div className='flex flex-wrap justify-between'
-                                        >
-                                            <label className="  tracking-wide text-gray-700 text-xs font-bold mb-2">Regions</label>
-                                            <label className="  tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                                style={{ marginLeft: "140px" }}>Price</label>
+                                <div class="relative flex flex-col w-full  min-w-0 mb-0 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
+                                    <div class="flex-auto px-0 pt-0 pb-2">
+                                        <div class="p-0 overflow-x-auto">
+                                            <table class="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
+                                                <thead class="align-bottom">
+                                                    <tr>
+                                                        <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Label</th>
+                                                        <th class="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Regions</th>
+                                                        <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Price</th>
+                                                        <th class="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-gray-200 border-solid shadow-none tracking-none whitespace-nowrap text-slate-400 opacity-70"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {savedValues.map((value, index) => (
+                                                        <tr key={value.id}>
+                                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                <div class="flex px-2 py-1">
+
+                                                                    <div class="flex flex-col justify-center">
+                                                                        <h6 class="mb-0 leading-normal text-sm">{index + 1}</h6>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                <p class="mb-0 font-semibold leading-tight text-xs">{value.regions || value.location}</p>
+                                                            </td>
+                                                            <td class="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                <span class="font-semibold leading-tight text-xs text-slate-400">{value.price || value.fee}</span>
+                                                            </td>
+                                                            <td class="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                <p onClick={() => handleRemove(value.id)} class="font-semibold leading-tight text-xs text-red-500"> Remove </p>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
                                         </div>
-                                        {savedValues.map((value) => (
-                                            <div className='gap-0' key={value.id}>
-                                                <div className='flex flex-wrap'>
-                                                    <p className=''>{value.regions || value.location}</p>
-                                                    <p className='' style={{ marginLeft: "180px" }}>{value.price || value.fee}</p>
-                                                </div>
-                                                {/* <div className="cursor-pointer" style={{marginLeft: "50px"}}> */}
-                                                <p className='cursor-pointer text-red-500' onClick={() => handleRemove(value.id)}
-                                                    style={{ marginLeft: "140%", marginTop: "-40px" }}>Remove</p>
-                                                {/* <BsTrashFill onClick={removeInput} /> */}
-                                                {/* </div> */}
-                                            </div>
-
-
-                                        ))}
                                     </div>
                                 </div>
                             )}

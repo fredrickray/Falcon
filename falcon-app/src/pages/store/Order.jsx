@@ -96,9 +96,9 @@ const Orders = () => {
                     sidenav-trigger
                   >
                     <div className="w-4.5 overflow-hidden" onClick={handleNavOpen}>
+                      <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`} />
                       <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
-                      <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
-                      <i className="ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
+                      <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`} />
                     </div>
                   </a>
                 </li>
