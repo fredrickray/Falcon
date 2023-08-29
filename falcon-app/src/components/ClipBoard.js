@@ -1,7 +1,7 @@
 import React from 'react';
 import Swal from 'sweetalert2';
 
-const CopyToClipboardLink = ({ text, children }) => {
+const CopyToClipboardLink = ({ text, children, title }) => {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
@@ -19,7 +19,7 @@ const CopyToClipboardLink = ({ text, children }) => {
 
       Toast.fire ({
         icon: 'success',
-        title: "Link copied to ClipBoard",
+        title: title,
       });
     } 
     catch (err) {

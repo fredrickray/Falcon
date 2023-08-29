@@ -289,9 +289,9 @@ function StorePreview() {
               <span><b>
                 {result.name}
               </b></span>
-              <h5>
+              {/* <h5>
                 {result.description}
-              </h5>
+              </h5> */}
               <div className="star">
                 <i className="mdi mdi-star" />
                 <i className="mdi mdi-star" />

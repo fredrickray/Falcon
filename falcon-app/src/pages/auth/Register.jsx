@@ -167,19 +167,19 @@ const Register = () => {
 
     if (countLowerCase === 0) {
       // invalid form, 0 lowercase characters
-      response('Invalid Form, 0 lower case characters in passwordReg')
+      response('Invalid Form, 0 lower case characters in password')
       return
     }
 
     if (countUpperCase === 0) {
       // invalid form, 0 upper case characters
-      response('Invalid Form, 0 upper case characters in passwordReg')
+      response('Invalid Form, 0 upper case characters in password')
       return
     }
 
     if (countDigit === 0) {
       // invalid form, 0 digit characters
-      response('Invalid Form, 0 digit characters in passwordReg')
+      response('Invalid Form, 0 digit characters in password')
       return
     }
 

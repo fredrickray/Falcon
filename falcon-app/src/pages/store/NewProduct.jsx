@@ -116,7 +116,7 @@ const NewProduct = () => {
   const PRODUCT_URL = 'http://localhost:9000/store/create-product';
 
   const response = (message) => {
-    Swal.fire ({
+    Swal.fire({
       position: 'top-end',
       color: "red",
       toast: true,
@@ -132,35 +132,35 @@ const NewProduct = () => {
     formData.append('upload_preset', 'b74r48f2');
 
     const sanitizedDescription = DOMPurify.sanitize(description, { ALLOWED_TAGS: [] });
-    
 
-    if(name.length === 0) {
+
+    if (name.length === 0) {
       response("Name field must not be empty")
       return
     }
 
-    if(description.length === 0) {
+    if (description.length === 0) {
       response("Description field must not be empty")
       return
     }
 
-    if(price.length === 0) {
+    if (price.length === 0) {
       response("Price field must not be empty")
       return
     }
 
-    if(weight.length === 0) {
+    if (weight.length === 0) {
       response("Weight field must not be empty")
       return
     }
 
-    if(quantity.length === 0) {
+    if (quantity.length === 0) {
       response("Quantity field must not be empty")
       return
     }
 
-    
-    if(selectedImages.length === 0) {
+
+    if (selectedImages.length === 0) {
       response("An Image must be selected")
       return
     }
@@ -187,12 +187,12 @@ const NewProduct = () => {
             email: email,
             store: store
           },
-          {
-            headers: {
-              Authorization : `Bearer ${token}`,
-              "Content-Type": "application/json"
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+              }
             }
-          } 
           )
           .then(response => {
             console.log(response.data.message);
@@ -214,7 +214,7 @@ const NewProduct = () => {
               title: "Product created succesfully",
             })
             // setTimeout(() => {
-              window.location.href = "/Products"
+            window.location.href = "/Products"
             // }, 3000)
           })
           .catch(error => {
@@ -482,7 +482,7 @@ const NewProduct = () => {
                         />
                       </div>
 
-                      
+
 
                       <div
                         className="w-full md:w-6/12 px-3 pb"
@@ -612,57 +612,70 @@ const NewProduct = () => {
                         + Add Option
                       </button>
 
-                      <div className="flex flex-wrap mt-4">
+                      <div className="flex flex-wrap mt-4 items-center">
                         {showInputField &&
-                          <div
-                            className="w-full md:w-4/12 px-3 pb"
-                            style={{ marginTop: '5%' }}
-                          >
-                            <label
-                              className="block  tracking-wide text-gray-700 text-xs font-bold mb-2"
-                              htmlFor="price"
+                            <div
+                              className="w-full md:w-4/12 px-3 pb"
                             >
-                              Option 1
-                            </label>
+                              <label
+                                className="block  tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                htmlFor="price"
+                              >
+                                Option 1
+                              </label>
 
-                            <input
-                              className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
-                              list="options"
-                              // id="Style"
-                              type="text"
-                            // value="Size"
-                            />
-                            <datalist id="options">
-                              <option value="Style" />
-                              <option value="Size">Size</option>
-                              <option value="Colour">Colour</option>
-                            </datalist>
-                          </div>}
-                        {showInputField &&
+                              <input
+                                className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
+                                list="options"
+                                // id="Style"
+                                type="text"
+                              // value="Size"
+                              />
+                              <datalist id="options">
+                                <option value="Style" />
+                                <option value="Size">Size</option>
+                                <option value="Colour">Colour</option>
+                              </datalist>
+                            </div>
+                        }
+                        {showInputField && (
                           <div
                             className="flex items-center justify-between w-full md:w-8/12 px-3 pb"
                             style={{ marginTop: '2%' }}
                           >
-                            <input
-                              className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
-                              id="Style"
-                              type="text"
-                              style={{ marginTop: '8%' }}
-                              // value={style}
-                              onChange={multipleOptionChnage}
-                            // value="0.00"
-                            />
+                            <div className='relative w-full'>
+                              <input
+                                className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
+                                id="Style"
+                                type="text"
+                                style={{ marginTop: '8%' }}
+                                // value={style}
+                                onChange={multipleOptionChnage}
+                              // value="0.00"
+                              />
+                              <div style={{ background: "#3a416f", color: "white", width: "80px", top: "48px", left: "20px" }} className='absolute top-1 left-2 rounded-lg w-[100px] px-3 py-2 text-[#F3F3F3] bg-[#3a416f] flex items-center justify-between text-xs'>
+                                <div className='flex items-center'>
+                                  <div className=''>
+                                    MMaa
+                                  </div>
+                                  <div className='border-l border-gray-600 '>
+                                    <i className="fa fa-times" aria-hidden="true"></i>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
                             <div className="mt-4 cursor-pointer">
                               <BsTrashFill onClick={trashInput} />
                             </div>
-                          </div>}
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex flex-wrap mt-4">
                         {showSecondInput &&
                           <div
                             className="w-full md:w-4/12 px-3 pb"
-                            style={{ marginTop: '5%' }}
                           >
                             <label
                               className="block tracking-wide text-gray-700 text-xs font-bold mb-2"

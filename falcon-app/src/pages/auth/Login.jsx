@@ -11,7 +11,7 @@ const Login = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState (false);
   const [isOpen, setIsOpen] = useState(false)
   // const [isNavOpen, setIsNavOpen] = useState(false)
-  const LOGIN_URL = 'http://localhost:9000/auth/login';
+  const LOGIN_URL = 'https://falcon-server-jaek.onrender.com/auth/login';
 
   const response = (message) => {
     Swal.fire ({

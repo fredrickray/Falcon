@@ -197,9 +197,9 @@ const Profile = () => {
                 <li className="flex items-center pl-4 xl:hidden">
                   <a href className="block p-0 text-white transition-all ease-soft-in-out text-sm" sidenav-trigger>
                     <div className="w-4.5 overflow-hidden" onClick={handleNavOpen}>
+                      <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-white transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`}></i>
                       <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-white transition-all"></i>
-                      <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-white transition-all"></i>
-                      <i className="ease-soft relative block h-0.5 rounded-sm bg-white transition-all"></i>
+                      <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-white transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`}></i>
                     </div>
                   </a>
                 </li>

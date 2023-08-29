@@ -25,6 +25,7 @@ import NewStore from './pages/store/NewStore';
 import Shipping from './pages/store/Shipping';
 import StorePreview from './pages/store/storePreview';
 import StoreProductDetailed from './pages/store/storeProductDetails';
+import SuccessPayment from './components/SuccessPayment';
 import StoreProduct from './pages/store/storeProduct';
 // ------>> STORE END <<-------
 import NotFound from './components/notFound';
@@ -45,6 +46,7 @@ const App = () => {
         <Route exact path="/Store/Product/:id" element={<StoreProduct />} />
         <Route exact path="/Store/:store" element={<StorePreview />} />
         <Route exact path="/Store/Product/Details/:id" element={<StoreProductDetailed />} />
+        <Route exact path="/Success" element={<SuccessPayment />} />
         <Route exact path="/Payments" element={<Payments />} />
         <Route exact path="/Orders" element={<Orders />} />
         <Route exact path="/Orders/detail/:tx_ref" element={<OrderDetail />} />

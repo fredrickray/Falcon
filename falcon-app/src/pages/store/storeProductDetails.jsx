@@ -7,6 +7,7 @@ import { GrClose } from 'react-icons/gr';
 import { FlutterWaveButton, closePaymentModal } from 'flutterwave-react-v3';
 import axios from "axios"
 import { useNavigate } from 'react-router-dom';
+import SuccessPayment from '../../components/SuccessPayment';
 
 function StoreProductDetailed() {
   const { id } = useParams();
@@ -28,18 +29,43 @@ function StoreProductDetailed() {
   const [isQuantityZero, setIsQuantityZero] = useState(false)
   const { error, data: productDetail, store } = useProductId(`http://localhost:9000/stores/get-product/${id}`)
   const GET_DELIVERY_URL = "http://localhost:9000/store/get-delivery"
-  const [size, setSize] = useState(() => {
-    const storedSize = localStorage.getItem("size")
-    return storedSize ? storedSize : null
-  })
-
   const [addedItem, setAddedItem] = useState([])
   const { email, token } = localStorage
   let sumPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
   sumPrice = sumPrice * quantity
-  const totalPrice = sumPrice + shippingMoney
+  let totalPrice = sumPrice + shippingMoney
 
   const navigate = useNavigate()
+
+
+  const handleVariantSize = (e) => {
+    if (productDetail === null) {
+      return;
+    }
+    const { value } = e.target;
+    productDetail[0].size = value
+    console.log(value)
+  }
+
+  const handleVariantColour = (e) => {
+    if (productDetail === null) {
+      return;
+    }
+    const { value } = e.target;
+    productDetail[0].colour = value
+    console.log(value)
+  }
+
+  const handleVariantStyle = (e) => {
+    if (productDetail === null) {
+      return;
+    }
+    const { value } = e.target;
+    productDetail[0].style = value;
+    console.log(value)
+  }
+
+  
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -84,7 +110,7 @@ function StoreProductDetailed() {
 
 
   const added = () => {
-    // Assuming 'setAddedItem', 'productDetail', 'Swal', 'setCartItemCount', 'cartItemCount', 'localStorage', 'size' are defined somewhere
+    // Assuming 'setAddedItem', 'productDetail', 'Swal', 'setCartItemCount', 'cartItemCount', 'localStorage', 'variant' are defined somewhere
 
     // Checking if the product is already in the cart
     const isProductInCart = addedItem.some(item => item.id === productDetail.id);
@@ -120,9 +146,6 @@ function StoreProductDetailed() {
 
       // Update the cart item count in the state
       setCartItemCount(cartItemCount + 1);
-
-      // Store the selected size in local storage
-      localStorage.setItem('size', size);
     }
   };
 
@@ -166,39 +189,6 @@ function StoreProductDetailed() {
     }
   };
 
-  // useEffect(() => {
-  //   const itemsFromStorage = JSON.parse(localStorage.getItem('cartItem'));
-  //   // console.log(itemsFromStorage)
-  //   console.log(productDetail)
-
-  //   const updatedItems = itemsFromStorage?.map(item => {
-  //     if (item.id === productDetail[0].id) {
-  //       // If the IDs match, update the quantity
-  //       console.log(updatedItems)
-  //       return { ...item, quantity: productDetail.quantity };
-  //     }
-  //     return item;
-  //   }, [productDetail]);
-
-  //   // Update the localStorage with the updated array
-  //   localStorage.setItem('cartItem', JSON.stringify(updatedItems));
-  // })
-
-  // console.log(productDetail[0].quantity)
-
-
-  // to remove from quantity function
-  // const minusQuantity = (id) => {
-  //   // Find the product in the cart based on its id
-  //   const updatedCart = addedItem.map((item) =>
-  //     item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item
-  //   );
-
-  //   // Update the cart state with the updated cart
-  //   setAddedItem(updatedCart);
-  // };
-  // const [localStSize, setLocalStSize] = useState()
-  // 
   useEffect(() => {
     if (addedItem.length > 0) {
       localStorage.setItem('cartItem', JSON.stringify(addedItem));
@@ -217,15 +207,31 @@ function StoreProductDetailed() {
       // if (productDetail && parsedArray) {
       // console.log("asasas")
 
-      const updatedArray = parsedArray.filter(result => result.quantity !== 0);
+      // const updatedArray = parsedArray.filter(result => result.quantity !== 0);
 
       // Check if productDetail quantity is 0 and remove the item from updatedArray if it matches
-      if (productDetail && productDetail[0].quantity === 0) {
-        const productIdToRemove = productDetail[0].id;
-        const filteredArray = updatedArray.filter(result => result.id !== productIdToRemove);
-        console.log(filteredArray)
-        localStorage.setItem("cartItem", JSON.stringify(filteredArray));
-      }
+      // if (productDetail && productDetail[0].quantity === 0) {
+      //   const productIdToRemove = productDetail[0].id;
+      //   const filteredArray = updatedArray.filter(result => result.id !== productIdToRemove);
+      //   console.log(filteredArray)
+      //   localStorage.setItem("cartItem", JSON.stringify(filteredArray));
+      // }
+
+      // if(productDetail == null) {
+      //   return "Returning null"
+      // }
+      // else{
+      //   if(productDetail[0].quantity === 0) {
+      //     setIsQuantityZero(true)
+      //   }
+      //   else{
+          setIsQuantityZero(false)
+          setAddedItem(parsedArray)
+          setCartItemCount(itemCount);
+      //   }
+      // }
+
+      
 
       // const updatedItem = parsedArray?.filter(result =>  result.quantity !== 0) // return result.quantity !== 0;
       //   if(updatedItem.id === productDetail[0].id) {
@@ -241,9 +247,7 @@ function StoreProductDetailed() {
 
       // Update the localStorage with the updated array
       // localStorage.setItem('cartItem', JSON.stringify(parsedArray));
-      setIsQuantityZero(false)
-      setAddedItem(parsedArray)
-      setCartItemCount(itemCount);
+      
       // console.log(updatedItems)
       // }
       // console.log(itemCount);
@@ -257,8 +261,27 @@ function StoreProductDetailed() {
   }, []);
 
   useEffect(() => {
-    localStorage.removeItem("")
-  })
+    const check = () => {
+      if(productDetail != null) {
+        if(productDetail[0].quantity == 0) {
+          setIsQuantityZero(true)
+          console.log("Quantity is zero")
+        }
+        else{
+          setIsQuantityZero(false)
+          console.log("Quantity is not zero")
+        }
+      }
+      return "Product detail have not mounted"
+      
+    }
+    check()
+  }, [productDetail])
+
+  
+  // useEffect(() => {
+  //   localStorage.removeItem("")
+  // })
 
   // useEffect(() => {
   //   if (!error && productDetail) {
@@ -296,11 +319,33 @@ function StoreProductDetailed() {
   //   localStorage.setItem('cartItem', JSON.stringify(updatedItems));
   // }
 
+  const [discountValue, setDiscountValue] = useState([])
+  const fetchDiscount = async () => {
+    try {
+      const response = await axios.post("http://localhost:9000/store/get-discount", { email },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      )
+      console.log(response.data.discounts)
+      const discount = response.data.discounts
+      const newDiscounts = discount.map(item => ({ name: item.name, price: item.price }))
+      console.log(newDiscounts)
+      setDiscountValue(newDiscounts)
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
   useEffect(() => {
-    fetchSavedValues();
+    fetchDeliveryValues();
+    fetchDiscount()
   }, []);
 
-  const fetchSavedValues = async () => {
+  const fetchDeliveryValues = async () => {
     try {
       const response = await axios.post(GET_DELIVERY_URL, { email },
         {
@@ -319,6 +364,23 @@ function StoreProductDetailed() {
     }
   };
 
+  const handleDiscount = () => {
+    //  validate if discount exist
+    const newDiscount = discountValue.filter(items => items.name === discount)
+    console.log(newDiscount)
+    if (newDiscount.length) {
+      Swal.fire({
+        title: 'Discount code confirmed.',
+        position: "center",
+        showConfirmButton: false
+      });
+      console.log(newDiscount[0].price)
+      totalPrice = totalPrice - newDiscount[0].price
+    }
+    else {
+      console.log("Discount code not found")
+    }
+  }
 
   const handleStateChange = (e) => {
     const { value } = e.target
@@ -413,19 +475,6 @@ function StoreProductDetailed() {
   let MainImg = document.getElementById('MainImg');
   let smallimg = document.getElementsByClassName('small-img');
 
-  // smallimg[0].onclick = function () {
-  //     MainImg.src = smallimg[0].src;
-  // }
-  // smallimg[1].onclick = function () {
-  //     MainImg.src = smallimg[1].src;
-  // }
-  // smallimg[2].onclick = function () {
-  //     MainImg.src = smallimg[2].src;
-  // }
-  // smallimg[3].onclick = function () {
-  //     MainImg.src = smallimg[3].src;
-  // }
-
   for (let i = 0; i < smallimg.length; i++) {
     smallimg[i].onclick = function () {
       MainImg.src = smallimg[i].src;
@@ -439,6 +488,10 @@ function StoreProductDetailed() {
     quantity: item.quantity,
     image: item.image
   }));
+
+
+
+
 
   // console.log(selectedItemsData)
   const config = {
@@ -477,7 +530,9 @@ function StoreProductDetailed() {
 
         // Handle the response from your server if needed
         console.log('POST request successful:', response.data);
-        window.location.href = `/Store/${store}`
+        // setPaymentSuccessful(true); 
+        localStorage.removeItem("cartItem")
+        // window.location.href = `/Store/${store}`
       }
       catch (error) {
         console.error('POST request error:', error.message);
@@ -495,7 +550,7 @@ function StoreProductDetailed() {
           <div onClick={() => navigate(`/Store/${store}`)}>
             <i className="fa fa-arrow-left cursor-pointer" aria-hidden="true"></i>
           </div>
-          <h3 className='logo'>{store}</h3>
+          <h3 style={{ paddingLeft: "50px" }} className='logo'>{store}</h3>
           <div>
             <ul id="navbar">
               <div data-v-7d194230 className='summary_body'>
@@ -510,9 +565,19 @@ function StoreProductDetailed() {
                                 <p data-v-7d194230 className='summary_cart_item_product_name'>
                                   {info.name}
                                 </p>
-                                {size && (
+                                {info.size && (
                                   <span data-v-7d194230 className='summary_cart_item_product_variant'>
-                                    {size}
+                                    {info.size}
+                                  </span>
+                                )}
+                                {info.style && (
+                                  <span data-v-7d194230 className='summary_cart_item_product_variant'>
+                                    {info.style}
+                                  </span>
+                                )}
+                                {info.colour && (
+                                  <span data-v-7d194230 className='summary_cart_item_product_variant'>
+                                    {info.colour}
                                   </span>
                                 )}
                                 <span data-v-7d194230 className='summary_cart_item_product_price'>
@@ -622,8 +687,8 @@ function StoreProductDetailed() {
 
                   <label for="discount">Discount</label>
                   <div data-v-7ef2909e className='discount_group'>
-                    <input data-v-7ef2909e id='discountCode' className='form_input' placeholder="Optional" onChange={e => setDiscount(e.target.value)} />
-                    <button data-v-7ef2909e className='btn discount_cta' type="">Apply</button>
+                    <input data-v-7ef2909e id='discountCode' className='form_input' placeholder="Optional" value={discount} onChange={e => setDiscount(e.target.value)} />
+                    <button data-v-7ef2909e className='btn discount_cta' onClick={handleDiscount} type="">Apply</button>
                   </div>
                   {/* {isEmpty && <p style={{ color: 'red' }}>Inputs must not be empty</p>} */}
                 </div>
@@ -881,10 +946,47 @@ function StoreProductDetailed() {
                   >
                     Size:
                   </label>
-                  {/* <span className='select_option_name'>Size:</span> */}
-                  <select onChange={e => setSize(e.target.value)}>
-                    {result.size.split(' ').map((size, index) => (
-                      <option key={index} className='select_option_value'>{size}</option>
+                  {/* <span className='select_option_name'>variant:</span> */}
+                  <select onChange={e => handleVariantSize(e)}>
+                    <option className='select_option_value'>Select a size</option>
+                    {result.size.split(' ').map((variant, index) => (
+                      <option key={index} value={variant} className='select_option_value'>{variant}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {result.style && (
+                <div className='select_option'>
+                  <label
+                    // className="block tracking-wide text-xs font-bold mb-2"
+                    htmlFor="price"
+                  >
+                    Style:
+                  </label>
+                  {/* <span className='select_option_name'>variant:</span> */}
+                  <select onChange={e => handleVariantStyle(e)}>
+                    <option className='select_option_value'>Select a Style</option>
+                    {result.style.split(' ').map((variant, index) => (
+                      <option key={index} className='select_option_value'>{variant}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {result.colour && (
+                <div className='select_option'>
+                  <label
+                    // className="block tracking-wide text-xs font-bold mb-2"
+                    htmlFor="price"
+                  >
+                    Colour:
+                  </label>
+                  {/* <span className='select_option_name'>variant:</span> */}
+                  <select onChange={e => handleVariantColour(e)}>
+                    <option className='select_option_value'>Select a Colour</option>
+                    {result.colour.split(' ').map((variant, index) => (
+                      <option key={index} className='select_option_value'>{variant}</option>
                     ))}
                   </select>
                 </div>
@@ -896,14 +998,13 @@ function StoreProductDetailed() {
 
               {/* // onChange={e => setInput(e.target.value)}/ */}
               <button disabled={isQuantityZero} style={{ backgroundColor: isQuantityZero ? "rgb(130, 130, 130)" : "", cursor: isQuantityZero ? "not-allowed" : "" }} className={`btn ${isQuantityZero ? "rgb(130, 130, 130)" : "btn--primary"}  btn--block`} onClick={added} type='button'>{isQuantityZero ? "Out of Stock" : "Add To Cart"}</button>
-              <h4>Product Details</h4>
+              {/* <h4>Product Details</h4> */}
               <span>
                 {result.description}
               </span>
             </div>
           </section>
         ))}
-
       </div>
     );
   }

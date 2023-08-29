@@ -1,11 +1,11 @@
 import React from 'react';
-// import "../Error.css"
+import "../Error.css"
 import { Link } from "react-router-dom"
 
 
 const NotFound = () => {
   return (
-    <div>
+    <div className='not-found'>
       <div>
         {/* <a href> */}
           <header className="top-header" />

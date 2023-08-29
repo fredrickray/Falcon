@@ -9,7 +9,13 @@ import Blog3 from "../assets/img/blog3.jpg"
 import Blog4 from "../assets/img/blog4.jpg"
 import Contact1 from "../assets/img/contact1.png"
 import { useNavigate } from 'react-router-dom';
-
+// import "../asset/css/animate.css"
+// import "../asset/css/bootstrap.min.css"
+// import "../asset/css/LineIcons.css"
+// import "../asset/css/magnific-popup.css"
+// import "../asset/css/main.css"
+// import "../asset/css/main.map"
+// import "../asset/css/main.map"
 
 
 const Index = () => {
