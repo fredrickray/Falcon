@@ -16,7 +16,7 @@ const Register = () => {
 
   // const check = () => setIsOpen(!true)
 
-  const API_URL = 'http://localhost:9000/auth/register';
+  const API_URL = 'https://falcon-server-jaek.onrender.com/auth/register';
 
 
   const facebookReg = () => {

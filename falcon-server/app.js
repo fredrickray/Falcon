@@ -10,6 +10,7 @@ const session = require("express-session")
 const passport = require("passport")
 const OauthRoute = require("./routes/googleRoute")
 const port  = process.env.PORT || 9000
+const server = process.env.SERVER
 const app = express()
 const cors = require("cors")
 
@@ -69,7 +70,8 @@ app.get("/", (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Server is running on port http://localhost:${port}`)
+    // console.log(`Server is running on port http://localhost:${port}`)
+    console.log(`Server is running on ${server}`)
 })
 
 
