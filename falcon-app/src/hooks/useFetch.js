@@ -9,7 +9,7 @@ const useFetch = url => {
   const [store, setStore] = useState("")
   // const [location, setLocation] = useState("")
   // const [fee, setFee] = useState("")
-  const { email } = localStorage;
+  const { email, token } = localStorage;
 
 
 
@@ -18,7 +18,7 @@ const useFetch = url => {
     () => {
       axios.post(url, { email }, {
         headers: {
-          Authorization: `Bearer ${localStorage.token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         },
       })
