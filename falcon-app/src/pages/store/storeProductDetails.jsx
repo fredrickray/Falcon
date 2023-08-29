@@ -7,7 +7,6 @@ import { GrClose } from 'react-icons/gr';
 import { FlutterWaveButton, closePaymentModal } from 'flutterwave-react-v3';
 import axios from "axios"
 import { useNavigate } from 'react-router-dom';
-import SuccessPayment from '../../components/SuccessPayment';
 
 function StoreProductDetailed() {
   const { id } = useParams();
@@ -27,8 +26,8 @@ function StoreProductDetailed() {
   const [cartItemCount, setCartItemCount] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isQuantityZero, setIsQuantityZero] = useState(false)
-  const { error, data: productDetail, store } = useProductId(`http://localhost:9000/stores/get-product/${id}`)
-  const GET_DELIVERY_URL = "http://localhost:9000/store/get-delivery"
+  const { error, data: productDetail, store } = useProductId(`https://falcon-server-jaek.onrender.com/stores/get-product/${id}`)
+  const GET_DELIVERY_URL = "https://falcon-server-jaek.onrender.com/store/get-delivery"
   const [addedItem, setAddedItem] = useState([])
   const { email, token } = localStorage
   let sumPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
