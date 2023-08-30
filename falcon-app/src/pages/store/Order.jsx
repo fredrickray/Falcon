@@ -16,7 +16,7 @@ const Orders = () => {
   })
 
   const result = () => {
-    axios.post("http://localhost:9000/payment/orders", { my_email: email })
+    axios.post("https://falcon-server-jaek.onrender.com/payment/orders", { my_email: email })
       .then(response => {
         // console.log(response.data.orderItems)
         setData(response.data.orderItems)
