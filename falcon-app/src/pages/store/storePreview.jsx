@@ -256,7 +256,7 @@ function StorePreview() {
       const { tx_ref, amount, currency, transaction_id, status } = response;
       const mainData = { email, firstname, lastname, customer_email, tx_ref, shipping_money: shippingMoney, amount, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, status, currency, transaction_id }
       try {
-        const response = await axios.post('http://localhost:9000/payment/new_payment', {
+        const response = await axios.post('https://falcon-server-jaek.onrender.com/payment/new_payment', {
           mainData,
           itemsData: selectedItemsData
         });

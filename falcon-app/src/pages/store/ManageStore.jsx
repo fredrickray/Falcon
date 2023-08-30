@@ -8,7 +8,7 @@ import { BsEyeFill, } from "react-icons/bs"
 import axios from "axios"
 
 const ManageStore = () => {
-    const { store, data } = useFetchStore(`http://localhost:9000/store/get-store/`)
+    const { store, data } = useFetchStore(`https://falcon-server-jaek.onrender.com/store/get-store/`)
     const link = `http://localhost:3000/Store/${store}`
     const [isNavOpen, setIsNavOpen] = useState(false)
     const textToCopy = link
@@ -34,7 +34,7 @@ const ManageStore = () => {
             try {
                 // Make a request to the backend to add the new discount using Axios
                 await axios.post(
-                    'http://localhost:9000/store/create-discount',
+                    'https://falcon-server-jaek.onrender.com/store/create-discount',
                     newDiscount,
                     {
                         headers: {
@@ -62,7 +62,7 @@ const ManageStore = () => {
         console.log('Deleting discount with id:', id);
         try {
             // Make a request to the backend to delete the item using Axios
-            const response = await axios.delete(`http://localhost:9000/store/delete-discount/${id}`,
+            const response = await axios.delete(`https://falcon-server-jaek.onrender.com/store/delete-discount/${id}`,
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.token}`,
@@ -83,7 +83,7 @@ const ManageStore = () => {
 
     async function fetchDiscounts() {
         try {
-            const response = await axios.post("http://localhost:9000/store/get-discount", { email },
+            const response = await axios.post("https://falcon-server-jaek.onrender.com/store/get-discount", { email },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

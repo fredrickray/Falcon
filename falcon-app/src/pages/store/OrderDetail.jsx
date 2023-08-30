@@ -6,7 +6,7 @@ import useFetch from '../../hooks/useFetch';
 
 const OrderDetail = () => {
     const { tx_ref } = useParams()
-    const { store } = useFetch("http://localhost:9000/store/get-products")
+    const { store } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
     const [orderDetail, setOrderDetail] = useState(null)
     const [filteredProducts, setFilteredProducts] = useState([]);
     // console.log(orderDetail)
@@ -18,7 +18,7 @@ const OrderDetail = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:9000/payment/order/order_details/${tx_ref}`)
+            const response = await axios.get(`https://falcon-server-jaek.onrender.com/payment/order/order_details/${tx_ref}`)
             if (response === null)
                 return
             else {

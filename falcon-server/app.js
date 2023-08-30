@@ -17,7 +17,7 @@ const cors = require("cors")
 
 app.use(cors())
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    origin: ["https://falcon-app.vercel.app"],
     methods: ["GET", "POST", "UPDATE", "DELETE", "OPTIONS"],
     credentials: true,
     allowedHeaders: "X-Requested-With,content-type"

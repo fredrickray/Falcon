@@ -6,7 +6,7 @@ import CopyToClipboardLink from '../../components/ClipBoard';
 
 const Products = () => {
   const [searchItem, setSearchItem] = useState("")
-  const { data: products, count, store } = useFetch("http://localhost:9000/store/get-products")
+  const { data: products, count, store } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
   const [isNavOpen, setIsNavOpen] = useState(false)
   const filteredProducts = products?.filter((data) =>
     data.name.toLowerCase().includes(searchItem.toLowerCase())

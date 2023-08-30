@@ -30,7 +30,7 @@ const Payments = () => {
 
     const handleGetPayments = async () => {
         try {
-            const response = await axios.get('http://localhost:9000/payment/get_payment', {
+            const response = await axios.get('https://falcon-server-jaek.onrender.com/payment/get_payment', {
                 params: {
                     email,
                 },

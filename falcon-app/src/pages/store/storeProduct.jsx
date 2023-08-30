@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BsTrashFill } from 'react-icons/bs';
 import axios from 'axios';
@@ -34,8 +34,8 @@ const StoreProduct = () => {
   // const token = localStorage.token;
   // useEffect(() => setWeight())
 
-  const { data: productDetail } = useProductId(`http://localhost:9000/store/get-product/${id}`)
-  const { store } = useFetchStore("http://localhost:9000/store/get-store")
+  const { data: productDetail } = useProductId(`https://falcon-server-jaek.onrender.com/store/get-product/${id}`)
+  const { store } = useFetchStore("https://falcon-server-jaek.onrender.com/store/get-store")
   // console.log(productDetail[0].price)
   const handleOptionChange = () => {
     setShowInputField(true);
@@ -114,7 +114,7 @@ const StoreProduct = () => {
   };
   const CLOUDINARY_API =
     'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
-  const PRODUCT_URL = `http://localhost:9000/store/update-product/${id}`;
+  const PRODUCT_URL = `https://falcon-server-jaek.onrender.com/store/update-product/${id}`;
 
   const update = () => {
     const formData = new FormData();
