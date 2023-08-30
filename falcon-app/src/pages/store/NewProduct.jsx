@@ -15,8 +15,8 @@ const NewProduct = () => {
   const [showSecondInput, setShowSecondInput] = useState(false);
   const [showThirdInput, setShowThirdInput] = useState(false);
   const [name, setName] = useState('');
-  const [price, setPrice] = useState('0.00');
-  const [comparePrice, setComparePrice] = useState("0.00")
+  const [price, setPrice] = useState('');
+  const [comparePrice, setComparePrice] = useState("")
   const [quantity, setQuantity] = useState('');
   const [description, setDescription] = useState('');
   const [weight, setWeight] = useState('');
@@ -95,7 +95,7 @@ const NewProduct = () => {
   // To restrict amount of images to select to 5
   const maxImage = e => {
     const files = e.target.files;
-    const maxFiles = 5; // set the maximum number of files here
+    const maxFiles = 4; // set the maximum number of files here
     if (files.length > maxFiles) {
       Swal.fire({
         position: 'center',
@@ -495,6 +495,7 @@ const NewProduct = () => {
                           type="number"
                           value={price}
                           onChange={e => setPrice(e.target.value)}
+                          placeholder='0.00'
                         />
                       </div>
 
@@ -514,6 +515,7 @@ const NewProduct = () => {
                           type="number"
                           value={comparePrice}
                           onChange={e => setComparePrice(e.target.value)}
+                          placeholder='0.00'
                         />
                       </div>
 
@@ -922,7 +924,8 @@ const NewProduct = () => {
               style={{
                 backgroundColor: '#f9f9f9',
                 color: '#828282',
-                padding: "30px"
+                padding: "30px",
+                justifyContent: "space-between"
                 // marginTop: '8%',
               }}
             >
@@ -1015,7 +1018,7 @@ const NewProduct = () => {
                         display: 'block',
                       }}
                     >
-                      Maximum of 5 media files
+                      Maximum of 4 media files
                     </span>
                   </span>
                 </label>
