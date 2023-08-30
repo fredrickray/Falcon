@@ -319,7 +319,7 @@ const Register = () => {
                 <div className="w-full max-w-full px-3 mx-auto mt-0 text-center lg:flex-0 shrink-0 lg:w-5/12">
                   <h1 className="mt-12 mb-2 text-white">Welcome!</h1>
                   <p className="text-white">
-                    Use these awesome forms to login or create new account in your project for free.
+                  Sign up now to discover exclusive features, personalized experiences, and exciting opportunities tailored just for you. Your journey starts here!
                   </p>
                 </div>
               </div>

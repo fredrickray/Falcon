@@ -7,47 +7,49 @@ const PasswordReset = () => {
     // const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const URL = "http://localhost:9000/auth/password_reset"
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false)
+    const URL = "https://falcon-server-jaek.onrender.com/auth/password_reset"
+    const popUp = (position, toast, title, color, icon, timer) => {
+        Swal.fire({
+            position: position,
+            toast: toast,
+            title: title,
+            color: color,
+            icon: icon,
+            showConfirmButton: false,
+            timer: timer,
+          });
+    } 
 
     const verify = async () => {
         try {
-            // setIsButtonDisabled(true)
+            setIsButtonDisabled(true)
             const response = await Axios.post(URL, { email, password })
+            // setIsButtonDisabled(true)
             console.log(response.data.message)
             console.log(response.data.status)
             if(response.data.status === "Success") {
+                setIsButtonDisabled(false)
                 console.log(response.data.message)
-                Swal.fire({
-                    position: 'top-right',
-                    toast: true,
-                    title: response.data.message,
-                    color: 'green',
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 3500,
-                  });
+                popUp("top-right", true, response.data.message, "green", "success", 3500)
                    window.location.href = "/Login"
             }
-            Swal.fire({
-                position: 'top-right',
-                toast: true,
-                title: response.data.message,
-                color: 'red',
-                showConfirmButton: false,
-                timer: 2500,
-              });
+            setIsButtonDisabled(false)
+            popUp("top-right", true, response.data.message, "red", "", 2500)
             
         }
         catch (error) {
             console.log(error)
-            Swal.fire({
-                position: 'center',
-                toast: true,
-                title: error.message,
-                color: 'red',
-                showConfirmButton: false,
-                timer: 2500,
-              });
+            setIsButtonDisabled(false)
+            popUp("center", true, error.message, "red", "", 2500)
+            // Swal.fire({
+            //     position: 'center',
+            //     toast: true,
+            //     title: error.message,
+            //     color: 'red',
+            //     showConfirmButton: false,
+            //     timer: 2500,
+            //   });
         }
     }
 
@@ -112,7 +114,7 @@ const PasswordReset = () => {
                                     <div className="relative flex flex-col min-w-0 mt-32 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border">
                                         <div className="p-6 pb-0 mb-0 bg-transparent border-b-0 rounded-t-2xl">
                                             <p className="mb-0">
-                                                Enter your email and password to sign in
+                                                Enter your email to verify and reset password to sign in
                                             </p>
 
                                         </div>
@@ -154,9 +156,10 @@ const PasswordReset = () => {
                                                         className="inline-block w-full px-6 py-3 mt-6 mb-0 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
                                                         // disabled={isButtonDisabled ? true : false}
                                                         onClick={verify}
+                                                        disabled={isButtonDisabled ? true : false}
                                                     >
-                                                        {/* {isButtonDisabled ? 'Verifying....' : 'Verify'} */}
-                                                        Verify
+                                                        {isButtonDisabled ? 'Verifying....' : 'Verify'}
+                                                        {/* Verify */}
                                                     </button>
                                                 </div>
                                             </form>

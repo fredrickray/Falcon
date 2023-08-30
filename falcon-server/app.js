@@ -36,7 +36,7 @@ app.use(
 // Middleware to handle preflight requests
 const handlePreflight = (req, res, next) => {
     // Set the CORS headers for the preflight request
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // Replace * with your allowed origins
+    res.setHeader("Access-Control-Allow-Origin", "https://falcon-app.vercel.app"); // Replace * with your allowed origins
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Include your allowed methods
     res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type"); // Include your allowed headers
   
