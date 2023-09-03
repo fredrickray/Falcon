@@ -9,7 +9,7 @@ router.use (bodyParser.urlencoded ({extended: true}));
 router.use (bodyParser.json ());
 router.use (express.json ());
 router.use(cors({
-    origin: ["https://falcon-app.vercel.app"],
+    origin: ["https://falcon-app.vercel.app", "http://localhost:3000"],
     methods: ["GET", "POST", "UPDATE", "DELETE"],
     credentials: true,
 

@@ -4,11 +4,13 @@ import axios from 'axios';
 
 const useFetchStore = url => {
     const [data, setData] = useState (null);
+    const [isFetching, setIsFetching] = useState(false)
     const { token, email } = localStorage
     const [store, setStore] = useState("")
     const [link, setLink] = useState("")
 
     useEffect(() => {
+      setIsFetching(true)
         axios.post(url, {
           email
         }, {
@@ -21,9 +23,11 @@ const useFetchStore = url => {
             setData(response.data)
             setStore(response.data.response[0].name)
             setLink(response.data.response[0].link)
+            setIsFetching(false)
         })
         .catch(err => {
           if (err.response.status === 401) {
+            setIsFetching(false)
             Swal.fire({
               position: 'top-end',
               // icon: 'success',
@@ -39,19 +43,21 @@ const useFetchStore = url => {
           }
           else {
             // Handle other errors here, e.g., show an alert with the error message
-            Swal.fire({
-              position: 'top-end',
-              toast: true,
-              color: 'red',
-              text: "Retrieved Store for user",
-              showConfirmButton: false,
-              timer: 3000,
-            });
+            setIsFetching(false)
+            console.log(err)
+            // Swal.fire({
+            //   position: 'top-end',
+            //   toast: true,
+            //   color: 'red',
+            //   text: "Retrieved Store for user",
+            //   showConfirmButton: false,
+            //   timer: 3000,
+            // });
           }
         })
       },
       [ url, token, link, email ])
-      return { data, store, link }
+      return { data, store, link, isFetching }
 }
 
 export default useFetchStore;

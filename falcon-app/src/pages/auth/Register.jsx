@@ -13,11 +13,25 @@ const Register = () => {
   const [passwordReg, setPasswordReg] = useState('');
   const [phone, setPhone] = useState('');
   const [isOpen, setIsOpen] = useState(false)
+  const [isNavOpen, setIsNavOpen] = useState(false)
 
   // const check = () => setIsOpen(!true)
 
-  const API_URL = 'https://falcon-server-jaek.onrender.com/auth/register';
+  const handleNavOpen = () => {
+    setIsNavOpen(prev => !prev)
+  }
 
+  const API_URL = 'https://falcon-server-jaek.onrender.com/auth/register';
+  const response = (message) => {
+    Swal.fire({
+      position: 'top-end',
+      color: "red",
+      toast: true,
+      title: message,
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  }
 
   const facebookReg = () => {
     Swal.fire({
@@ -41,20 +55,20 @@ const Register = () => {
     });
   };
 
-  const googleReg = () => {
-    window.open(
-      `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'http://localhost:9000'}/auth/google/callback`,
-      '_self'
-    );
-    // Swal.fire ({
-    //   position: 'top-end',
-    //   // icon: 'success',
-    //   toast: true,
-    //   title: 'Google authentication, coming soon!!!',
-    //   showConfirmButton: false,
-    //   timer: 2500,
-    // });
-  };
+  // const googleReg = () => {
+  //   window.open(
+  //     `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'http://localhost:9000'}/auth/google/callback`,
+  //     '_self'
+  //   );
+  //   // Swal.fire ({
+  //   //   position: 'top-end',
+  //   //   // icon: 'success',
+  //   //   toast: true,
+  //   //   title: 'Google authentication, coming soon!!!',
+  //   //   showConfirmButton: false,
+  //   //   timer: 2500,
+  //   // });
+  // };
 
   // const googleAuth = () => {
   //   fetch("/auth/google/callback")
@@ -65,16 +79,12 @@ const Register = () => {
   //       console.log(error)
   //     })
   // }
-  const response = (message) => {
-    Swal.fire({
-      position: 'top-end',
-      color: "red",
-      toast: true,
-      title: message,
-      showConfirmButton: false,
-      timer: 2500,
-    });
-  }
+
+  const googleReg = () => {
+    response('Google authentication, coming soon!!!')
+  };
+
+  
 
   const register = () => {
     if (fnameReg.length === 0) {
@@ -107,7 +117,7 @@ const Register = () => {
 
     if (passwordReg.length < 8) {
       response(
-        'Password must contain greater than or equal to 8 characters.',
+        'Password must be greater than or equal to 8 characters.',
       )
       return
     }
@@ -167,25 +177,25 @@ const Register = () => {
 
     if (countLowerCase === 0) {
       // invalid form, 0 lowercase characters
-      response('Invalid Form, 0 lower case characters in password')
+      response('Password must include lowercase')
       return
     }
 
     if (countUpperCase === 0) {
       // invalid form, 0 upper case characters
-      response('Invalid Form, 0 upper case characters in password')
+      response('Password must include uppercase')
       return
     }
 
     if (countDigit === 0) {
       // invalid form, 0 digit characters
-      response('Invalid Form, 0 digit characters in password')
+      response('Password must include a number')
       return
     }
 
     if (countSpecialCharacters === 0) {
       // invalid form, 0 special characters characters
-      response('Invalid Form, 0 special characters in passwordReg')
+      response('Password must have special characters')
       return
     }
     Axios.post(API_URL, {
@@ -261,30 +271,31 @@ const Register = () => {
             aria-controls="navigation"
             aria-expanded="false"
             aria-label="Toggle navigation"
+            onClick={handleNavOpen}
           >
             <span className="inline-block mt-2 align-middle bg-center bg-no-repeat bg-cover w-6 h-6 bg-none">
               <span
                 bar1
-                className="w-5.5 rounded-xs duration-350 relative my-0 mx-auto block h-px bg-white transition-all"
+                className={`w-5.5 rounded-xs duration-350 relative my-0 mx-auto block h-px bg-white transition-all ${isNavOpen ? "" : "rotate-45 origin-10-10 mt-1"}`}
               />
               <span
                 bar2
-                className="w-5.5 rounded-xs mt-1.75 duration-350 relative my-0 mx-auto block h-px bg-white transition-all"
+                className={`w-5.5 rounded-xs mt-1.75 duration-350 relative my-0 mx-auto block h-px bg-white transition-all ${isNavOpen ? "" : "opacity-0"}`}
               />
               <span
                 bar3
-                className="w-5.5 rounded-xs mt-1.75 duration-350 relative my-0 mx-auto block h-px bg-white transition-all"
+                className={`w-5.5 rounded-xs mt-1.75 ${isNavOpen ? "" : "-rotate-45 origin-10-90"} duration-350 relative my-0 mx-auto block h-px bg-white transition-all`}
               />
             </span>
           </button>
           <div
             navbar-menu
-            className="items-center flex-grow transition-all ease-soft duration-350 lg-max:bg-white lg-max:max-h-0 lg-max:overflow-hidden basis-full rounded-xl lg:flex lg:basis-auto"
+            className={`items-center flex-grow transition-all ease-soft duration-350 lg-max:bg-white ${isNavOpen ? "lg-max:max-h-0" : "lg-max:max-h-54"} lg-max:overflow-hidden basis-full rounded-xl lg:flex lg:basis-auto`}
           >
             <ul className="flex flex-col pl-0 mx-auto mb-0 list-none lg:flex-row xl:ml-auto">
               <li>
                 <Link
-                  className="block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 lg-max:opacity-0 lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75"
+                  className={`block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 ${isNavOpen ? "lg-max:opacity-0" : "lg-max:opacity-100"} lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75`}
                   to
                 >
                   <i className="mr-1 text-white lg-max:text-slate-700 fas fa-user-circle opacity-60" />
@@ -293,7 +304,7 @@ const Register = () => {
               </li>
               <li>
                 <Link
-                  className="block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 lg-max:opacity-0 lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75"
+                  className={`block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 ${isNavOpen ? "lg-max:opacity-0" : "lg-max:opacity-100"} lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75`}
                   to="/Login"
                 >
                   <i className="mr-1 text-white lg-max:text-slate-700 fas fa-key opacity-60" />
@@ -528,7 +539,7 @@ const Register = () => {
                       <div className="text-center">
                         <button
                           type="button"
-                          className="inline-block w-full px-6 py-3 mt-6 mb-2 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:scale-102 hover:shadow-soft-xs leading-pro text-xs ease-soft-in tracking-tight-soft shadow-soft-md bg-150 bg-x-25 bg-gradient-to-tl from-gray-900 to-slate-800 hover:border-slate-700 hover:bg-slate-700 hover:text-white"
+                          className="inline-block w-full px-6 py-3 mt-6 mb-2 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:scale-102 hover:shadow-soft-xs leading-pro text-xs ease-soft-in tracking-tight-soft shadow-soft-md bg-150 bg-x-25 bg-black hover:border-slate-700 hover:bg-slate-700 hover:text-white"
                           onClick={register}
                         >
                           Sign up

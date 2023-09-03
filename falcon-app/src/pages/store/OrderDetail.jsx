@@ -233,7 +233,7 @@ const OrderDetail = () => {
     else {
         return (
             <div className="sm-0 font-sans antialiased font-normal text-base leading-default bg-gray-50 text-slate-500">
-                <AsideBar />
+                <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen}/>
 
                 <main className="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen rounded-xl transition-all duration-200">
                     <nav
@@ -289,10 +289,10 @@ const OrderDetail = () => {
                                             className="block p-0 transition-all ease-nav-brand text-sm text-slate-500"
                                             sidenav-trigger
                                         >
-                                            <div className="w-4.5 overflow-hidden">
-                                                <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
-                                                <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
-                                                <i className="ease-soft relative block h-0.5 rounded-sm bg-slate-500 transition-all" />
+                                            <div className="w-4.5 overflow-hidden" onClick={handleNavOpen}>
+                                                <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`}></i>
+                                                <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all"></i>
+                                                <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`}></i>
                                             </div>
                                         </a>
                                     </li>

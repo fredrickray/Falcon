@@ -167,7 +167,7 @@ const Home = () => {
             </div>
 
             {/* <!-- card3 --> */}
-            <div className="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
+            {/* <div className="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
               <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
                 <div className="flex-auto p-4">
                   <div className="flex flex-row -mx-3">
@@ -178,9 +178,6 @@ const Home = () => {
                         </p>
                         <h5 className="mb-0 font-bold">
                           +3,462
-                          {/* <span className="leading-normal text-red-600 text-sm font-weight-bolder">
-                            -2%
-                          </span> */}
                         </h5>
                       </div>
                     </div>
@@ -192,10 +189,10 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* <!-- card4 --> */}
-            <div className="w-full max-w-full px-3 sm:w-1/2 sm:flex-none xl:w-1/4">
+            {/* <div className="w-full max-w-full px-3 sm:w-1/2 sm:flex-none xl:w-1/4">
               <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
                 <div className="flex-auto p-4">
                   <div className="flex flex-row -mx-3">
@@ -206,9 +203,6 @@ const Home = () => {
                         </p>
                         <h5 className="mb-0 font-bold">
                           $103,430
-                          {/* <span className="leading-normal text-sm font-weight-bolder text-lime-500">
-                            +5%
-                          </span> */}
                         </h5>
                       </div>
                     </div>
@@ -220,7 +214,7 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* <!-- cards row 2 --> */}
