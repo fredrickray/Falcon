@@ -5,6 +5,7 @@ import axios from 'axios';
 const useFetch = url => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const [isFetching, setIsFetching] = useState(false)
   const [count, setCount] = useState(0)
   const [store, setStore] = useState("")
   // const [location, setLocation] = useState("")
@@ -16,6 +17,7 @@ const useFetch = url => {
 
   useEffect(
     () => {
+      setIsFetching(true)
       axios.post(url, { email }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -30,6 +32,7 @@ const useFetch = url => {
           setData(data);
           setCount(data.length)
           setStore(data[0].store)
+          setIsFetching(false)
           // setFee(data.data2.slice(0,3).fee)
           // setLocation(data.data2.location)
         })
@@ -40,13 +43,14 @@ const useFetch = url => {
           // }
       
           if (err.response.data.error) {
+            setIsFetching(false)
             console.log(err.response.data.error)
             Swal.fire({
               position: 'top-end',
               // icon: 'success',
               toast: true,
               color: "red",
-              title: 'Authorization token required',
+              title: err.response.data.error,
               showConfirmButton: false,
               timer: 3000,
             })
@@ -58,9 +62,9 @@ const useFetch = url => {
           }
         });
     },
-    [url, error, email]
+    [url, error, email,token]
   );
-  return { data, count, store };
+  return { data, count, store, isFetching };
 };
 
 export default useFetch;

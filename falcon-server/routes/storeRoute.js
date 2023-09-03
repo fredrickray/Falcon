@@ -9,7 +9,7 @@ router.use (bodyParser.json ());
 router.use (express.json ());
 
 router.use(cors({
-    origin: ["https://falcon-app.vercel.app"],
+    origin: ["https://falcon-app.vercel.app", "http://localhost:3000"],
     methods: ["GET", "POST", "UPDATE", "DELETE", "OPTIONS"],
     credentials: true,
     allowedHeaders:  ["X-Requested-With", "Content-Type", "Authorization"],
@@ -39,9 +39,9 @@ router
 
 
 router
-.post("/store", storeController.store)
+.post("/get-store", storeController.store)
 router
-.post("/get-store", storeController.checkStoreExist)
+.post("/check-store", storeController.checkStoreExist)
 
 router
 .get("/products", storeController.queryProducts)

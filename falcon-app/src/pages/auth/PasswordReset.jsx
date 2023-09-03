@@ -8,6 +8,7 @@ const PasswordReset = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [isButtonDisabled, setIsButtonDisabled] = useState(false)
+    const [isNavOpen, setIsNavOpen] = useState(false)
     const URL = "https://falcon-server-jaek.onrender.com/auth/password_reset"
     const popUp = (position, toast, title, color, icon, timer) => {
         Swal.fire({
@@ -18,8 +19,8 @@ const PasswordReset = () => {
             icon: icon,
             showConfirmButton: false,
             timer: timer,
-          });
-    } 
+        });
+    }
 
     const verify = async () => {
         try {
@@ -28,15 +29,15 @@ const PasswordReset = () => {
             // setIsButtonDisabled(true)
             console.log(response.data.message)
             console.log(response.data.status)
-            if(response.data.status === "Success") {
+            if (response.data.status === "Success") {
                 setIsButtonDisabled(false)
                 console.log(response.data.message)
                 popUp("top-right", true, response.data.message, "green", "success", 3500)
-                   window.location.href = "/Login"
+                window.location.href = "/Login"
             }
             setIsButtonDisabled(false)
-            popUp("top-right", true, response.data.message, "red", "", 2500)
-            
+            popUp("top-right", true, response.data.message, "green", "", 2500)
+
         }
         catch (error) {
             console.log(error)
@@ -53,6 +54,11 @@ const PasswordReset = () => {
         }
     }
 
+    const handleNavOpen = () => {
+        setIsNavOpen(prev => !prev)
+    }
+
+
     return (
         <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
             <div className="container sticky top-0 z-sticky">
@@ -62,40 +68,42 @@ const PasswordReset = () => {
                         <nav className="absolute top-0 left-0 right-0 z-30 flex flex-wrap items-center px-4 py-2 mx-6 my-4 shadow-soft-2xl rounded-blur bg-white/80 backdrop-blur-2xl backdrop-saturate-200 lg:flex-nowrap lg:justify-start">
                             <div className="flex items-center justify-between w-full p-0 pl-6 mx-auto flex-wrap-inherit">
                                 <button
+                                    // onClick={handleNavOpen}
                                     navbar-trigger
                                     className="px-3 py-1 ml-2 leading-none transition-all bg-transparent border border-transparent border-solid rounded-lg shadow-none cursor-pointer text-lg ease-soft-in-out lg:hidden"
                                     type="button"
                                     aria-controls="navigation"
                                     aria-expanded="false"
                                     aria-label="Toggle navigation"
+                                    onClick={handleNavOpen}
                                 >
                                     <span className="inline-block mt-2 align-middle bg-center bg-no-repeat bg-cover w-6 h-6 bg-none">
                                         <span
                                             bar1
-                                            className="w-5.5 rounded-xs relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300"
+                                            className={`w-5.5 rounded-xs relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "" : "rotate-45 origin-10-10 mt-1"}`}
                                         />
                                         <span
                                             bar2
-                                            className="w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300"
+                                            className={`w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "" : "opacity-0"}`}
                                         />
                                         <span
                                             bar3
-                                            className="w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300"
+                                            className={`w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "" : "-rotate-45 origin-10-90 mt-0.75"}`}
                                         />
                                     </span>
                                 </button>
                                 <div
                                     navbar-menu
-                                    className="items-center flex-grow overflow-hidden transition-all duration-500 ease-soft lg-max:max-h-0 basis-full lg:flex lg:basis-auto"
+                                    className={`items-center flex-grow  transition-all duration-500 ease-soft ${isNavOpen ? "lg-max:max-h-0" : "lg-max:max-h-54"} basis-full lg:flex lg:basis-auto`}
                                 >
                                     <ul className="flex flex-col pl-0 mx-auto mb-0 list-none lg:flex-row xl:ml-auto">
                                         <li>
                                             <Link
-                                                className="block px-4 py-2 mr-2 font-normal transition-all lg-max:opacity-0 duration-250 ease-soft-in-out text-sm text-slate-700 lg:px-2"
+                                                className={`block px-4 py-2 mr-2 font-normal transition-all ${isNavOpen ? "lg-max:opacity-0" : "lg-max:opacity-100"} duration-250 ease-soft-in-out text-sm text-slate-700 lg:px-2`}
                                                 to="/Login"
                                             >
                                                 <i className="mr-1 fas fa-key opacity-60" />
-                                                Go back
+                                                Go Back
                                             </Link>
                                         </li>
                                     </ul>

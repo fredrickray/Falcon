@@ -9,6 +9,7 @@ const Login = () => {
   const [email, setEmail] = useState ('');
   const [password, setPassword] = useState ('');
   const [isButtonDisabled, setIsButtonDisabled] = useState (false);
+  const [isNavOpen, setIsNavOpen] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   // const [isNavOpen, setIsNavOpen] = useState(false)
   const LOGIN_URL = 'https://falcon-server-jaek.onrender.com/auth/login';
@@ -22,6 +23,10 @@ const Login = () => {
       showConfirmButton: false,
       timer: 2500,
     });
+  }
+
+  const handleNavOpen = () => {
+    setIsNavOpen(prev => !prev)
   }
 
   // const handleNavOpen = () => setIsNavOpen(prev => !prev)
@@ -57,6 +62,7 @@ const Login = () => {
     })
       .then (response => {
         console.log (response);
+        setIsButtonDisabled(false)
         // setIsLoading(true)
         const {fname, lname, email, username, phone} = response.data.data;
         const token = response.data.token;
@@ -122,30 +128,31 @@ const Login = () => {
                   aria-controls="navigation"
                   aria-expanded="false"
                   aria-label="Toggle navigation"
+                  onClick={handleNavOpen}
                 >
                   <span className="inline-block mt-2 align-middle bg-center bg-no-repeat bg-cover w-6 h-6 bg-none">
                     <span
                       bar1
-                      className="w-5.5 rounded-xs relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300"
+                      className={`w-5.5 rounded-xs relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "" : "rotate-45 origin-10-10 mt-1"}`}
                     />
                     <span
                       bar2
-                      className="w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300"
+                      className={`w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "" : "opacity-0"}`}
                     />
                     <span
                       bar3
-                      className="w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300"
+                      className={`w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "" : "-rotate-45 origin-10-90 mt-0.75"}`}
                     />
                   </span>
                 </button>
                 <div
                   navbar-menu
-                  className={`items-center flex-grow  transition-all duration-500 ease-soft lg-max:max-h-0 basis-full lg:flex lg:basis-auto`}
+                  className={`items-center flex-grow  transition-all duration-500 ease-soft ${isNavOpen ? "lg-max:max-h-0" : "lg-max:max-h-54"} basis-full lg:flex lg:basis-auto`}
                 >
                   <ul className="flex flex-col pl-0 mx-auto mb-0 list-none lg:flex-row xl:ml-auto">
                     <li>
                       <Link
-                        className="block px-4 py-2 mr-2 font-normal transition-all lg-max:opacity-0 duration-250 ease-soft-in-out text-sm text-slate-700 lg:px-2"
+                        className={`block px-4 py-2 mr-2 font-normal transition-all ${isNavOpen ? "lg-max:opacity-0" : "lg-max:opacity-100"} duration-250 ease-soft-in-out text-sm text-slate-700 lg:px-2`}
                         to="/Register"
                       >
                         <i className="mr-1 fas fa-user-circle opacity-60" />
@@ -154,7 +161,7 @@ const Login = () => {
                     </li>
                     <li>
                       <Link
-                        className="block px-4 py-2 mr-2 font-normal transition-all lg-max:opacity-0 duration-250 ease-soft-in-out text-sm text-slate-700 lg:px-2"
+                        className={`block px-4 py-2 mr-2 font-normal transition-all ${isNavOpen ? "lg-max:opacity-0" : "lg-max:opacity-100"} duration-250 ease-soft-in-out text-sm text-slate-700 lg:px-2`}
                         to="/Login"
                       >
                         <i className="mr-1 fas fa-key opacity-60" />
@@ -176,7 +183,7 @@ const Login = () => {
                 <div className="flex flex-col w-full max-w-full px-3 mx-auto md:flex-0 shrink-0 md:w-6/12 lg:w-5/12 xl:w-4/12">
                   <div className="relative flex flex-col min-w-0 mt-32 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border">
                     <div className="p-6 pb-0 mb-0 bg-transparent border-b-0 rounded-t-2xl">
-                      <h3 className="relative z-10 font-bold text-transparent bg-gradient-to-tl from-blue-600 to-cyan-400 bg-clip-text">
+                      <h3 className="relative z-10 font-bold text-transparent bg-black bg-clip-text">
                         Welcome back
                       </h3>
                       <div id="googleDiv">
@@ -328,7 +335,7 @@ const Login = () => {
                         <div className="text-center">
                           <button
                             type="button"
-                            className={`inline-block w-full px-6 py-3 mt-6 mb-0 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft ${isButtonDisabled ? "bg-gray-600" : "bg-gradient-to-tl from-blue-600 to-cyan-400"}  hover:scale-102 hover:shadow-soft-xs active:opacity-85`}
+                            className={`inline-block w-full px-6 py-3 mt-6 mb-0 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft ${isButtonDisabled ? "bg-gray-600" : "bg-black"}  hover:scale-102 hover:shadow-soft-xs active:opacity-85`}
                             disabled={isButtonDisabled ? true : false}
                             onClick={login}
                           >
@@ -347,9 +354,9 @@ const Login = () => {
                         Don't have an account?
                         <Link
                           to="/Register"
-                          className="relative z-10 font-semibold text-transparent bg-gradient-to-tl from-blue-600 to-cyan-400 bg-clip-text"
+                          className="relative z-10 font-semibold  text-slate-700 bg-clip-text"
                         >
-                          Sign up
+                           Sign up
                         </Link>
                       </p>
                     </div>

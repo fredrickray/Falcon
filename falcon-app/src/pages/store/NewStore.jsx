@@ -4,6 +4,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import useFetchStore from '../../hooks/useFetchStore';
 import { Link } from 'react-router-dom';
+import { LineWave } from 'react-loader-spinner'
 const NewStore = () => {
   const [name, setName] = useState('');
   const [link, setLink] = useState('');
@@ -19,6 +20,14 @@ const NewStore = () => {
   const showForm = () => {
     setShowFormField(!showFormField)
 
+  }
+
+  const showImage = () => {
+    Swal.fire({
+      imageUrl: selectedImage,
+      imageWidth: 400,
+      imageHeight: "auto",
+    })
   }
 
   // to use the function "handleImageUpload" and set Image to send to the backend
@@ -59,12 +68,12 @@ const NewStore = () => {
               logo: logoUrl,
               email: email,
             },
-            {
-              headers: {
-                Authorization : `Bearer ${token}`,
-                "Content-Type": "application/json"
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json"
+                }
               }
-            }
             )
             .then(response => {
               console.log(response.data);
@@ -107,59 +116,59 @@ const NewStore = () => {
           });
         });
     }
-    else{
+    else {
       axios
-      .post(CREATE_STORE_URL, {
-        name: name,
-        link: link,
-        email: email,
-      },
-      {
-        headers: {
-          Authorization : `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      }
-      )
-      .then(response => {
-        console.log(response.data);
-        setIsButtonDisabled(false);
-        Swal.fire({
-          position: 'top-end',
-          toast: true,
-          title: "Store created successfully",
-          color: 'green',
-          showConfirmButton: false,
-          timer: 2500,
+        .post(CREATE_STORE_URL, {
+          name: name,
+          link: link,
+          email: email,
+        },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+          }
+        )
+        .then(response => {
+          console.log(response.data);
+          setIsButtonDisabled(false);
+          Swal.fire({
+            position: 'top-end',
+            toast: true,
+            title: "Store created successfully",
+            color: 'green',
+            showConfirmButton: false,
+            timer: 2500,
+          })
+            .then(window.location.href = "/store/products/new")
         })
-        .then(window.location.href = "/store/products/new")
-      })
-      .catch(error => {
-        console.log("Log error for the post to the backend on the else statement")
-        console.log(error);
-        setIsButtonDisabled(false);
-        Swal.fire({
-          position: 'center',
-          toast: true,
-          title: "Failed to create store",
-          color: 'red',
-          showConfirmButton: false,
-          timer: 2500,
+        .catch(error => {
+          console.log("Log error for the post to the backend on the else statement")
+          console.log(error);
+          setIsButtonDisabled(false);
+          Swal.fire({
+            position: 'center',
+            toast: true,
+            title: "Failed to create store",
+            color: 'red',
+            showConfirmButton: false,
+            timer: 2500,
+          });
         });
-      });
     }
   };
 
-  const handleNavOpen = () =>  setIsNavOpen(prev => !prev)
+  const handleNavOpen = () => setIsNavOpen(prev => !prev)
 
-  
+
 
 
 
 
   return (
     <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
-      <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen}/>
+      <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen} />
       <main className="ease-soft-in-out xl:ml-68.5 relative h-screen max-h-screen rounded-xl transition-all duration-200">
 
         <nav
@@ -185,7 +194,7 @@ const NewStore = () => {
             </nav>
 
             <div className="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
-              <ul style={{marginLeft: "70%"}} className="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
+              <ul style={{ marginLeft: "70%" }} className="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
                 {/* <!-- online builder btn  --> */}
                 <li className="flex items-center pl-4 xl:hidden">
                   <a
@@ -249,31 +258,7 @@ const NewStore = () => {
             </div>
           )}
 
-          {!data && (
-            <div className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
-              <div className="relative flex flex-col h-full min-w-0 break-words bg-transparent border border-solid shadow-none rounded-2xl border-slate-100 bg-clip-border">
-                <div className="flex flex-col justify-center flex-auto p-6 text-center">
-                  {/* <Link to="/store/Products/new"> */}
-                  <button onClick={showForm}>
-                    {showFormField ?
-                      <div>
-                        <i className="mb-4 fa fa-minus text-slate-400" />
-                        <h5 className="text-slate-400">Cancel</h5>
-                      </div>
 
-                      :
-                      <div>
-                        <i className="mb-4 fa fa-plus text-slate-400" />
-                        <h5 className="text-slate-400">New Store</h5>
-                      </div>
-
-                    }
-                  </button>
-                  {/* </Link> */}
-                </div>
-              </div>
-            </div>
-          )}
 
           {showFormField && (
             <div className="container">
@@ -312,7 +297,7 @@ const NewStore = () => {
                         </label>
                         <div style={{ width: "100%", padding: "12px 16px 11px", lineHeight: "19px", color: "inherit", fontFamily: "inherit", backgroundColor: "#fff", backgroundClip: "padding-box", border: "1px solid #e0e0e0", borderRadius: "4px", borderShadow: "none", maxHeight: "41px", outline: "none", whiteSpace: "nowrap" }} className="mb-4 flex items-center transition-all .5">
                           <span style={{ fontStretch: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} className="text-#828282 mr-0 max-w-20">
-                            http://localhost:9000/stores/get-stores/
+                            https://falcon-server-jaek.onrender.com/stores/get-stores/
                           </span>
                           <input
                             name="link"
@@ -350,9 +335,11 @@ const NewStore = () => {
                           <img
                             src={selectedImage}
                             alt="Selected Img"
+                            onClick={showImage}
                             style={{
                               width: "50px",
-                              height: "50px"
+                              height: "50px",
+                              cursor: "pointer"
                             }}
                           />}
 
@@ -373,7 +360,46 @@ const NewStore = () => {
               </div>
             </div>
           )}
+
+          {!data && (
+            <div style={{ margin: "30px auto" }} className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
+              <div className="relative flex flex-col h-full min-w-0 break-words bg-transparent border border-solid shadow-none rounded-2xl border-slate-100 bg-clip-border">
+                <div className="flex flex-col justify-center flex-auto p-6 text-center">
+                  {/* <Link to="/store/Products/new"> */}
+                  <button onClick={showForm}>
+                    {showFormField ?
+                      <div>
+                        <i className="mb-4 fa fa-minus text-slate-400" />
+                        <h5 className="text-slate-400">Cancel</h5>
+                      </div>
+
+                      :
+                      <div>
+                        <i className="mb-4 fa fa-plus text-slate-400" />
+                        <h5 className="text-slate-400">New Store</h5>
+                      </div>
+
+                    }
+                  </button>
+                  {/* </Link> */}
+                </div>
+              </div>
+            </div>
+          )}
         </section>
+
+        <LineWave
+          height="200"
+          width="200"
+          color="#4fa94d"
+          ariaLabel="line-wave"
+          wrapperStyle={{justifyContent: "center"}}
+          wrapperClass=""
+          visible={true}
+          firstLineColor=""
+          middleLineColor=""
+          lastLineColor=""
+        />
         {/* </main> */}
       </main>
     </div>
