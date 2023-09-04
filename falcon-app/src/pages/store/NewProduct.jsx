@@ -32,7 +32,7 @@ const NewProduct = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false)
   const { email, token } = localStorage;
-  const { store, isFetching } = useFetchStore("https://falcon-server-jaek.onrender.com/store/store")
+  const { store, isFetching } = useFetchStore("https://falcon-server-jaek.onrender.com/store/get-store")
   // const { store } = useFetch("http://localhost:9000/store/get-products")
   // console.log(description)
   const handleOptionChange = () => {
@@ -398,7 +398,7 @@ const NewProduct = () => {
   
     return (
       <div className="bg-white">
-        {/* {!isFetching && store && ( */}
+        {!isFetching && store && (
           <nav
             navbar-main
             className="relative flex flex-wrap items-center justify-between w-full px-0 py-2 mx-6 mt-6 transition-all shadow-none bg-gray-950/80 duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
@@ -413,11 +413,11 @@ const NewProduct = () => {
                 <div className="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
                   <div className="flex items-center">
                     <Link to="/Products">
-                      <GrClose className="mr-4" style={{ cursor: 'pointer' }} />
+                      <GrClose className="mr-4" style={{ cursor: 'pointer', fontSize: "24px" }} />
                     </Link>
                     <h6 className="mb-0 font-bold capitalize">Add new product</h6>
                   </div>
-                  <nav className=" start-0 flex justify-end xl:margin: left-4">
+                  <nav className=" end-0 flex justify-end xl:margin: left-4">
                     <button
                       type="button"
                       className="ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
@@ -438,7 +438,7 @@ const NewProduct = () => {
               </nav>
             </div>
           </nav>
-        {/* // )} */}
+        )}
 
         {isFetching && (
           <LineWave
@@ -1073,7 +1073,7 @@ const NewProduct = () => {
           </div>
         )}
 
-        {!isFetching && (store || store.length === 0) && (
+        {!isFetching && (!store || store.length === 0) && (
           <div>
             <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen} />
             <main className='ease-soft-in-out xl:ml-68.5 relative h-screen max-h-screen rounded-xl transition-all duration-200'>

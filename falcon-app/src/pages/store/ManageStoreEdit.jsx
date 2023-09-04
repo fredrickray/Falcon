@@ -26,7 +26,7 @@ const ManageStoreEdit = () => {
 
     const fetchStore = async () => {
         try {
-            const response = await axios.post("https://falcon-server-jaek.onrender.com/store/store", { email }, {
+            const response = await axios.post("https://falcon-server-jaek.onrender.com/store/get-store", { email }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"

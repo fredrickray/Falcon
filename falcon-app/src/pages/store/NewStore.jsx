@@ -15,7 +15,7 @@ const NewStore = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isNavOpen, setIsNavOpen] = useState(false)
   const CLOUDINARY_API = process.env.REACT_APP_CLOUDINARY_API;
-  const { data } = useFetchStore("https://falcon-server-jaek.onrender.com/store/get-store")
+  const { store, isFetching } = useFetchStore("https://falcon-server-jaek.onrender.com/store/get-store")
 
   const showForm = () => {
     setShowFormField(!showFormField)
@@ -216,6 +216,7 @@ const NewStore = () => {
 
         {/* <main className="mt-0 transition-all duration-200 ease-soft-in-out"> */}
         <section className="min-h-screen mb-32">
+          {!isFetching && (
           <div
             className="relative flex items-start pt-12 pb-56 m-4 overflow-hidden bg-center bg-cover min-h-50-screen rounded-xl"
             style={{
@@ -233,8 +234,24 @@ const NewStore = () => {
               </div>
             </div>
           </div>
+          )}
 
-          {data && (
+          {isFetching && (
+            <LineWave
+              height="200"
+              width="200"
+              color="#4fa94d"
+              ariaLabel="line-wave"
+              wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, -70%)", top: "50%", left: "50%",  }}              
+              wrapperClass=""
+              visible={true}
+              firstLineColor=""
+              middleLineColor=""
+              lastLineColor=""
+            />
+          )}
+
+          {!isFetching && store && (
             <div className="container">
               <div className="flex flex-wrap -mx-3 -mt-48 md:-mt-56 lg:-mt-48">
                 <div className="w-full max-w-full px-3 mx-auto mt-0 md:flex-0 shrink-0 md:w-7/12 lg:w-5/12 xl:w-4/12">
@@ -257,7 +274,6 @@ const NewStore = () => {
               </div>
             </div>
           )}
-
 
 
           {showFormField && (
@@ -361,7 +377,7 @@ const NewStore = () => {
             </div>
           )}
 
-          {!data && (
+          {!isFetching && (!store || store.length === 0) && (
             <div style={{ margin: "30px auto" }} className="w-full max-w-full px-3 mb-6 md:w-6/12 md:flex-none xl:mb-0 xl:w-3/12">
               <div className="relative flex flex-col h-full min-w-0 break-words bg-transparent border border-solid shadow-none rounded-2xl border-slate-100 bg-clip-border">
                 <div className="flex flex-col justify-center flex-auto p-6 text-center">
@@ -387,20 +403,6 @@ const NewStore = () => {
             </div>
           )}
         </section>
-
-        <LineWave
-          height="200"
-          width="200"
-          color="#4fa94d"
-          ariaLabel="line-wave"
-          wrapperStyle={{justifyContent: "center"}}
-          wrapperClass=""
-          visible={true}
-          firstLineColor=""
-          middleLineColor=""
-          lastLineColor=""
-        />
-        {/* </main> */}
       </main>
     </div>
   );

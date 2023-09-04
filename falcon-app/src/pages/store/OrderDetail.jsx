@@ -3,35 +3,43 @@ import AsideBar from '../../components/AsideBar';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import useFetch from '../../hooks/useFetch';
+import { LineWave } from 'react-loader-spinner';
 
 const OrderDetail = () => {
     const { tx_ref } = useParams()
     const { store } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
     const [orderDetail, setOrderDetail] = useState(null)
     const [filteredProducts, setFilteredProducts] = useState([]);
+    const [isFetching, setIsFetching] = useState(false)
     // console.log(orderDetail)
     const [isNavOpen, setIsNavOpen] = useState(false)
     const [searchItem, setSearchItem] = useState("")
     useEffect(() => {
-        fetchData()
-    }, [])
-
-    const fetchData = async () => {
-        try {
-            const response = await axios.get(`https://falcon-server-jaek.onrender.com/payment/order/order_details/${tx_ref}`)
-            if (response === null)
-                return
-            else {
-                console.log(response.data)
-                setOrderDetail(response.data)
+        const fetchData = async () => {
+            setIsFetching(true)
+            try {
+                const response = await axios.get(`https://falcon-server-jaek.onrender.com/payment/order/order_details/${tx_ref}`)
+                if (response.status === 400) {
+                    setIsFetching(false)
+                    return
+                }
+                else {
+                    console.log(response.data)
+                    setOrderDetail(response.data)
+                    setIsFetching(false)
+                }
+    
             }
+            catch (error) {
+                console.log(error)
+                setIsFetching(false)
+            }
+        }
+        fetchData()
+    }, [tx_ref])
 
-        }
-        catch (error) {
-            console.log(error)
-        }
-    }
-   
+    
+
     // const check = () => console.log("Clicking")
 
     useEffect(() => {
@@ -46,12 +54,12 @@ const OrderDetail = () => {
         }
     }, [orderDetail, searchItem]);
 
-    const handleNavOpen = () =>  setIsNavOpen(prev => !prev)
+    const handleNavOpen = () => setIsNavOpen(prev => !prev)
 
     if (store) {
         return (
             <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
-                <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen}/>
+                <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen} />
 
                 <main className="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen rounded-xl transition-all duration-200">
                     <nav
@@ -120,16 +128,22 @@ const OrderDetail = () => {
                         </div>
                     </nav>
 
-                    {orderDetail === null ? (
-                        <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
-                            <h1 className='text-md ' style={{ fontSize: "32px", justifyContent: "center" }}>
-                                There were no item found <br />for the provided tx_ref.
-                            </h1>
-                            <p>
-                                Order list doesn't exist or it was deleted <br /> Go back and try again .
-                            </p>
-                        </div>
-                    ) : (
+                    {isFetching && (
+                        <LineWave
+                            height="300"
+                            width="300"
+                            color="#4fa94d"
+                            ariaLabel="line-wave"
+                            wrapperStyle={{ justifyContent: "center", position: "fixed", display: "flex", alignItems: "center", transform: "translate(-30%, -70%)", top: "50%", left: "50%", }}
+                            wrapperClass=""
+                            visible={true}
+                            firstLineColor=""
+                            middleLineColor=""
+                            lastLineColor=""
+                        />
+                    )}
+
+                    {!isFetching && orderDetail && (
                         <div className="flex flex-wrap -mx-3 mt-5%" style={{ marginTop: '5%' }}>
                             <div className="flex-none w-full max-w-full px-3">
                                 <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
@@ -139,12 +153,12 @@ const OrderDetail = () => {
                                             <label className='font-bold capitalize text-slate-900'>Created:</label>
                                             <p className='cursor-pointer' style={{ color: "blue", marginLeft: "20px" }}>{new Date(orderDetail[0].created_at).toLocaleDateString()}</p>
                                             {/* <CopyToClipboardLink text={textToCopy}>
-                                                <i
-                                                    style={{ marginLeft: "15px", cursor: "pointer" }}
-                                                    className="fa fa-clone"
-                                                    aria-hidden="true"
-                                                />
-                                            </CopyToClipboardLink> */}
+                                            <i
+                                                style={{ marginLeft: "15px", cursor: "pointer" }}
+                                                className="fa fa-clone"
+                                                aria-hidden="true"
+                                            />
+                                        </CopyToClipboardLink> */}
                                         </div>
                                     </div>
                                     <div className="flex-auto px-0 pt-0 pb-2">
@@ -162,62 +176,62 @@ const OrderDetail = () => {
                                                             Quantity
                                                         </th>
                                                         {/* <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900">
-                                                            Tx_Ref
-                                                        </th>
-                                                        <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900">
-                                                            Date
-                                                        </th> */}
+                                                        Tx_Ref
+                                                    </th>
+                                                    <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900">
+                                                        Date
+                                                    </th> */}
                                                     </tr>
                                                 </thead>
-                                                        {filteredProducts?.length === 0 ? (
-                                                                                    <p style={{ marginLeft: "140%", fontSize: "20px" }} className='p-2 align-middle bg-transparent whitespace-nowrap shadow-transparent'>No item found</p>
-                                                        ) : (
-                                                <tbody>
-                                                    {filteredProducts?.map((result) => (
-                                                        <tr
-                                                            key={result.id}
-                                                            // onClick={() => navigate(`/Store/Product/${result.id}`)}
-                                                            className='cursor-pointer'>
+                                                {filteredProducts?.length === 0 ? (
+                                                    <p style={{ marginLeft: "140%", fontSize: "20px" }} className='p-2 align-middle bg-transparent whitespace-nowrap shadow-transparent'>No item found</p>
+                                                ) : (
+                                                    <tbody>
+                                                        {filteredProducts?.map((result) => (
+                                                            <tr
+                                                                key={result.id}
+                                                                // onClick={() => navigate(`/Store/Product/${result.id}`)}
+                                                                className='cursor-pointer'>
 
-                                                            <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent"
-                                                            // style={{ textDecoration: "none", width: "100%" }}
-                                                            >
-                                                                <div className="flex px-2 py-1" >
-                                                                    <div>
-                                                                        <img
-                                                                            src={result.image}
-                                                                            className="inline-flex items-center justify-center mr-4 text-white transition-all duration-200 ease-soft-in-out text-sm h-9 w-9 rounded-xl"
-                                                                            alt="user1"
-                                                                        />
+                                                                <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent"
+                                                                // style={{ textDecoration: "none", width: "100%" }}
+                                                                >
+                                                                    <div className="flex px-2 py-1" >
+                                                                        <div>
+                                                                            <img
+                                                                                src={result.image}
+                                                                                className="inline-flex items-center justify-center mr-4 text-white transition-all duration-200 ease-soft-in-out text-sm h-9 w-9 rounded-xl"
+                                                                                alt="user1"
+                                                                            />
+                                                                        </div>
+                                                                        <div className="flex flex-col justify-center">
+                                                                            <h6 className="mb-0 leading-normal text-sm">
+                                                                                {result.name}
+                                                                            </h6>
+                                                                        </div>
                                                                     </div>
-                                                                    <div className="flex flex-col justify-center">
-                                                                        <h6 className="mb-0 leading-normal text-sm">
-                                                                            {result.name}
-                                                                        </h6>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
+                                                                </td>
 
-                                                            <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                <p className="mb-0 font-semibold leading-tight text-xs">
-                                                                    ₦{result.price.toLocaleString()}
-                                                                </p>
-                                                            </td>
+                                                                <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                    <p className="mb-0 font-semibold leading-tight text-xs">
+                                                                        ₦{result.price.toLocaleString()}
+                                                                    </p>
+                                                                </td>
 
-                                                            <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                <span className="font-semibold leading-tight text-xs text-black-400">
-                                                                    {result.quantity}
-                                                                </span>
-                                                            </td>
+                                                                <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                    <span className="font-semibold leading-tight text-xs text-black-400">
+                                                                        {result.quantity}
+                                                                    </span>
+                                                                </td>
 
-                                                            {/* <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                <span className="font-semibold leading-tight text-xs text-slate-400">
-                                                                    {new Date(result.created_at).toLocaleDateString()}
-                                                                </span>
-                                                            </td> */}
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
+                                                                {/* <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                            <span className="font-semibold leading-tight text-xs text-slate-400">
+                                                                {new Date(result.created_at).toLocaleDateString()}
+                                                            </span>
+                                                        </td> */}
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
                                                 )}
                                             </table>
                                         </div>
@@ -226,6 +240,29 @@ const OrderDetail = () => {
                             </div>
                         </div>
                     )}
+
+                    {!isFetching && (!orderDetail || orderDetail.length === 0) && (
+                        <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
+                            <h1 className='text-md' style={{ fontSize: "25px", paddingTop: "20%" }}>
+                                There are no orders to show <br />within this period.
+                            </h1>
+                            <p>
+                                Your customers might be looking for ways to pay you, create a product<br /> and start selling.
+                            </p>
+                        </div>
+                    )}
+
+                    {!isFetching && orderDetail === null && (
+                        <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
+                            <h1 className='text-md ' style={{ fontSize: "32px", justifyContent: "center" }}>
+                                There were no item found <br />for the provided tx_ref.
+                            </h1>
+                            <p>
+                                Order list doesn't exist or it was deleted <br /> Go back and try again .
+                            </p>
+                        </div>
+                    )}
+
                 </main>
             </div>
         );
@@ -233,7 +270,7 @@ const OrderDetail = () => {
     else {
         return (
             <div className="sm-0 font-sans antialiased font-normal text-base leading-default bg-gray-50 text-slate-500">
-                <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen}/>
+                <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen} />
 
                 <main className="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen rounded-xl transition-all duration-200">
                     <nav
@@ -301,14 +338,7 @@ const OrderDetail = () => {
                         </div>
                     </nav>
 
-                    <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
-                        <h1 className='text-md '>
-                            There are no orders to show <br />within this period.
-                        </h1>
-                        <p>
-                            Your customers might be looking for ways to pay you, create a product<br /> and start selling.
-                        </p>
-                    </div>
+
                 </main>
             </div>
         );

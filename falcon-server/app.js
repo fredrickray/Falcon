@@ -55,7 +55,7 @@ app.use(handlePreflight)
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/auth", OauthRoute)
+app.use("/OAuth", OauthRoute)
 app.use("/auth", authR)
 app.use("/admin", adminR)
 app.use("/store", storeR)

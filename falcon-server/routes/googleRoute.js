@@ -5,17 +5,25 @@ const passport = require("passport")
 
 // Route for initiating the Google OAuth authentication
 router
-.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+.get('/google', passport.authenticate('google',  ['profile', 'email']));
 
 
 // Route for handling the callback URL after successful authentication
-router
-.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
-    // Redirect or handle successful authentication
-    res.redirect('/Home');
-  }
+router.get('/google/callback', 
+passport.authenticate('google', {
+   successRedirect: "http://localhost:3000/Home",
+   failureRedirect: '/login' }),
+  // (req, res) => {
+  //   // Redirect or handle successful authentication
+  //   res.redirect('/Home');
+  // }
 );
+// router.get("/google/callback",
+// passport.authenticate("google", {
+//     successRedirect: process.env.CLIENT_URL || "http://localhost:3000/Home",
+//     failureRedirect: "/login/failed"
+// }))  
+
 
 // Route for accessing the authenticated user profile
 router

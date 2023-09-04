@@ -59,7 +59,11 @@ const Login = () => {
     Axios.post (LOGIN_URL, {
       email: email,
       password: password,
-    })
+    }, 
+    {
+      withCredentials: true,
+    }
+    )
       .then (response => {
         console.log (response);
         setIsButtonDisabled(false)
