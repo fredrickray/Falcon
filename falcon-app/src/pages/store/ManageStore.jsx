@@ -130,7 +130,7 @@ const ManageStore = () => {
                                 </ol>
                                 <h6 className='mb-0 font-bold capitalize'>Store Setup</h6>
                             </nav>
-                            <div className="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
+                            <div style={{maxWidth: "40px"}} className="flex max-w-[40px] items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
 
                                 <ul className="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
                                     <li className="flex items-center pl-4 xl:hidden">
@@ -164,12 +164,12 @@ const ManageStore = () => {
 
                     {!isFetching && store && (
                         <div>
-                            <div className='flex justify-between mt-1'>
-                                <h3 style={{ paddingLeft: "40px", paddingTop: "20px" }}>Store settings</h3>
+                            <div className='flex justify-between mt-1' style={{ margin: "0 38px"}}>
+                                <h3 className='text-6 p-0 lg:p-[40px]' style={{ paddingTop: "20px", fontSize: "24px" }}>Store settings</h3>
                                 <button
                                     type="button"
-                                    className="inline-block ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
-                                    style={{ background: '#FF9B00', marginRight: "4%" }}
+                                    className="mr-0 lg:mr-[4%]  inline-block ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+                                    style={{ background: '#FF9B00' }}
                                     onClick={() => navigate('/Store/setup/edit')}
                                 >
                                     Edit store
@@ -194,9 +194,9 @@ const ManageStore = () => {
                             </div>
 
                             <div className="container-fluid">
-                                <div className='border-b border-solid border-black' style={{ paddingLeft: "40px", paddingTop: "50px" }}>
+                                <div className='border-b border-solid mx-9 border-black' style={{ paddingLeft: "40px", paddingTop: "50px", margin: "0 38px" }}>
                                     <h4>Add discount code</h4>
-                                    <div className='flex' style={{ gap: "20px", paddingBottom: "20px" }}>
+                                    <div className='flex flex-col md:flex-row' style={{ gap: "20px", paddingBottom: "20px" }}>
 
                                         <div className="mb-4 relative flex-row">
                                             <label className="mb-2 ml-1 font-bold text-xs text-slate-700">

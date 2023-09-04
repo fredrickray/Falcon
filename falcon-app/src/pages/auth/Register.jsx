@@ -55,12 +55,22 @@ const Register = () => {
     });
   };
 
-  const googleReg = () => {
-    window.open(
-      `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'https://falcon-server-jaek.onrender.com'}/OAuth/google/callback`,
-      '_self'
-    );
-}
+//   const googleReg = () => {
+//     window.open(
+//       `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'https://falcon-server-jaek.onrender.com'}/OAuth/google/callback`,
+//       '_self'
+//     );
+// }
+
+  const googleReg = async() => {
+    try {
+      const response = await Axios.get("https://falcon-server-jaek.onrender.com/OAuth/google/callback")
+      console.log(response)
+    } 
+    catch (error) {
+      console.log(error)
+    }
+  }
   //   // Swal.fire ({
   //   //   position: 'top-end',
   //   //   // icon: 'success',

@@ -38,7 +38,7 @@ const Products = () => {
 
               {!isFetching && store && (
               <div className="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
-                <div className="flex items-center md:ml-auto md:pr-4">
+                <div className="flex flex-col md:flex-row items-center w-full md:ml-auto md:pr-4">
                   <div className="relative flex flex-wrap items-stretch w-full transition-all rounded-lg ease-soft">
                     <span className="text-sm ease-soft leading-5.6 absolute z-50 -ml-px flex h-full items-center whitespace-nowrap rounded-lg rounded-tr-none rounded-br-none border border-r-0 border-transparent bg-transparent py-2 px-2.5 text-center font-normal text-slate-500 transition-all">
                       <i className="fas fa-search" aria-hidden="true"></i>
@@ -46,8 +46,7 @@ const Products = () => {
                     <input type="text" className="pl-8.75 text-sm focus:shadow-soft-primary-outline ease-soft w-1/100 leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 pr-3 text-gray-700 transition-all placeholder:text-gray-500 focus:border-fuchsia-300 focus:outline-none focus:transition-shadow" placeholder="Type here..."
                       onChange={e => setSearchItem(e.target.value)} value={searchItem} />
                   </div>
-                </div>
-                <button
+                  <button
                   type="button"
                   className="inline-block ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-green-600 to-green-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
                   style={{ background: '#FF9B00', margin: "4%" }}
@@ -55,6 +54,7 @@ const Products = () => {
                 >
                   Add Product +
                 </button>
+                </div>
                 <ul className="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
                   <li className="flex items-center">
                     <Link to="/profile" className="block px-0 py-2 font-semibold transition-all ease-nav-brand text-sm text-slate-500">
