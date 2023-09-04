@@ -3,6 +3,7 @@ import AsideBar from '../../components/AsideBar';
 import axios from "axios";
 // import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { LineWave } from 'react-loader-spinner';
 const Orders = () => {
 
   const [data, setData] = useState(null)
@@ -10,21 +11,32 @@ const Orders = () => {
   const [searchItem, setSearchItem] = useState("")
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isNavOpen, setIsNavOpen] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
   const navigate = useNavigate()
   useEffect(() => {
+    const result = async () => {
+      setIsFetching(true)
+      try {
+        const response = await  axios.post("https://falcon-server-jaek.onrender.com/payment/orders", { my_email: email })
+        if(response.status === 200) {
+          console.log(response.data.orderItems)
+          setData(response.data.orderItems)
+          setIsFetching(false)
+        }
+        else{
+          console.log(response.data.message)
+        }
+        console.log(response.status)
+      } 
+      catch (error) {
+        console.log(error)
+        setIsFetching(false)
+      }
+    }
     result()
-  })
+  }, [email])
 
-  const result = () => {
-    axios.post("https://falcon-server-jaek.onrender.com/payment/orders", { my_email: email })
-      .then(response => {
-        // console.log(response.data.orderItems)
-        setData(response.data.orderItems)
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
+ 
 
   useEffect(() => {
     if (data) {
@@ -107,17 +119,23 @@ const Orders = () => {
           </div>
         </nav>
 
-        {!data ? (
-          <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
-            <h1 className='text-md '>
-              There are no orders to show <br />within this period.
-            </h1>
-            <p>
-              Your customers might be looking for ways to pay you, create a product<br /> and start selling.
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-wrap -mx-3 mt-5%" style={{ marginTop: '5%' }}>
+        {isFetching && (
+            <LineWave
+              height="300"
+              width="300"
+              color="#4fa94d"
+              ariaLabel="line-wave"
+              wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, 40%)", top: "50%", left: "50%",  }}
+              wrapperClass=""
+              visible={true}
+              firstLineColor=""
+              middleLineColor=""
+              lastLineColor=""
+            />
+          )}
+
+          {!isFetching && data && (
+            <div className="flex flex-wrap -mx-3 mt-5%" style={{ marginTop: '5%' }}>
             <div className="flex-none w-full max-w-full px-3">
               <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
                 <div className="p-6 pb-0 mb-0 bg-white border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
@@ -194,8 +212,19 @@ const Orders = () => {
               </div>
             </div>
           </div>
-        )}
+          )}
 
+          {!isFetching && (!data || data.length === 0) && (
+            <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
+            <h1 className='text-md' style={{fontSize: "25px", paddingTop: "20%"}}>
+              There are no orders to show <br />within this period.
+            </h1>
+            <p>
+              Your customers might be looking for ways to pay you, create a product<br /> and start selling.
+            </p>
+          </div>
+          )}
+                  
       </main>
 
     </div>

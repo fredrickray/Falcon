@@ -194,7 +194,6 @@ const passwordReset = async (req, res) => {
 
   try {
     // Hash the new password
-    const saltRounds = 10; // You can adjust this value based on your requirements
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Update the password in the database for the given email

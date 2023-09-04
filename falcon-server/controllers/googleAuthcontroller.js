@@ -25,8 +25,8 @@ passport.use(
                 // Add other profile properties as needed
               };
     
-              const [userId] = await db('user_profiles').insert(newUser);
-              newUser.id = userId;
+              // const [userId] = await knex('user_profiles').insert(newUser);
+              // newUser.id = userId;
               console.log(user)
     
               done(null, newUser);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AsideBar from '../../components/AsideBar';
 import axios from "axios";
 import Swal from 'sweetalert2';
-
+import { LineWave } from 'react-loader-spinner';
 
 
 const Payments = () => {
@@ -12,8 +12,9 @@ const Payments = () => {
     const [searchItem, setSearchItem] = useState("")
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [isNavOpen, setIsNavOpen] = useState(false)
+    const [isFetching, setIsFetching] = useState(false)
 
-    const popUp = ( position , message, color ) => {
+    const popUp = (position, message, color) => {
         Swal.fire({
             position: position,
             toast: true,
@@ -29,6 +30,7 @@ const Payments = () => {
     }, [email])
 
     const handleGetPayments = async () => {
+        setIsFetching(true)
         try {
             const response = await axios.get('https://falcon-server-jaek.onrender.com/payment/get_payment', {
                 params: {
@@ -40,14 +42,17 @@ const Payments = () => {
 
             if (response.data.message === 'No transactions found for this email') {
                 popUp("center", response.data.message)
+                setIsFetching(false)
             }
             else {
                 popUp("top-end", response.data.message)
                 setData(response.data.response)
+                setIsFetching(false)
             }
         }
         catch (error) {
             popUp("top-end", error.response.data.message, "red")
+            setIsFetching(false)
             console.error(error.response.data.message);
         }
     };
@@ -134,16 +139,22 @@ const Payments = () => {
                     </div>
                 </nav>
 
-                {!data ? (
-                    <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
-                        <h1 className='text-md '>
-                            There are no Payments to show <br />within this period.
-                        </h1>
-                        <p>
-                            Your customers might be looking for ways to pay you, create a product<br /> and start selling.
-                        </p>
-                    </div>
-                ) : (
+                {isFetching && (
+                    <LineWave
+                        height="300"
+                        width="300"
+                        color="#4fa94d"
+                        ariaLabel="line-wave"
+                        wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, 40%)", top: "50%", left: "50%", }}
+                        wrapperClass=""
+                        visible={true}
+                        firstLineColor=""
+                        middleLineColor=""
+                        lastLineColor=""
+                    />
+                )}
+
+                {!isFetching && data && (
                     <div className="flex flex-wrap -mx-3 mt-5%" style={{ marginTop: '5%' }}>
                         <div className="flex-none w-full max-w-full px-3">
                             <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
@@ -220,6 +231,20 @@ const Payments = () => {
                         </div>
                     </div>
                 )}
+
+                {!isFetching && (!data || data.length === 0) && (
+                    <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
+                        <h1 className='text-md '>
+                            There are no Payments to show <br />within this period.
+                        </h1>
+                        <p>
+                            Your customers might be looking for ways to pay you, create a product<br /> and start selling.
+                        </p>
+                    </div>
+                )}
+
+
+
             </main>
 
         </div>

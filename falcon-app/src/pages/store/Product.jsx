@@ -86,9 +86,9 @@ const Products = () => {
               wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, 40%)", top: "50%", left: "50%",  }}
               wrapperClass=""
               visible={true}
-              firstLineColor=""
-              middleLineColor=""
-              lastLineColor=""
+              firstLineColor="black"
+              middleLineColor="black"
+              lastLineColor="black"
             />
           )}
 
@@ -122,7 +122,7 @@ const Products = () => {
                               Price
                             </th>
                             <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900">
-                              Number of product sold
+                              Number of product
                             </th>
                             <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900">
                               Date
@@ -163,7 +163,7 @@ const Products = () => {
                                 </td>
                                 <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                                   <span className="font-semibold leading-tight text-xs text-black-400">
-                                    {result.quantity > 0 ? `0 / ${result.quantity}` : "Out of Stock"}
+                                    {result.quantity > 0 ? `${result.quantity}` : "Out of Stock"}
                                   </span>
                                 </td>
                                 <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">

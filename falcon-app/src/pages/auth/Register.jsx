@@ -55,11 +55,12 @@ const Register = () => {
     });
   };
 
-  // const googleReg = () => {
-  //   window.open(
-  //     `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'http://localhost:9000'}/auth/google/callback`,
-  //     '_self'
-  //   );
+  const googleReg = () => {
+    window.open(
+      `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'https://falcon-server-jaek.onrender.com'}/OAuth/google/callback`,
+      '_self'
+    );
+}
   //   // Swal.fire ({
   //   //   position: 'top-end',
   //   //   // icon: 'success',
@@ -70,8 +71,8 @@ const Register = () => {
   //   // });
   // };
 
-  // const googleAuth = () => {
-  //   fetch("/auth/google/callback")
+  // const googleReg = () => {
+  //   fetch("/OAuth/google/callback")
   //     .then(response => {
   //       console.log(response)
   //     }) 
@@ -80,9 +81,9 @@ const Register = () => {
   //     })
   // }
 
-  const googleReg = () => {
-    response('Google authentication, coming soon!!!')
-  };
+  // const googleReg = () => {
+  //   response('Google authentication, coming soon!!!')
+  // };
 
   
 
