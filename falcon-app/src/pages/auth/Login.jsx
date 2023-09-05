@@ -60,9 +60,9 @@ const Login = () => {
       email: email,
       password: password,
     }, 
-    {
-      withCredentials: true,
-    }
+    // {
+    //   withCredentials: true,
+    // }
     )
       .then (response => {
         console.log (response);
