@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AsideBar from '../../components/AsideBar'
 import axios from "axios"
 import useFetch from '../../hooks/useFetch'
-
+import { LineWave } from 'react-loader-spinner'
 const Shipping = () => {
     const [handleShipping, setHandleShipping] = useState(false)
     const [showInputField, setShowInputField] = useState(false)
@@ -10,7 +10,7 @@ const Shipping = () => {
     const [priceValue, setPriceValue] = useState('');
     const [savedValues, setSavedValues] = useState([]);
     const [isNavOpen, setIsNavOpen] = useState(false)
-    const { store } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
+    const { store, isFetching } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
     const { email, token } = localStorage
     const CREATE_DELIVERY_URL = "https://falcon-server-jaek.onrender.com/store/create-delivery"
     const GET_DELIVERY_URL = "https://falcon-server-jaek.onrender.com/store/get-delivery"
@@ -53,7 +53,7 @@ const Shipping = () => {
                     },
                 }
             )
-            console.log(response.data.data2)
+            // console.log(response.data.data2)
             setSavedValues(response.data.data2);
         }
         catch (error) {
@@ -63,7 +63,6 @@ const Shipping = () => {
 
     useEffect(() => {
         fetchSavedValues();
-        console.log(savedValues)
     }, []);
 
 
@@ -77,13 +76,13 @@ const Shipping = () => {
                 email
             };
             try {
-                 await axios.post(CREATE_DELIVERY_URL, newItem, {
+                await axios.post(CREATE_DELIVERY_URL, newItem, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json"
                     },
                 });
-                const createdItem =  fetchSavedValues()// Assuming the server responds with the created item data
+                const createdItem = fetchSavedValues()// Assuming the server responds with the created item data
                 setSavedValues(createdItem);
                 setRegionsValue('');
                 setPriceValue('');
@@ -169,140 +168,157 @@ const Shipping = () => {
                     </div>
                 </nav>
 
-                <section className='min-h-screen mb-32' style={{ marginLeft: '7%', marginTop: '3%' }}>
-                    <div>
-                        <h5>Shipping setup for {store}</h5>
-                    </div>
-                    <div>
-                        <p>
-                            Shipping preference
-                        </p>
-                        <select onChange={handleShippingChange} className='focus:shadow-soft-primary-outline block w-3 pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '>
-                            <option value='turn-off'>
-                                Turn off shipping
-                            </option>
-                            <option value='handle'>
-                                I'll handle my own shipping
-                            </option>
-                        </select>
-                    </div>
-
-                    {handleShipping && (
-                        <div style={{ marginTop: '3%' }}>
-                            <h5>Shipping regions and rates</h5>
-                            <p className='leading-tight text-xs text-slate-400'>
-                                This would allow you to set shipping fees for your products
+                {isFetching ? (
+                    <LineWave
+                        height="300"
+                        width="300"
+                        color="#4fa94d"
+                        ariaLabel="line-wave"
+                        wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, 40%)", top: "50%", left: "50%", }}
+                        wrapperClass=""
+                        visible={true}
+                        firstLineColor="black"
+                        middleLineColor="black"
+                        lastLineColor="black"
+                    />
+                ) : (
+                    <section className='min-h-screen mb-32' style={{ marginLeft: '7%', marginTop: '3%' }}>
+                        <div>
+                            <h5>{store ? `Shipping setup for ${store}` : "Shipping setup"}</h5>
+                        </div>
+                        <div>
+                            <p>
+                                Shipping preference
                             </p>
-                            <button
-                                className='inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85'
-                                type=''
-                                style={{ background: '#FF9B00' }}
-                                onClick={handleInputChange}>
-                                Add shipping region
-                            </button>
+                            <select onChange={handleShippingChange} className='focus:shadow-soft-primary-outline block w-3 pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '>
+                                <option value='turn-off'>
+                                    Turn off shipping
+                                </option>
+                                <option value='handle'>
+                                    I'll handle my own shipping
+                                </option>
+                            </select>
                         </div>
-                    )}
 
-                    {handleShipping && (
-                        <div className='mt-4'>
-                            {showInputField &&
-                                <div className='flex sm:block'>
-                                    <div
-                                        className="w-full md:w-4/12 px-3 pb"
-                                        style={{ marginTop: '5%' }}
-                                    >
-                                        <label
-                                            className="block  tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                            htmlFor="price"
+                        {handleShipping && (
+                            <div style={{ marginTop: '3%' }}>
+                                <h5>Shipping regions and rates</h5>
+                                <p className='leading-tight text-xs text-slate-400'>
+                                    This would allow you to set shipping fees for your products
+                                </p>
+                                <button
+                                    className='inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85'
+                                    type=''
+                                    style={{ background: '#FF9B00' }}
+                                    onClick={handleInputChange}>
+                                    Add shipping region
+                                </button>
+                            </div>
+                        )}
+
+                        {handleShipping && (
+                            <div className='mt-4'>
+                                {showInputField &&
+                                    <div className='flex sm:block'>
+                                        <div
+                                            className="w-full md:w-4/12 px-3 pb"
+                                            style={{ marginTop: '5%' }}
                                         >
-                                            Regions
-                                        </label>
+                                            <label
+                                                className="block  tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                                htmlFor="price"
+                                            >
+                                                Regions
+                                            </label>
 
-                                        <input
-                                            className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-3 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
-                                            type="text"
-                                            id='regions'
-                                            value={regionsValue}
-                                            onChange={(e) => setRegionsValue(e.target.value)}
-                                        />
-                                    </div>
-
-                                    <div
-                                        className="flex items-center  w-full md:w-8/12 px-3 pb"
-                                        style={{ marginTop: '2%' }}
-                                    >
-                                        <label
-                                            className="block  tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                            htmlFor="price"
-                                        >
-                                            Price
-                                        </label>
-                                        <input
-                                            className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-3 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
-                                            id="Style"
-                                            type="number"
-                                            style={{ marginTop: '8%' }}
-                                            value={priceValue}
-                                            onChange={(e) => setPriceValue(e.target.value)} />
-                                        <button
-                                            className="inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
-                                            type="button"
-                                            style={{ background: '#FF9B00' }}
-                                            onClick={handleSave}
-                                        >Save
-                                        </button>
-                                        <div className="mt-4 cursor-pointer">
-                                            <p className='cursor-pointer text-red-500' onClick={removeInput}>Remove</p>
-                                            {/* <BsTrashFill onClick={removeInput} /> */}
+                                            <input
+                                                className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-3 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
+                                                type="text"
+                                                id='regions'
+                                                value={regionsValue}
+                                                onChange={(e) => setRegionsValue(e.target.value)}
+                                            />
                                         </div>
-                                    </div>
-                                </div>}
+
+                                        <div
+                                            className="flex items-center  w-full md:w-8/12 px-3 pb"
+                                            style={{ marginTop: '2%' }}
+                                        >
+                                            <label
+                                                className="block  tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                                htmlFor="price"
+                                            >
+                                                Price
+                                            </label>
+                                            <input
+                                                className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-3 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
+                                                id="Style"
+                                                type="number"
+                                                style={{ marginTop: '8%' }}
+                                                value={priceValue}
+                                                onChange={(e) => setPriceValue(e.target.value)} />
+                                            <button
+                                                className="inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+                                                type="button"
+                                                style={{ background: '#FF9B00' }}
+                                                onClick={handleSave}
+                                            >Save
+                                            </button>
+                                            <div className="mt-4 cursor-pointer">
+                                                <p className='cursor-pointer text-red-500' onClick={removeInput}>Remove</p>
+                                                {/* <BsTrashFill onClick={removeInput} /> */}
+                                            </div>
+                                        </div>
+                                    </div>}
 
 
-                            {savedValues.length > 0 && (
-                                <div class="relative flex flex-col w-full  min-w-0 mb-0 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
-                                    <div class="flex-auto px-0 pt-0 pb-2">
-                                        <div class="p-0 overflow-x-auto">
-                                            <table class="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
-                                                <thead class="align-bottom">
-                                                    <tr>
-                                                        <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Label</th>
-                                                        <th class="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Regions</th>
-                                                        <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Price</th>
-                                                        <th class="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-gray-200 border-solid shadow-none tracking-none whitespace-nowrap text-slate-400 opacity-70"></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {savedValues.map((value, index) => (
-                                                        <tr key={value.id}>
-                                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                <div class="flex px-2 py-1">
-
-                                                                    <div class="flex flex-col justify-center">
-                                                                        <h6 class="mb-0 leading-normal text-sm">{index + 1}</h6>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                <p class="mb-0 font-semibold leading-tight text-xs">{value.regions || value.location}</p>
-                                                            </td>
-                                                            <td class="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                <span class="font-semibold leading-tight text-xs text-slate-400">{value.price || value.fee}</span>
-                                                            </td>
-                                                            <td class="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                <p onClick={() => handleRemove(value.id)} class="font-semibold leading-tight text-xs text-red-500"> Remove </p>
-                                                            </td>
+                                {savedValues.length > 0 && (
+                                    <div class="relative flex flex-col w-full  min-w-0 mb-0 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
+                                        <div class="flex-auto px-0 pt-0 pb-2">
+                                            <div class="p-0 overflow-x-auto">
+                                                <table class="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
+                                                    <thead class="align-bottom">
+                                                        <tr>
+                                                            <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Label</th>
+                                                            <th class="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Regions</th>
+                                                            <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Price</th>
+                                                            <th class="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-gray-200 border-solid shadow-none tracking-none whitespace-nowrap text-slate-400 opacity-70"></th>
                                                         </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                        {savedValues.map((value, index) => (
+                                                            <tr key={value.id}>
+                                                                <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                    <div class="flex px-2 py-1">
+
+                                                                        <div class="flex flex-col justify-center">
+                                                                            <h6 class="mb-0 leading-normal text-sm">{index + 1}</h6>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                    <p class="mb-0 font-semibold leading-tight text-xs">{value.regions || value.location}</p>
+                                                                </td>
+                                                                <td class="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                    <span class="font-semibold leading-tight text-xs text-slate-400">{value.price || value.fee}</span>
+                                                                </td>
+                                                                <td class="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                    <p onClick={() => handleRemove(value.id)} class="font-semibold leading-tight text-xs text-red-500"> Remove </p>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </section>
+                                )}
+                            </div>
+                        )}
+                    </section>
+                )}
+
+
             </main>
         </div>
     )

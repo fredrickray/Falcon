@@ -836,7 +836,7 @@ function StoreProductDetailed() {
                       })
                     }}
                     >PLACE YOUR ORDER</button> */}
-                  <FlutterWaveButton type="submit" className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton>
+                  <FlutterWaveButton className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton>
                 </div>
               </div>
 
@@ -911,12 +911,12 @@ function StoreProductDetailed() {
                   NGN
                   <span> {result.price.toLocaleString()}</span>
                 </h2>
-                {result.compare_price && (
+                {/* {result.compare_price && (
                   <h2 style={{ textDecoration: "line-through", marginLeft: "20px", color: "#828282" }}>
                     NGN
                     <span>{result.compare_price.toLocaleString()}</span>
                   </h2>
-                )}
+                )} */}
               </div>
               {/* <input type="number" value={quantity} onChange={e => setQuantity(e.target.value)}/> */}
               <div className='product_quantity'>

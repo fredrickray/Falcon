@@ -668,11 +668,6 @@ function StorePreview() {
         </div>
       </section>
 
-      <div class="soldout-container">
-        <div class="sold-out">SOLD OUT!</div>
-        <div class="divider"></div>
-        <div class="deets">Next session date: 2 February</div>
-      </div>
     </div>
   );
 }
