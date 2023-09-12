@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // ------->> AUTH(Registration, Login) <<---------
 import Register from './pages/auth/Register';
 import Login from "./pages/auth/Login"
-// import NewPassword from './pages/auth/NewPassword';
 import PasswordReset from './pages/auth/PasswordReset';
 //------->> AUTH END <-----------
 
@@ -28,6 +27,7 @@ import StoreProductDetailed from './pages/store/storeProductDetails';
 import SuccessPayment from './components/SuccessPayment';
 import StoreProduct from './pages/store/storeProduct';
 // ------>> STORE END <<-------
+import ServerError from './components/ServerError';
 import NotFound from './components/notFound';
 import Tag from './pages/Tag';
 import "./assets/css/soft-ui-dashboard-tailwind.css"
@@ -60,6 +60,7 @@ const App = () => {
         <Route exact path="/Tag" element={<Tag />} />
         {/* <Route exact path="/Store/View/:store" element={<StoreView />} /> */}
         <Route exact path="*" element={<NotFound />} />
+        <Route exact path="/err505in" element={<ServerError />} />
         </Routes>
       </BrowserRouter>
     </React.StrictMode>

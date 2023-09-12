@@ -13,7 +13,7 @@ const port  = process.env.PORT || 9000
 const server = process.env.SERVER
 const app = express()
 const cors = require("cors")
-
+const cron = require('node-cron');
 
 app.use(cors())
 app.use(cors({
@@ -64,6 +64,9 @@ app.use("/payment", payRoute)
 app.use("/openai", openaiR)
 // app.get("/auth", authR)
 
+// cron.schedule('*/5 * * * * *', () => {
+//     console.log('running a task every 5 seconds');
+// });
 
 app.get("/", (req, res) => {
     res.send("Server is live and running")

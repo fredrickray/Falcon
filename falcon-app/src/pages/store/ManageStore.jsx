@@ -151,7 +151,7 @@ const ManageStore = () => {
                         <LineWave
                             height="300"
                             width="300"
-                            color="#4fa94d"
+                            color="#black"
                             ariaLabel="line-wave"
                             wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, 40%)", top: "50%", left: "50%", }}
                             wrapperClass=""
@@ -262,7 +262,7 @@ const ManageStore = () => {
                                                                         <CopyToClipboardLink text={discount.name} title={"Discount code copied"}><p className="mb-0 font-semibold cursor-pointer leading-tight text-xs" style={{ color: "#06c" }}>{discount.name}</p></CopyToClipboardLink>
                                                                     </td>
                                                                     <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                        <span className="font-semibold leading-tight text-xs text-slate-400">{discount.price}</span>
+                                                                        <span className="font-semibold leading-tight text-xs text-black">₦{discount.price.toLocaleString()}</span>
                                                                     </td>
                                                                     <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                                                                         <CopyToClipboardLink text={discount.name} title={"Discount code copied"}>
