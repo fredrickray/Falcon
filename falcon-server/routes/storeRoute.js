@@ -15,63 +15,63 @@ router.use(cors({
     allowedHeaders:  ["X-Requested-With", "Content-Type", "Authorization"],
 }))
 
-router
-.use(requireAuth)
+// router
+// .use(requireAuth)
 
 
 router
-.post("/Create-Store", storeController.createStore)
+.post("/Create-Store", requireAuth, storeController.createStore)
 
 router
-.put("/update-store/:id", storeController.updateStore)
+.put("/update-store/:id", requireAuth, storeController.updateStore)
 
 router
-.post("/create-product", storeController.createProduct)
+.post("/create-product", requireAuth, storeController.createProduct)
 
 router
-.put("/update-product/:id", storeController.updateProduct)
+.put("/update-product/:id", requireAuth, storeController.updateProduct)
 
 router
-.post("/category/:category", storeController.getCategory)
+.post("/category/:category", requireAuth, storeController.getCategory)
 
 router
-.post("/get-products", storeController.getProducts)
+.post("/get-products", requireAuth, storeController.getProducts)
 
 
 router
-.post("/get-store", storeController.store)
+.post("/get-store", requireAuth, storeController.store)
 router
-.post("/check-store", storeController.checkStoreExist)
+.post("/check-store", requireAuth, storeController.checkStoreExist)
 
 router
-.get("/products", storeController.queryProducts)
+.get("/products", requireAuth, storeController.queryProducts)
 
 router
-.get("/3products", storeController.query3Products)
+.get("/3products", requireAuth, storeController.query3Products)
 
 router
 .get("/get-product/:id", storeController.getProductID)
 
 router
-.get("/delete-product/:id", storeController.deleteProduct)
+.get("/delete-product/:id", requireAuth, storeController.deleteProduct)
 
 router
-.post("/create-discount", storeController.createDiscount)
+.post("/create-discount", requireAuth, storeController.createDiscount)
 
 router
 .post("/get-discount", storeController.getDiscounts)
 
 router
-.delete("/delete-discount/:id", storeController.deleteDiscount)
+.delete("/delete-discount/:id", requireAuth, storeController.deleteDiscount)
 
 router
-.post("/create-delivery", storeController.createDelivery)
+.post("/create-delivery", requireAuth, storeController.createDelivery)
 
 router
 .post("/get-delivery", storeController.getDelivery)
 
 router
-.delete("/delete-delivery/:id", storeController.deleteDelivery)
+.delete("/delete-delivery/:id", requireAuth, storeController.deleteDelivery)
 
 
 

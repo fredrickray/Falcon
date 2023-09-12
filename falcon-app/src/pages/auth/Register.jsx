@@ -287,26 +287,26 @@ const Register = () => {
             <span className="inline-block mt-2 align-middle bg-center bg-no-repeat bg-cover w-6 h-6 bg-none">
               <span
                 bar1
-                className={`w-5.5 rounded-xs duration-350 relative my-0 mx-auto block h-px bg-white transition-all ${isNavOpen ? "" : "rotate-45 origin-10-10 mt-1"}`}
+                className={`w-5.5 rounded-xs duration-350 relative my-0 mx-auto block h-px bg-white transition-all ${isNavOpen ? "rotate-45 origin-10-10 mt-1" : ""}`}
               />
               <span
                 bar2
-                className={`w-5.5 rounded-xs mt-1.75 duration-350 relative my-0 mx-auto block h-px bg-white transition-all ${isNavOpen ? "" : "opacity-0"}`}
+                className={`w-5.5 rounded-xs mt-1.75 duration-350 relative my-0 mx-auto block h-px bg-white transition-all ${isNavOpen ? "opacity-0" : ""}`}
               />
               <span
                 bar3
-                className={`w-5.5 rounded-xs mt-1.75 ${isNavOpen ? "" : "-rotate-45 origin-10-90"} duration-350 relative my-0 mx-auto block h-px bg-white transition-all`}
+                className={`w-5.5 rounded-xs mt-1.75 ${isNavOpen ? "-rotate-45 origin-10-90" : ""} duration-350 relative my-0 mx-auto block h-px bg-white transition-all`}
               />
             </span>
           </button>
           <div
             navbar-menu
-            className={`items-center flex-grow transition-all ease-soft duration-350 lg-max:bg-white ${isNavOpen ? "lg-max:max-h-0" : "lg-max:max-h-54"} lg-max:overflow-hidden basis-full rounded-xl lg:flex lg:basis-auto`}
+            className={`items-center flex-grow transition-all ease-soft duration-350 lg-max:bg-white ${isNavOpen ? "lg-max:max-h-54" : "lg-max:max-h-0"} lg-max:overflow-hidden basis-full rounded-xl lg:flex lg:basis-auto`}
           >
             <ul className="flex flex-col pl-0 mx-auto mb-0 list-none lg:flex-row xl:ml-auto">
               <li>
                 <Link
-                  className={`block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 ${isNavOpen ? "lg-max:opacity-0" : "lg-max:opacity-100"} lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75`}
+                  className={`block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 ${isNavOpen ?  "lg-max:opacity-100" : "lg-max:opacity-0"} lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75`}
                   to
                 >
                   <i className="mr-1 text-white lg-max:text-slate-700 fas fa-user-circle opacity-60" />
@@ -315,7 +315,7 @@ const Register = () => {
               </li>
               <li>
                 <Link
-                  className={`block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 ${isNavOpen ? "lg-max:opacity-0" : "lg-max:opacity-100"} lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75`}
+                  className={`block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 ${isNavOpen ? "lg-max:opacity-100" : "lg-max:opacity-0"} lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75`}
                   to="/Login"
                 >
                   <i className="mr-1 text-white lg-max:text-slate-700 fas fa-key opacity-60" />

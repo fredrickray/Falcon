@@ -80,26 +80,26 @@ const PasswordReset = () => {
                                     <span className="inline-block mt-2 align-middle bg-center bg-no-repeat bg-cover w-6 h-6 bg-none">
                                         <span
                                             bar1
-                                            className={`w-5.5 rounded-xs relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "" : "rotate-45 origin-10-10 mt-1"}`}
+                                            className={`w-5.5 rounded-xs relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "rotate-45 origin-10-10 mt-1" : "" }`}
                                         />
                                         <span
                                             bar2
-                                            className={`w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "" : "opacity-0"}`}
+                                            className={`w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "opacity-0": ""}`}
                                         />
                                         <span
                                             bar3
-                                            className={`w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "" : "-rotate-45 origin-10-90 mt-0.75"}`}
+                                            className={`w-5.5 rounded-xs mt-1.75 relative my-0 mx-auto block h-px bg-gray-600 transition-all duration-300 ${isNavOpen ? "-rotate-45 origin-10-90 mt-0.75" : ""}`}
                                         />
                                     </span>
                                 </button>
                                 <div
                                     navbar-menu
-                                    className={`items-center flex-grow  transition-all duration-500 ease-soft ${isNavOpen ? "lg-max:max-h-0" : "lg-max:max-h-54"} basis-full lg:flex lg:basis-auto`}
+                                    className={`items-center flex-grow  transition-all duration-500 ease-soft ${isNavOpen ? "lg-max:max-h-54" : "lg-max:max-h-0"} basis-full lg:flex lg:basis-auto`}
                                 >
                                     <ul className="flex flex-col pl-0 mx-auto mb-0 list-none lg:flex-row xl:ml-auto">
                                         <li>
                                             <Link
-                                                className={`block px-4 py-2 mr-2 font-normal transition-all ${isNavOpen ? "lg-max:opacity-0" : "lg-max:opacity-100"} duration-250 ease-soft-in-out text-sm text-slate-700 lg:px-2`}
+                                                className={`block px-4 py-2 mr-2 font-normal transition-all ${isNavOpen ? "lg-max:opacity-100" : "lg-max:opacity-0" } duration-250 ease-soft-in-out text-sm text-slate-700 lg:px-2`}
                                                 to="/Login"
                                             >
                                                 <i className="mr-1 fas fa-key opacity-60" />

@@ -398,6 +398,7 @@ svg:not(:root) {
 }
 
 
+
 .form_textarea{
   display: block;
   width: 90%;
@@ -452,7 +453,7 @@ svg:not(:root) {
     position: relative;
     margin-top: 10px;
     bottom: 0px;
-    margin-right: 25px;
+    /* margin-right: 25px; */
 }
 
 #navbar2 .summary__footer{
@@ -1996,6 +1997,11 @@ footer .copyright {
     text-align: center;
     text-decoration: none;
     transition: all .3s ease;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-inline: auto;
   }
   #navbar, #navbar2, #navbar3 {
       display: flex;
@@ -2006,7 +2012,7 @@ footer .copyright {
       top: 0;
       right: -410px;
       height: 100vh;
-      width: 415px;
+      width: 100%;
       background-color: #ffffff;;
       box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
       padding: 80px 0 0 10px;
@@ -2047,7 +2053,7 @@ footer .copyright {
     top: 0;
     right: -410px;
     height: 100vh;
-    width: 410px;
+    width: 100%;
     background-color: #ffffff;
     box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
     padding: 80px 0 0 10px;

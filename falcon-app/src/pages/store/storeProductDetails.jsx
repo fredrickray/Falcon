@@ -7,6 +7,9 @@ import { GrClose } from 'react-icons/gr';
 import { FlutterWaveButton, closePaymentModal } from 'flutterwave-react-v3';
 import axios from "axios"
 import { useNavigate } from 'react-router-dom';
+import { LineWave } from 'react-loader-spinner';
+import NotFound from '../../components/notFound';
+import ServerError from '../../components/ServerError';
 
 function StoreProductDetailed() {
   const { id } = useParams();
@@ -26,15 +29,27 @@ function StoreProductDetailed() {
   const [cartItemCount, setCartItemCount] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isQuantityZero, setIsQuantityZero] = useState(false)
-  const { error, data: productDetail, store } = useProductId(`https://falcon-server-jaek.onrender.com/stores/get-product/${id}`)
+  const { error, data: productDetail, store, isFetching } = useProductId(`https://falcon-server-jaek.onrender.com/stores/get-product/${id}`)
   const GET_DELIVERY_URL = "https://falcon-server-jaek.onrender.com/store/get-delivery"
   const [addedItem, setAddedItem] = useState([])
+  // const [isInputValid, setIsInputValid] = useState(false)
   const { email, token } = localStorage
   let sumPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
   sumPrice = sumPrice * quantity
   let totalPrice = sumPrice + shippingMoney
 
   const navigate = useNavigate()
+  console.log(error)
+
+  // const  checkFormValidity = () => {
+  //   if (firstname && lastname && customer_email && phone  !== "") {
+  //     console.log("Form validity checking")
+  //     return true;
+  //   }
+  //   else{
+  //     return false;
+  //   }
+  // }
 
 
   const handleVariantSize = (e) => {
@@ -64,7 +79,7 @@ function StoreProductDetailed() {
     console.log(value)
   }
 
-  
+
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -160,14 +175,12 @@ function StoreProductDetailed() {
   //   setAddedItem(updatedCart);
   // };
   const addQuantity = () => {
-    console.log(addedItem[0])
     console.log()
     if (quantity > productDetail[0].quantity) {
-      console.log("Product is no longer available")
       Swal.fire({
         position: 'top-end',
         toast: true,
-        title: `Product is not available`,
+        title: `Quantity not available`,
         color: 'red',
         showConfirmButton: false,
         timer: 2500,
@@ -224,13 +237,13 @@ function StoreProductDetailed() {
       //     setIsQuantityZero(true)
       //   }
       //   else{
-          setIsQuantityZero(false)
-          setAddedItem(parsedArray)
-          setCartItemCount(itemCount);
+      setIsQuantityZero(false)
+      setAddedItem(parsedArray)
+      setCartItemCount(itemCount);
       //   }
       // }
 
-      
+
 
       // const updatedItem = parsedArray?.filter(result =>  result.quantity !== 0) // return result.quantity !== 0;
       //   if(updatedItem.id === productDetail[0].id) {
@@ -246,7 +259,7 @@ function StoreProductDetailed() {
 
       // Update the localStorage with the updated array
       // localStorage.setItem('cartItem', JSON.stringify(parsedArray));
-      
+
       // console.log(updatedItems)
       // }
       // console.log(itemCount);
@@ -261,23 +274,23 @@ function StoreProductDetailed() {
 
   useEffect(() => {
     const check = () => {
-      if(productDetail != null) {
-        if(productDetail[0].quantity == 0) {
+      if (productDetail != null) {
+        if (productDetail[0].quantity === 0) {
           setIsQuantityZero(true)
           console.log("Quantity is zero")
         }
-        else{
+        else {
           setIsQuantityZero(false)
           console.log("Quantity is not zero")
         }
       }
       return "Product detail have not mounted"
-      
+
     }
     check()
   }, [productDetail])
 
-  
+
   // useEffect(() => {
   //   localStorage.removeItem("")
   // })
@@ -336,7 +349,7 @@ function StoreProductDetailed() {
       setDiscountValue(newDiscounts)
 
     } catch (error) {
-      console.log(error)
+      console.log(error.response)
     }
   }
   useEffect(() => {
@@ -430,6 +443,7 @@ function StoreProductDetailed() {
 
   if (shippingNav) {
     shippingNav.addEventListener('click', () => {
+      console.log("working")
       nav3.classList.add('active3')
     })
   }
@@ -484,7 +498,7 @@ function StoreProductDetailed() {
     product_Id: item.id,
     name: item.name,
     price: item.price,
-    quantity: item.quantity,
+    quantity: quantity,
     image: item.image
   }));
 
@@ -527,303 +541,350 @@ function StoreProductDetailed() {
           itemsData: selectedItemsData
         });
 
-        // Handle the response from your server if needed
+        console.log(response)
         console.log('POST request successful:', response.data);
-        // setPaymentSuccessful(true); 
         localStorage.removeItem("cartItem")
         // window.location.href = `/Store/${store}`
+
+        if (status === "successful" || "completed") {
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Transaction completed succesfully',
+            showConfirmButton: false,
+            timer: 2500
+          })
+
+          console.log("Success status: ", status)
+        }
+        else {
+          Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: 'Transaction was not succesfully',
+            showConfirmButton: false,
+            timer: 1500
+          })
+
+          console.log(status)
+        }
       }
       catch (error) {
         console.error('POST request error:', error.message);
       }
     },
-    onClose: () => { },
+    onClose: () => console.log("Closing payment modal"),
   };
 
   // const handleFlutterPayment = useFlutterwave(config);
 
-  if (!error) {
-    return (
-      <div>
-        <section id="header">
-          <div onClick={() => navigate(`/Store/${store}`)}>
-            <i className="fa fa-arrow-left cursor-pointer" aria-hidden="true"></i>
-          </div>
-          <h3 style={{ paddingLeft: "50px" }} className='logo'>{store}</h3>
+
+  return (
+    <div>
+      {isFetching && (
+        <LineWave
+          height="300"
+          width="300"
+          color="#4fa94d"
+          ariaLabel="line-wave"
+          wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, -70%)", top: "50%", left: "50%", }}
+          wrapperClass=""
+          visible={true}
+          firstLineColor="black"
+          middleLineColor="black"
+          lastLineColor="black"
+        />
+      )}
+
+      {!isFetching && error === 500 ? (
+        <ServerError />
+      ) : null}
+
+      {!isFetching && error ? (
+        <NotFound />
+      )
+        :
+        (
           <div>
-            <ul id="navbar">
-              <div data-v-7d194230 className='summary_body'>
-                <div data-v-7d194230 className='summary_cart'>
-                  <div data-v-7d194230 className='summary_cart_item'>
-                    {Array.isArray(addedItem) && addedItem.length > 0 ? (
+            <section id="header">
+              <div onClick={() => navigate(`/Store/${store}`)}>
+                <i className="fa fa-arrow-left cursor-pointer" aria-hidden="true"></i>
+              </div>
+              <h3 style={{ paddingLeft: "50px" }} className='logo'>{store}</h3>
+              <div>
+                <ul id="navbar">
+                  <div data-v-7d194230 className='summary_body'>
+                    <div data-v-7d194230 className='summary_cart'>
                       <div data-v-7d194230 className='summary_cart_item'>
-                        {addedItem.map((info) => (
-                          <div key={info.created_at} data-v-7d194230 className='summary_cart_item_variants'>
-                            <div data-v-7d194230 className='summary_cart_item_product'>
-                              <div data-v-7d194230 className='summary_cart_item_product_details'>
-                                <p data-v-7d194230 className='summary_cart_item_product_name'>
-                                  {info.name}
-                                </p>
-                                {info.size && (
-                                  <span data-v-7d194230 className='summary_cart_item_product_variant'>
-                                    {info.size}
-                                  </span>
-                                )}
-                                {info.style && (
-                                  <span data-v-7d194230 className='summary_cart_item_product_variant'>
-                                    {info.style}
-                                  </span>
-                                )}
-                                {info.colour && (
-                                  <span data-v-7d194230 className='summary_cart_item_product_variant'>
-                                    {info.colour}
-                                  </span>
-                                )}
-                                <span data-v-7d194230 className='summary_cart_item_product_price'>
-                                  NGN {info.price.toLocaleString()}
-                                </span>
-                              </div>
-                              <div data-v-7d194230 className='summary__cart__item__product__cta'>
-                                <div data-v-7d194230 className='action'>
-                                  <button onClick={() => minusQuantity(info.id)} data-v-7d194230 type="button" className='action_minus'>
-                                    <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M14.158 12.332H10.7V11.275H14.158V12.332Z" fill="#333333"></path></svg>
-                                  </button>
-                                  <span data-v-7d194230 className='action__value'>{quantity}</span>
-                                  <button onClick={() => addQuantity(info.id)} data-v-7d194230 type='button' className='action_plus'>
-                                    <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M15.406 11.772H12.557V14.782H11.535V11.772H8.7V10.827H11.535V7.838H12.557V10.827H15.406V11.772Z" fill="#333333"></path></svg>
-                                  </button>
+                        {Array.isArray(addedItem) && addedItem.length > 0 ? (
+                          <div data-v-7d194230 className='summary_cart_item'>
+                            {addedItem.map((info) => (
+                              <div key={info.created_at} data-v-7d194230 className='summary_cart_item_variants'>
+                                <div data-v-7d194230 className='summary_cart_item_product'>
+                                  <div data-v-7d194230 className='summary_cart_item_product_details'>
+                                    <p data-v-7d194230 className='summary_cart_item_product_name'>
+                                      {info.name}
+                                    </p>
+                                    {info.size && (
+                                      <span data-v-7d194230 className='summary_cart_item_product_variant'>
+                                        {info.size}
+                                      </span>
+                                    )}
+                                    {info.style && (
+                                      <span data-v-7d194230 className='summary_cart_item_product_variant'>
+                                        {info.style}
+                                      </span>
+                                    )}
+                                    {info.colour && (
+                                      <span data-v-7d194230 className='summary_cart_item_product_variant'>
+                                        {info.colour}
+                                      </span>
+                                    )}
+                                    <span data-v-7d194230 className='summary_cart_item_product_price'>
+                                      NGN {info.price.toLocaleString()}
+                                    </span>
+                                  </div>
+                                  <div data-v-7d194230 className='summary__cart__item__product__cta'>
+                                    <div data-v-7d194230 className='action'>
+                                      <button onClick={() => minusQuantity(info.id)} data-v-7d194230 type="button" className='action_minus'>
+                                        <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M14.158 12.332H10.7V11.275H14.158V12.332Z" fill="#333333"></path></svg>
+                                      </button>
+                                      <span data-v-7d194230 className='action__value'>{quantity}</span>
+                                      <button onClick={() => addQuantity(info.id)} data-v-7d194230 type='button' className='action_plus'>
+                                        <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M15.406 11.772H12.557V14.782H11.535V11.772H8.7V10.827H11.535V7.838H12.557V10.827H15.406V11.772Z" fill="#333333"></path></svg>
+                                      </button>
+                                    </div>
+                                    <i style={{ marginLeft: "65%", marginTop: "20%", cursor: "pointer" }} onClick={() => removeFromCart(info.id)} className="fa fa-trash" aria-hidden="true"></i>
+                                  </div>
                                 </div>
-                                <i style={{ marginLeft: "65%", marginTop: "20%", cursor: "pointer" }} onClick={() => removeFromCart(info.id)} className="fa fa-trash" aria-hidden="true"></i>
                               </div>
-                            </div>
+                            ))}
                           </div>
-                        ))}
+                        ) : (
+                          <div className='summary_cart_empty'>
+                            <p className='summary_cart_empty_msg'>Your cart is currently empty</p>
+                            <button id='summary_emptyCart_button' className='btn btn--default btn--sm summary__cart__empty__btn'>
+                              CONTINUE SHOPPING
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    ) : (
-                      <div className='summary_cart_empty'>
-                        <p className='summary_cart_empty_msg'>Your cart is currently empty</p>
-                        <button id='summary_emptyCart_button' className='btn btn--default btn--sm summary__cart__empty__btn'>
-                          CONTINUE SHOPPING
-                        </button>
+                    </div>
+                  </div>
+
+                  {Array.isArray(addedItem) && addedItem.length > 0 && (
+                    <div data-v-7d194230 className='summary__footer'>
+
+                      <div data-v-7d194230 className='summary__footer__item'>
+                        <div data-v-7d194230 className='summary_footer_item_name'>
+                          Items
+                        </div>
+                        <div data-v-7d194230 className='summary_footer_item_value'>
+                          <strong>NGN</strong> {sumPrice.toLocaleString()}
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </div>
-              </div>
 
-              {Array.isArray(addedItem) && addedItem.length > 0 && (
-                <div data-v-7d194230 className='summary__footer'>
+                      <div data-v-7d194230 className='summary__footer__item'>
+                        <div data-v-7d194230 className='summary_footer_item_name'>
+                          Shipping
+                        </div>
+                        <div data-v-7d194230 className='summary_footer_item_value'>
+                          <strong>NGN</strong> {shippingMoney}
+                        </div>
+                      </div>
 
-                  <div data-v-7d194230 className='summary__footer__item'>
-                    <div data-v-7d194230 className='summary_footer_item_name'>
-                      Items
-                    </div>
-                    <div data-v-7d194230 className='summary_footer_item_value'>
-                      <strong>NGN</strong> {sumPrice.toLocaleString()}
-                    </div>
-                  </div>
+                      <div data-v-7d194230 className='summary__footer__item'>
+                        <div data-v-7d194230 className='summary__footer__item__name'>
+                          Total
+                        </div>
+                        <div data-v-7d194230 className='summary__footer__item__value--2'>
+                          <strong>NGN</strong> {totalPrice.toLocaleString()}
+                        </div>
+                      </div>
 
-                  <div data-v-7d194230 className='summary__footer__item'>
-                    <div data-v-7d194230 className='summary_footer_item_name'>
-                      Shipping
+                      <div data-v-7d194230 className='summary__footer__item'>
+                        <button type="" id='infoNav' className='btn_cart btn--primary btn--block'>Continue</button>
+                      </div>
                     </div>
-                    <div data-v-7d194230 className='summary_footer_item_value'>
-                      <strong>NGN</strong> {shippingMoney}
-                    </div>
-                  </div>
+                  )}
 
-                  <div data-v-7d194230 className='summary__footer__item'>
-                    <div data-v-7d194230 className='summary__footer__item__name'>
-                      Total
-                    </div>
-                    <div data-v-7d194230 className='summary__footer__item__value--2'>
-                      <strong>NGN</strong> {totalPrice.toLocaleString()}
-                    </div>
-                  </div>
-
-                  <div data-v-7d194230 className='summary__footer__item'>
-                    <button type="" id='infoNav' className='btn_cart btn--primary btn--block'>Continue</button>
-                  </div>
-                </div>
-              )}
-
-              <AiOutlineShoppingCart className='cartDesktop' /><p className='cartNumber'>{cartItemCount}</p>
-              <GrClose id='close' />
-              {Array.isArray(addedItem) && addedItem.length > 0 && (
-                <ul id='payment_process' className='payment_process'>
-                  <li style={{ color: "blue" }}>Cart</li>
-                  <li>Information</li>
-                  <li>Shipping</li>
+                  <AiOutlineShoppingCart className='cartDesktop' /><p className='cartNumber'>{cartItemCount}</p>
+                  <GrClose id='close' />
+                  {Array.isArray(addedItem) && addedItem.length > 0 && (
+                    <ul id='payment_process' className='payment_process'>
+                      <li style={{ color: "blue" }}>Cart</li>
+                      <li>Information</li>
+                      <li>Shipping</li>
+                    </ul>
+                  )}
                 </ul>
-              )}
-            </ul>
 
-            <ul id="navbar2">
-              <div className='summary_body'>
+                <ul id="navbar2">
+                  <div className='summary_body'>
 
-                <div className='summary_form'>
-                  <div className='form_item_flex'>
-                    <div className='form_item'>
-                      <label for="firstname">Firstname</label>
-                      <input className='form_input' placeholder="Firstname" onChange={e => setFirstname(e.target.value)} />
+                    <div className='summary_form'>
+                      <div className='form_item_flex'>
+                        <div className='form_item'>
+                          <label for="firstname">Firstname</label>
+                          <input className='form_input' placeholder="Firstname" onChange={e => setFirstname(e.target.value)} />
+                        </div>
+                        <div className='form_item'>
+                          <label for="lastname">Lastname</label>
+                          <input className='form_input' placeholder="Lastname" onChange={e => setLastname(e.target.value)} />
+                        </div>
+                      </div>
+                      <div className='form_item'>
+                        <label for="email">Email</label>
+                        <input className='form_input' placeholder="myemail@gmail.com"
+                          onChange={e => setCustomerEmail(e.target.value)}
+                        />
+                      </div>
+
+                      <div className='form_item'>
+                        <label for="phone">Phone</label>
+                        <input className='form_input' type='number' onChange={e => setPhone(e.target.value)} />
+                      </div>
+
+                      <label for="discount">Discount</label>
+                      <div data-v-7ef2909e className='discount_group'>
+                        <input data-v-7ef2909e id='discountCode' className='form_input' placeholder="Optional" onChange={e => setDiscount(e.target.value)} />
+                        <button data-v-7ef2909e className='btn discount_cta' type="">Apply</button>
+                      </div>
+                      {/* {isEmpty && <p style={{ color: 'red' }}>Inputs must not be empty</p>} */}
                     </div>
-                    <div className='form_item'>
-                      <label for="lastname">Lastname</label>
-                      <input className='form_input' placeholder="Lastname" onChange={e => setLastname(e.target.value)} />
+
+                  </div>
+
+                  <div data-v-7d194230 className='summary__footer'>
+                    <div data-v-7d194230 className='summary__footer__item'>
+                      <div data-v-7d194230 className='summary_footer_item_name'>
+                        Items
+                      </div>
+                      <div data-v-7d194230 className='summary_footer_item_value'>
+                        <strong>NGN</strong> {sumPrice.toLocaleString()}
+                      </div>
+                    </div>
+
+                    <div data-v-7d194230 className='summary__footer__item'>
+                      <div data-v-7d194230 className='summary_footer_item_name'>
+                        Shipping
+                      </div>
+                      <div data-v-7d194230 className='summary_footer_item_value'>
+                        <strong>NGN</strong> {shippingMoney}
+                      </div>
+                    </div>
+
+                    <div data-v-7d194230 className='summary__footer__item'>
+                      <div data-v-7d194230 className='summary__footer__item__name'>
+                        Total
+                      </div>
+                      <div data-v-7d194230 className='summary__footer__item__value--2'>
+                        <strong>NGN</strong> {totalPrice.toLocaleString()}
+                      </div>
+                    </div>
+
+                    <div data-v-7d194230 className='summary__footer__item'>
+                      <button type="" id='shippingNav' className='btn_info btn--primary blocks'><span className='btn-span'>Continue to shipping</span></button>
                     </div>
                   </div>
-                  <div className='form_item'>
-                    <label for="email">Email</label>
-                    <input className='form_input' placeholder="myemail@gmail.com"
-                      onChange={e => setCustomerEmail(e.target.value)}
-                    />
-                  </div>
 
-                  <div className='form_item'>
-                    <label for="phone">Phone</label>
-                    <input className='form_input' type='number' onChange={e => setPhone(e.target.value)} />
-                  </div>
+                  <GrClose id='close2' />
+                  <ul id='payment_process2' className='payment_process'>
+                    <li id="back_Cart">Cart</li>
+                    <li style={{ color: "blue" }}>Information</li>
+                    <li>Shipping</li>
+                  </ul>
+                </ul>
 
-                  <label for="discount">Discount</label>
-                  <div data-v-7ef2909e className='discount_group'>
-                    <input data-v-7ef2909e id='discountCode' className='form_input' placeholder="Optional" value={discount} onChange={e => setDiscount(e.target.value)} />
-                    <button data-v-7ef2909e className='btn discount_cta' onClick={handleDiscount} type="">Apply</button>
-                  </div>
-                  {/* {isEmpty && <p style={{ color: 'red' }}>Inputs must not be empty</p>} */}
-                </div>
+                <ul id="navbar3"
+                // style={{right: "0px"}}
+                >
+                  <div className='summary_body'>
 
-              </div>
+                    <div className='summary_form'>
+                      <div className='form_item'>
+                        <label for="country">Country</label>
+                        <select
+                          // value={selectedCountry}
+                          style={{ width: "90%" }}
+                          className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '
+                        // onChange={handleCountryChange}
+                        >
+                          {/* {countries.map((country) => ( */}
+                          <option>
+                            Nigeria
+                          </option>
+                          {/* ))} */}
+                        </select>
+                      </div>
 
-              <div data-v-7d194230 className='summary__footer'>
-                <div data-v-7d194230 className='summary__footer__item'>
-                  <div data-v-7d194230 className='summary_footer_item_name'>
-                    Items
-                  </div>
-                  <div data-v-7d194230 className='summary_footer_item_value'>
-                    <strong>NGN</strong> {sumPrice.toLocaleString()}
-                  </div>
-                </div>
+                      <div className='form_item'>
+                        <label for="state">State</label>
+                        <select
+                          value={selectedState}
+                          style={{ width: "90%" }}
+                          className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '
+                          onChange={handleStateChange}
+                        >
+                          <option value="">Select a state...</option>
+                          {state.map((state, index) => (
+                            <option key={index} value={state}>
+                              {state}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                <div data-v-7d194230 className='summary__footer__item'>
-                  <div data-v-7d194230 className='summary_footer_item_name'>
-                    Shipping
-                  </div>
-                  <div data-v-7d194230 className='summary_footer_item_value'>
-                    <strong>NGN</strong> {shippingMoney}
-                  </div>
-                </div>
+                      <div className='form_item'>
+                        <label for="delivery_address">Delivery Address</label>
+                        <input className='form_input' type='text' onChange={e => setDeliveryAddress(e.target.value)} />
+                      </div>
 
-                <div data-v-7d194230 className='summary__footer__item'>
-                  <div data-v-7d194230 className='summary__footer__item__name'>
-                    Total
-                  </div>
-                  <div data-v-7d194230 className='summary__footer__item__value--2'>
-                    <strong>NGN</strong> {totalPrice.toLocaleString()}
-                  </div>
-                </div>
-
-                <div data-v-7d194230 className='summary__footer__item'>
-                  <button type="" id='shippingNav' className='btn_info btn--primary blocks'><span className='btn-span'>Continue to shipping</span></button>
-                </div>
-              </div>
-
-              <GrClose id='close2' />
-              <ul id='payment_process2' className='payment_process'>
-                <li id="back_Cart">Cart</li>
-                <li style={{ color: "blue" }}>Information</li>
-                <li>Shipping</li>
-              </ul>
-            </ul>
-
-            <ul id="navbar3"
-            // style={{right: "0px"}}
-            >
-              <div className='summary_body'>
-
-                <div className='summary_form'>
-                  <div className='form_item'>
-                    <label for="country">Country</label>
-                    <select
-                      // value={selectedCountry}
-                      style={{ width: "90%" }}
-                      className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '
-                    // onChange={handleCountryChange}
-                    >
-                      {/* {countries.map((country) => ( */}
-                      <option>
-                        Nigeria
-                      </option>
-                      {/* ))} */}
-                    </select>
-                  </div>
-
-                  <div className='form_item'>
-                    <label for="state">State</label>
-                    <select
-                      value={selectedState}
-                      style={{ width: "90%" }}
-                      className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '
-                      onChange={handleStateChange}
-                    >
-                      <option value="">Select a state...</option>
-                      {state.map((state, index) => (
-                        <option key={index} value={state}>
-                          {state}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className='form_item'>
-                    <label for="delivery_address">Delivery Address</label>
-                    <input className='form_input' type='text' onChange={e => setDeliveryAddress(e.target.value)} />
-                  </div>
-
-                  {/* <select style={{width: "90%"}} className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '>
+                      {/* <select style={{width: "90%"}} className='focus:shadow-soft-primary-outline block pl-3  py-2 text-base border-gray-300 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm '>
                     {shpping?.map((result, index) => (
                     <option key={[index]}>{result}</option>
                     ))}
                   </select> */}
 
-                  <div className='form_item'>
-                    <label for="delivery_note">Delivery Note</label>
-                    <textarea className='form_textarea' value={deliveryNote} rows="" cols="" onChange={e => setDeliveryNote(e.target.value)} />
+                      <div className='form_item'>
+                        <label for="delivery_note">Delivery Note</label>
+                        <textarea className='form_textarea' value={deliveryNote} rows="" cols="" onChange={e => setDeliveryNote(e.target.value)} />
+                      </div>
+
+                    </div>
+
                   </div>
 
-                </div>
+                  <div data-v-7d194230 className='summary__footer'>
+                    <div data-v-7d194230 className='summary__footer__item'>
+                      <div data-v-7d194230 className='summary_footer_item_name'>
+                        Items
+                      </div>
+                      <div data-v-7d194230 className='summary_footer_item_value'>
+                        <strong>NGN</strong> {sumPrice.toLocaleString()}
+                      </div>
+                    </div>
 
-              </div>
+                    <div data-v-7d194230 className='summary__footer__item'>
+                      <div data-v-7d194230 className='summary_footer_item_name'>
+                        Shipping
+                      </div>
+                      <div data-v-7d194230 className='summary_footer_item_value'>
+                        <strong>NGN</strong> {shippingMoney}
+                      </div>
+                    </div>
 
-              <div data-v-7d194230 className='summary__footer'>
-                <div data-v-7d194230 className='summary__footer__item'>
-                  <div data-v-7d194230 className='summary_footer_item_name'>
-                    Items
-                  </div>
-                  <div data-v-7d194230 className='summary_footer_item_value'>
-                    <strong>NGN</strong> {sumPrice.toLocaleString()}
-                  </div>
-                </div>
+                    <div data-v-7d194230 className='summary__footer__item'>
+                      <div data-v-7d194230 className='summary__footer__item__name'>
+                        Total
+                      </div>
+                      <div data-v-7d194230 className='summary__footer__item__value--2'>
+                        <strong>NGN</strong> {totalPrice.toLocaleString()}
+                      </div>
+                    </div>
 
-                <div data-v-7d194230 className='summary__footer__item'>
-                  <div data-v-7d194230 className='summary_footer_item_name'>
-                    Shipping
-                  </div>
-                  <div data-v-7d194230 className='summary_footer_item_value'>
-                    <strong>NGN</strong> {shippingMoney}
-                  </div>
-                </div>
-
-                <div data-v-7d194230 className='summary__footer__item'>
-                  <div data-v-7d194230 className='summary__footer__item__name'>
-                    Total
-                  </div>
-                  <div data-v-7d194230 className='summary__footer__item__value--2'>
-                    <strong>NGN</strong> {totalPrice.toLocaleString()}
-                  </div>
-                </div>
-
-                <div data-v-7d194230 className='summary__footer__item'>
-                  {/* <button 
+                    <div data-v-7d194230 className='summary__footer__item'>
+                      {/* <button 
                     type="" 
                     className='btn btn--primary btn--block'
                     onClick={() => {
@@ -836,177 +897,182 @@ function StoreProductDetailed() {
                       })
                     }}
                     >PLACE YOUR ORDER</button> */}
-                  <FlutterWaveButton className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton>
-                </div>
+                      <FlutterWaveButton className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton>
+                    </div>
+                  </div>
+
+                  <GrClose id='close3' />
+                  <ul id='payment_process3' className='payment_process'>
+                    <li id="back_Info">Cart</li>
+                    <li>Information</li>
+                    <li style={{ color: "blue" }}>Shipping</li>
+                  </ul>
+                </ul>
               </div>
-
-              <GrClose id='close3' />
-              <ul id='payment_process3' className='payment_process'>
-                <li id="back_Info">Cart</li>
-                <li>Information</li>
-                <li style={{ color: "blue" }}>Shipping</li>
-              </ul>
-            </ul>
-          </div>
-          <div id="mobile">
-            <AiOutlineShoppingCart id='cart' /><p className='cartNumber'>{cartItemCount}</p>
-          </div>
-        </section>
-
-        {productDetail?.map((result) => (
-          <section id="prodetails" className="section-p1" key={result.id}>
-            <div className="single-pro-image">
-              <img src={result.image.split('\r\n')[0]} width="100%" id="MainImg" alt="" />
-              {/* {result.image.length > 1 && ( */}
-              <div className="small-img-group">
-                <div className="small-img-col">
-                  <img
-                    src={result.image.split('\r\n')[0]}
-                    width="100%"
-                    className="small-img"
-                    alt=""
-                  />
-                </div>
-
-                <div className="small-img-col">
-                  <img
-                    src={result.image.split('\r\n')[1]}
-                    width="100%"
-                    className="small-img"
-                    alt=""
-                  />
-                </div>
-
-                <div className="small-img-col">
-                  <img
-                    src={result.image.split('\r\n')[2]}
-                    width="100%"
-                    className="small-img"
-                    alt=""
-                  />
-                </div>
-
-                <div className="small-img-col">
-                  <img
-                    src={result.image.split('\r\n')[3]}
-                    width="100%"
-                    className="small-img"
-                    alt=""
-                  />
-                </div>
-
+              <div id="mobile">
+                <AiOutlineShoppingCart id='cart' /><p className='cartNumber'>{cartItemCount}</p>
               </div>
-              {/* // )} */}
-            </div>
+            </section>
 
-            <div className="single-pro-details">
-              {/* <h6>
+            {productDetail?.map((result) => (
+              <section id="prodetails" className="section-p1" key={result.id}>
+                <div className="single-pro-image">
+                  <img src={result.image.split('\r\n')[0]} width="100%" id="MainImg" alt="" />
+                  {/* {result.image.length > 1 && ( */}
+                  <div className="small-img-group">
+                    <div className="small-img-col">
+                      <img
+                        src={result.image.split('\r\n')[0]}
+                        width="100%"
+                        className="small-img"
+                        alt=""
+                      />
+                    </div>
+
+                    <div className="small-img-col">
+                      <img
+                        src={result.image.split('\r\n')[1]}
+                        width="100%"
+                        className="small-img"
+                        alt=""
+                      />
+                    </div>
+
+                    <div className="small-img-col">
+                      <img
+                        src={result.image.split('\r\n')[2]}
+                        width="100%"
+                        className="small-img"
+                        alt=""
+                      />
+                    </div>
+
+                    <div className="small-img-col">
+                      <img
+                        src={result.image.split('\r\n')[3]}
+                        width="100%"
+                        className="small-img"
+                        alt=""
+                      />
+                    </div>
+
+                  </div>
+                  {/* // )} */}
+                </div>
+
+                <div className="single-pro-details">
+                  {/* <h6>
                 {result.name}
               </h6> */}
-              <h4>
-                {result.name}
-              </h4>
-              <div className=' flex flex-wrap'>
-                <h2>
-                  NGN
-                  <span> {result.price.toLocaleString()}</span>
-                </h2>
-                {/* {result.compare_price && (
+                  <h4>
+                    {result.name}
+                  </h4>
+                  <div className=' flex flex-wrap'>
+                    <h2>
+                      NGN
+                      <span> {result.price.toLocaleString()}</span>
+                    </h2>
+                    {/* {result.compare_price && (
                   <h2 style={{ textDecoration: "line-through", marginLeft: "20px", color: "#828282" }}>
                     NGN
                     <span>{result.compare_price.toLocaleString()}</span>
                   </h2>
                 )} */}
-              </div>
-              {/* <input type="number" value={quantity} onChange={e => setQuantity(e.target.value)}/> */}
-              <div className='product_quantity'>
-                <label
-                  // className="block tracking-wide text-xs font-bold mb-2"
-                  htmlFor="price"
-                >
-                  Quantity:
-                </label>
-                <div className='action'>
-                  <button data-v-7be1d382 type="" className='action__btn action__minus' onClick={() => minusQuantity(result.id)}>
-                    <span data-v-7be1d382 className='action__btn_label'>-</span>
-                  </button>
-                  <input data-v-7be1d382 type="" name="" value={quantity} className='action__value' />
-                  <button data-v-7be1d382 type="" className='action__btn action__plus' onClick={() => addQuantity(result.id)}>
-                    <span className='action__btn_label'>+</span>
-                  </button>
-                </div>
-              </div>
+                  </div>
+                  {/* <input type="number" value={quantity} onChange={e => setQuantity(e.target.value)}/> */}
+                  <div className='product_quantity'>
+                    <label
+                      // className="block tracking-wide text-xs font-bold mb-2"
+                      htmlFor="price"
+                    >
+                      Quantity:
+                    </label>
+                    <div className='action'>
+                      <button data-v-7be1d382 type="" className='action__btn action__minus' onClick={() => minusQuantity(result.id)}>
+                        <span data-v-7be1d382 className='action__btn_label'>-</span>
+                      </button>
+                      <input data-v-7be1d382 type="" name="" value={quantity} className='action__value' />
+                      <button data-v-7be1d382 type="" className='action__btn action__plus' onClick={() => addQuantity(result.id)}>
+                        <span className='action__btn_label'>+</span>
+                      </button>
+                    </div>
+                  </div>
 
-              {result.size && (
-                <div className='select_option'>
-                  <label
-                    // className="block tracking-wide text-xs font-bold mb-2"
-                    htmlFor="price"
-                  >
-                    Size:
-                  </label>
-                  {/* <span className='select_option_name'>variant:</span> */}
-                  <select onChange={e => handleVariantSize(e)}>
-                    <option className='select_option_value'>Select a size</option>
-                    {result.size.split(' ').map((variant, index) => (
-                      <option key={index} value={variant} className='select_option_value'>{variant}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
+                  {result.size && (
+                    <div className='select_option'>
+                      <label
+                        // className="block tracking-wide text-xs font-bold mb-2"
+                        htmlFor="price"
+                      >
+                        Size:
+                      </label>
+                      {/* <span className='select_option_name'>variant:</span> */}
+                      <select onChange={e => handleVariantSize(e)}>
+                        <option className='select_option_value'>Select a size</option>
+                        {result.size.split(' ').map((variant, index) => (
+                          <option key={index} value={variant} className='select_option_value'>{variant}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
-              {result.style && (
-                <div className='select_option'>
-                  <label
-                    // className="block tracking-wide text-xs font-bold mb-2"
-                    htmlFor="price"
-                  >
-                    Style:
-                  </label>
-                  {/* <span className='select_option_name'>variant:</span> */}
-                  <select onChange={e => handleVariantStyle(e)}>
-                    <option className='select_option_value'>Select a Style</option>
-                    {result.style.split(' ').map((variant, index) => (
-                      <option key={index} className='select_option_value'>{variant}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
+                  {result.style && (
+                    <div className='select_option'>
+                      <label
+                        // className="block tracking-wide text-xs font-bold mb-2"
+                        htmlFor="price"
+                      >
+                        Style:
+                      </label>
+                      {/* <span className='select_option_name'>variant:</span> */}
+                      <select onChange={e => handleVariantStyle(e)}>
+                        <option className='select_option_value'>Select a Style</option>
+                        {result.style.split(' ').map((variant, index) => (
+                          <option key={index} className='select_option_value'>{variant}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
-              {result.colour && (
-                <div className='select_option'>
-                  <label
-                    // className="block tracking-wide text-xs font-bold mb-2"
-                    htmlFor="price"
-                  >
-                    Colour:
-                  </label>
-                  {/* <span className='select_option_name'>variant:</span> */}
-                  <select onChange={e => handleVariantColour(e)}>
-                    <option className='select_option_value'>Select a Colour</option>
-                    {result.colour.split(' ').map((variant, index) => (
-                      <option key={index} className='select_option_value'>{variant}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
+                  {result.colour && (
+                    <div className='select_option'>
+                      <label
+                        // className="block tracking-wide text-xs font-bold mb-2"
+                        htmlFor="price"
+                      >
+                        Colour:
+                      </label>
+                      {/* <span className='select_option_name'>variant:</span> */}
+                      <select onChange={e => handleVariantColour(e)}>
+                        <option className='select_option_value'>Select a Colour</option>
+                        {result.colour.split(' ').map((variant, index) => (
+                          <option key={index} className='select_option_value'>{variant}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
-              {/* <div className='flex flex-wrap'>
+                  {/* <div className='flex flex-wrap'>
                 
               </div> */}
 
-              {/* // onChange={e => setInput(e.target.value)}/ */}
-              <button disabled={isQuantityZero} style={{ backgroundColor: isQuantityZero ? "rgb(130, 130, 130)" : "", cursor: isQuantityZero ? "not-allowed" : "" }} className={`btn ${isQuantityZero ? "rgb(130, 130, 130)" : "btn--primary"}  btn--block`} onClick={added} type='button'>{isQuantityZero ? "Out of Stock" : "Add To Cart"}</button>
-              {/* <h4>Product Details</h4> */}
-              <span>
-                {result.description}
-              </span>
-            </div>
-          </section>
-        ))}
-      </div>
-    );
-  }
+                  {/* // onChange={e => setInput(e.target.value)}/ */}
+                  <button disabled={isQuantityZero} style={{ backgroundColor: isQuantityZero ? "rgb(130, 130, 130)" : "", cursor: isQuantityZero ? "not-allowed" : "" }} className={`btn ${isQuantityZero ? "rgb(130, 130, 130)" : "btn--primary"}  btn--block`} onClick={added} type='button'>{isQuantityZero ? "Out of Stock" : "Add To Cart"}</button>
+                  {/* <h4>Product Details</h4> */}
+                  <span>
+                    {result.description}
+                  </span>
+                </div>
+              </section>
+            ))}
+          </div>
+        )
+      }
+
+
+
+    </div>
+  );
 }
 
 export default StoreProductDetailed;
