@@ -33,23 +33,12 @@ function StoreProductDetailed() {
   const GET_DELIVERY_URL = "https://falcon-server-jaek.onrender.com/store/get-delivery"
   const [addedItem, setAddedItem] = useState([])
   // const [isInputValid, setIsInputValid] = useState(false)
-  const { email, token } = localStorage
+  const { email } = localStorage
   let sumPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
   sumPrice = sumPrice * quantity
   let totalPrice = sumPrice + shippingMoney
 
   const navigate = useNavigate()
-  console.log(error)
-
-  // const  checkFormValidity = () => {
-  //   if (firstname && lastname && customer_email && phone  !== "") {
-  //     console.log("Form validity checking")
-  //     return true;
-  //   }
-  //   else{
-  //     return false;
-  //   }
-  // }
 
 
   const handleVariantSize = (e) => {
@@ -164,19 +153,51 @@ function StoreProductDetailed() {
   };
 
 
-  // to add to quantity function
   // const addQuantity = (id) => {
-  //   // Find the product in the cart based on its id
-  //   const updatedCart = addedItem.map((item) =>
-  //     item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-  //   );
+  //   // const filter = productDetail.find(obj => obj.id === id)
+  //   const secondFilter = addedItem.find(obj => obj.id === id)
+  //   // setFilteredQantity(filter)
+  //   console.log(secondFilter)
+  //   setQuantity(quantity + 1)
+  //   // if (quantity > productDetail[0].quantity) {
+  //   //   Swal.fire({
+  //   //     position: 'top-end',
+  //   //     toast: true,
+  //   //     title: `Quantity not available`,
+  //   //     color: 'red',
+  //   //     showConfirmButton: false,
+  //   //     timer: 2500,
+  //   //   });
+  //   //   console.log(quantity)
+  //   //   return
+  //   // }
+  //   // else {
+  //   //   setQuantity(quantity + 1)
+  //   // }
+  //   // setQuantity(id.target.value(quantity + 1))
 
-  //   // Update the cart state with the updated cart
-  //   setAddedItem(updatedCart);
-  // };
-  const addQuantity = () => {
-    console.log()
-    if (quantity > productDetail[0].quantity) {
+  // }
+  const [firstClick, setFirstClick] = useState(false)
+
+  useEffect(() => console.log(addedItem), [addedItem])
+  const addQuantity = (id) => {
+    // Find the index of the item in the addedItem array
+    const itemIndex = addedItem.find((item) => item.id === id);
+    console.log(itemIndex)
+    // console.log(addedItem)
+  
+    if (itemIndex.cartQuantity <= itemIndex.quantity) {
+      if(firstClick) {
+        const newArray =  addedItem.map((obj) => (obj.id === id ? {...obj, cartQuantity: obj.cartQuantity + 1} : obj) )
+        setAddedItem(newArray)
+      }
+      else{
+        const newArray =  addedItem.map((obj) => (obj.id === id ? {...obj, cartQuantity: obj.cartQuantity + 2} : obj) )
+        setAddedItem(newArray)
+        setFirstClick(true)
+      }
+    }
+    else{
       Swal.fire({
         position: 'top-end',
         toast: true,
@@ -185,17 +206,15 @@ function StoreProductDetailed() {
         showConfirmButton: false,
         timer: 2500,
       });
-      console.log(quantity)
-      return
     }
-    else {
-      setQuantity(quantity + 1)
-    }
-    // setQuantity(id.target.value(quantity + 1))
+    
+  };
+  
 
-  }
+ 
+  
 
-  const minusQuantity = () => {
+  const minusQuantity = (id) => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
     }
@@ -334,14 +353,7 @@ function StoreProductDetailed() {
   const [discountValue, setDiscountValue] = useState([])
   const fetchDiscount = async () => {
     try {
-      const response = await axios.post("https://falcon-server-jaek.onrender.com/store/get-discount", { email },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        }
-      )
+      const response = await axios.post("https://falcon-server-jaek.onrender.com/store/get-discount", { email })
       console.log(response.data.discounts)
       const discount = response.data.discounts
       const newDiscounts = discount.map(item => ({ name: item.name, price: item.price }))
@@ -359,13 +371,7 @@ function StoreProductDetailed() {
 
   const fetchDeliveryValues = async () => {
     try {
-      const response = await axios.post(GET_DELIVERY_URL, { email },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        }
+      const response = await axios.post(GET_DELIVERY_URL, { email }
       )
       const shipping = response.data.data2
       const newShiping = shipping.map((item) => ({ location: item.location, fee: item.fee }))
@@ -544,6 +550,11 @@ function StoreProductDetailed() {
         console.log(response)
         console.log('POST request successful:', response.data);
         localStorage.removeItem("cartItem")
+        setFirstname('')
+        setLastname('')
+        setCustomerEmail('')
+        setPhone('')
+        
         // window.location.href = `/Store/${store}`
 
         if (status === "successful" || "completed") {
@@ -596,11 +607,11 @@ function StoreProductDetailed() {
         />
       )}
 
-      {!isFetching && error === 500 ? (
+      {!isFetching &&  error === 500 && !productDetail ? (
         <ServerError />
       ) : null}
 
-      {!isFetching && error ? (
+      {!isFetching && error && error !== 500 ? (
         <NotFound />
       )
         :
@@ -649,7 +660,7 @@ function StoreProductDetailed() {
                                       <button onClick={() => minusQuantity(info.id)} data-v-7d194230 type="button" className='action_minus'>
                                         <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M14.158 12.332H10.7V11.275H14.158V12.332Z" fill="#333333"></path></svg>
                                       </button>
-                                      <span data-v-7d194230 className='action__value'>{quantity}</span>
+                                      <span data-v-7d194230 className='action__value'>{info.cartQuantity || 1}</span>
                                       <button onClick={() => addQuantity(info.id)} data-v-7d194230 type='button' className='action_plus'>
                                         <svg data-v-7d194230="" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle data-v-7d194230="" cx="12" cy="12" fill="#F2F2F2" r="11.5" stroke="#E0E0E0"></circle> <path data-v-7d194230="" d="M15.406 11.772H12.557V14.782H11.535V11.772H8.7V10.827H11.535V7.838H12.557V10.827H15.406V11.772Z" fill="#333333"></path></svg>
                                       </button>

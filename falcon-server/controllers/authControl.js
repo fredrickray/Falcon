@@ -16,39 +16,49 @@ app.use (cookieParser ());
 //Registering merchant
 const register = async (req, res) => {
   bcrypt.hash (req.body.password, saltRounds, async (err, hash) => {
-    const {fname, lname, email, phone, username} = req.body;
+    const {fname, lname, email, phone, username, authType} = req.body;
     const password = hash;
       try {
-        let user = await knex ('Merchants').insert ({
-          email,
-          fname,
-          lname,
-          password,
-          username,
-          phone,
-          // token,
-        });
-        const token = createToken (user.id);
+        const userExist = await knex("Merchants").where({email}).first()
+        if(userExist){
+          res.status(409).send({message: "Email already exist, try again"})
+        }
+        else{
+          let user = await knex ('Merchants').insert ({
+            email,
+            fname,
+            lname,
+            password,
+            username,
+            phone,
+            authType
+            // token,
+          });
+          const token = createToken (user.id);
+  
+          // else{
+          res.cookie ('jwt', token, {
+            httpOnly: true,
+            withCredentials: true,
+            maxAge: maxAge * 1000,
+          });
 
-        // else{
-        res.cookie ('jwt', token, {
-          httpOnly: true,
-          withCredentials: true,
-          maxAge: maxAge * 1000,
-        });
+          res.status (200).json ({
+            success: true,
+            message: 'Registration was successful',
+            status: 'success',
+            User: user,
+            token,
+          });
+        }
+        
         // res
         //   .status (201)
         //   .send ({message: 'An email was sent to your account, please verify'});
         // crypto.randomBytes (32).toString ('hex');
         // const url = `${process.env.BASE_URL}user/${user.id}/verify/${token}`;
         // await sendEmail (user.email, 'Verify Email', url);
-        res.status (200).json ({
-          success: true,
-          message: 'Registration was successful',
-          status: 'success',
-          User: user,
-          token,
-        });
+        
         // console.log (user);
       } catch (error) {
         console.log (error);
@@ -162,23 +172,6 @@ const getUser = async (req, res) => {
     res.status(500).send({message: "There was a server error", error})
   }
 }
-// To get all Merchants
-const users = async (req, res) => {
-  const id = req.body.id;
-
-  try {
-    let user = await knex.select ().from ('Merchants');
-    // console.log(user)
-    if (user) {
-      // console.log (user);
-      res.send ({message: 'Users retrived', user});
-    } else {
-      res.send ({message: 'Users were not retrived'});
-    }
-  } catch (err) {
-    console.log (err);
-  }
-};
 
 // To Update Merchant's Password
 const passwordReset = async (req, res) => {
@@ -231,6 +224,5 @@ module.exports= {
   update,
   social,
   getUser,
-  users,
   passwordReset
 }

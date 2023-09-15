@@ -40,9 +40,12 @@ function StorePreview() {
   let sumPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
   sumPrice = sumPrice * quantity
   const totalPrice = sumPrice + shippingMoney
+  // console.log(storeData)
 
   const added = (item) => {
-    setAddedItem((prevCartItem) => [...prevCartItem, item]);
+    const filter = storeData.find(obj => obj.id === item)
+    console.log(filter)
+    setAddedItem((prevCartItem) => [...prevCartItem, filter]);
     const Toast = Swal.mixin({
       toast: true,
       position: 'top-end',
@@ -333,7 +336,8 @@ function StorePreview() {
                 <i className="mdi mdi-star" />
               </div>
               <h4>₦
-                {result.price.toLocaleString()}
+                {/* {result.price.toLocaleString()} */}
+                {result.price}
               </h4>
             </div>
           </Link>
@@ -348,7 +352,8 @@ function StorePreview() {
           </div>
         </div>
       );
-    } else {
+    } 
+    else {
       itemsToDisplay.push(
         <div className="pro"
           key=
@@ -373,7 +378,8 @@ function StorePreview() {
                 <i className="mdi mdi-star" />
               </div>
               <h4>₦
-                {result.price.toLocaleString()}
+                {/* {result.price.toLocaleString()} */}
+                {result.price}
               </h4>
             </div>
           </Link>
@@ -381,7 +387,7 @@ function StorePreview() {
 
             <div>
               <button
-                onClick={() => added(storeData.id)}
+                onClick={() => added(result.id)}
                 style={{ backgroundColor: '#0a0e27', color: "white", padding: "15px", paddingRight: "35px", paddingLeft: "35px", paddingTop: "10px", paddingBottom: "10px", borderRadius: "8px", marginLeft: "5px" }}>
                 Quick Add
               </button>

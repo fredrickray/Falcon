@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { GiClothes, GiArtificialIntelligence, GiTakeMyMoney } from 'react-icons/gi';
 import { AiOutlineDown, AiOutlineUp } from 'react-icons/ai';
-import { MdLocalShipping, MdManageAccounts } from 'react-icons/md';
+import { MdLocalShipping, MdManageAccounts, MdDashboard } from 'react-icons/md';
 import { TiShoppingCart } from "react-icons/ti"
 import { ImScissors } from "react-icons/im"
 import { FaStoreAlt } from "react-icons/fa"
+// import { BiSolidDashboard } from "react-icons/s"
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Logout from './LogOut';
@@ -37,7 +38,7 @@ const AsideBar = ({isNavOpen, handleNavOpen}) => {
   }
   
 
-  const { username } = localStorage
+  const { firstname } = localStorage
 
   return (
     <aside className={`max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 my-4 ml-4 block w-full ${isNavOpen ? "translate-x-0" : "-translate-x-full"} flex-wrap items-center justify-between overflow-y-auto rounded-2xl border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-transparent`}>
@@ -51,7 +52,7 @@ const AsideBar = ({isNavOpen, handleNavOpen}) => {
           href
         >
           <span className="ml-1 font-semibold transition-all duration-200 ease-nav-brand">
-           {username}'s Dashboard
+            Admin: {firstname}
           </span>
         </a>
       </div>
@@ -66,11 +67,11 @@ const AsideBar = ({isNavOpen, handleNavOpen}) => {
               to="/Home"
             >
               <div className="bg-black shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg  bg-center stroke-0 text-center xl:p-2.5 p-2">
-                <GiClothes size="500%" style={{height: '100%', color: "white"}} />
+                <MdDashboard size="500%" style={{height: '100%', color: "white"}} />
 
               </div>
               <span className="ml-1 duration-300 opacity-100 pointer-events-none ease-soft">
-                Dashboard
+                Overview
               </span>
             </Link>
           </li>

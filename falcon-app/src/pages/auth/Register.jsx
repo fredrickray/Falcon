@@ -14,6 +14,7 @@ const Register = () => {
   const [phone, setPhone] = useState('');
   const [isOpen, setIsOpen] = useState(false)
   const [isNavOpen, setIsNavOpen] = useState(false)
+  const [isButtonDisabled, setIsButtonDisabled] = useState (false);
 
   // const check = () => setIsOpen(!true)
 
@@ -21,7 +22,8 @@ const Register = () => {
     setIsNavOpen(prev => !prev)
   }
 
-  const API_URL = 'https://falcon-server-jaek.onrender.com/auth/register';
+  // const API_URL = 'https://falcon-server-jaek.onrender.com/auth/register';
+  const API_URL = "http://localhost:9000/auth/register"
   const response = (message) => {
     Swal.fire({
       position: 'top-end',
@@ -55,41 +57,25 @@ const Register = () => {
     });
   };
 
-//   const googleReg = () => {
-//     window.open(
-//       `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'https://falcon-server-jaek.onrender.com'}/OAuth/google/callback`,
-//       '_self'
-//     );
+  const googleReg = () => {
+    window.open(
+      "http://localhost:9000/OAuth/google",
+      // `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'http://localhost:9000'}/oauth/google/callback`,
+      '_self'
+    );
+}
+// const googleReg =  async() => {
+//   try {
+//     const response = await Axios.request("http://localhost:9000/oauth/google/callback")
+//     console.log(response)
+//   } catch (error) {
+//     console.log(error)
+//   }
+// //  const response =  window.open("http://localhost:9000/oauth/google")
+// //  console.log(response)
+//   // window.location.href = "http://localhost:9000/oauth/google"
 // }
 
-  const googleReg = async() => {
-    try {
-      const response = await Axios.get("https://falcon-server-jaek.onrender.com/OAuth/google/callback")
-      console.log(response)
-    } 
-    catch (error) {
-      console.log(error)
-    }
-  }
-  //   // Swal.fire ({
-  //   //   position: 'top-end',
-  //   //   // icon: 'success',
-  //   //   toast: true,
-  //   //   title: 'Google authentication, coming soon!!!',
-  //   //   showConfirmButton: false,
-  //   //   timer: 2500,
-  //   // });
-  // };
-
-  // const googleReg = () => {
-  //   fetch("/OAuth/google/callback")
-  //     .then(response => {
-  //       console.log(response)
-  //     }) 
-  //     .catch(error => {
-  //       console.log(error)
-  //     })
-  // }
 
   // const googleReg = () => {
   //   response('Google authentication, coming soon!!!')
@@ -98,20 +84,22 @@ const Register = () => {
   
 
   const register = () => {
+    setIsButtonDisabled(true)
     if (fnameReg.length === 0) {
       response('First Name field can not be empty')
-      // alert('Invalid Form, First Name can not be empty')
+      setIsButtonDisabled(false)
       return
     }
 
     if (lnameReg.length === 0) {
       response("Last Name field must not be empty")
-      // alert('Invalid Form, Last Name can not be empty')
+      setIsButtonDisabled(false)
       return
     }
 
     if (username.length === 0) {
       response("Username field can not be empty")
+      setIsButtonDisabled(false)
       return
     }
 
@@ -119,6 +107,7 @@ const Register = () => {
 
     if (emailReg.length === 0) {
       response('Email Address can not be empty')
+      setIsButtonDisabled(false)
       return
     }
 
@@ -130,9 +119,10 @@ const Register = () => {
       response(
         'Password must be greater than or equal to 8 characters.',
       )
+      setIsButtonDisabled(false)
       return
     }
-
+  
     // variable to count upper case characters in the passwordReg.
     let countUpperCase = 0
     // variable to count lowercase characters in the passwordReg.
@@ -189,24 +179,28 @@ const Register = () => {
     if (countLowerCase === 0) {
       // invalid form, 0 lowercase characters
       response('Password must include lowercase')
+      setIsButtonDisabled(false)
       return
     }
 
     if (countUpperCase === 0) {
       // invalid form, 0 upper case characters
       response('Password must include uppercase')
+      setIsButtonDisabled(false)
       return
     }
 
     if (countDigit === 0) {
       // invalid form, 0 digit characters
       response('Password must include a number')
+      setIsButtonDisabled(false)
       return
     }
 
     if (countSpecialCharacters === 0) {
       // invalid form, 0 special characters characters
       response('Password must have special characters')
+      setIsButtonDisabled(false)
       return
     }
     Axios.post(API_URL, {
@@ -220,6 +214,7 @@ const Register = () => {
       .then(response => {
         // console.log (response.data);
         if (response.data.status === "success") {
+          setIsButtonDisabled(false)
           localStorage.setItem('firstname', fnameReg);
           localStorage.setItem('lastname', lnameReg);
           localStorage.setItem('email', emailReg);
@@ -242,29 +237,21 @@ const Register = () => {
           }).then((window.location.href = '/Home'));
         }
         else {
-          console.log(response)
-          // Swal.fire ({
-          //   position: 'top-end',
-          //   // icon: 'success',
-          //   title: response.data.message,
-          //   toast: true,
-          //   color: 'red',
-          //   showConfirmButton: false,
-          //   timer: 1500,
-          // });
+          console.log(response.data)
+          setIsButtonDisabled(false)
         }
       })
       .catch(err => {
-        console.log('ERROR', err.message);
+        // console.log('ERROR', err.message);
+        setIsButtonDisabled(false)
         Swal.fire({
           position: 'top-end',
           icon: 'error',
           toast: true,
-          title: err.message,
+          title: err.response.data.message,
           showConfirmButton: false,
           timer: 2500,
         });
-        console.log(err.config.data);
       });
   };
 
@@ -550,10 +537,11 @@ const Register = () => {
                       <div className="text-center">
                         <button
                           type="button"
-                          className="inline-block w-full px-6 py-3 mt-6 mb-2 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:scale-102 hover:shadow-soft-xs leading-pro text-xs ease-soft-in tracking-tight-soft shadow-soft-md bg-150 bg-x-25 bg-black hover:border-slate-700 hover:bg-slate-700 hover:text-white"
+                          className={`inline-block w-full px-6 py-3 mt-6 mb-2 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer active:opacity-85 hover:scale-102 hover:shadow-soft-xs leading-pro text-xs ease-soft-in tracking-tight-soft shadow-soft-md bg-150 bg-x-25 ${isButtonDisabled ? "bg-opacity-70" : "bg-black"} hover:text-white`}
+                          disabled={isButtonDisabled ? true : false}
                           onClick={register}
                         >
-                          Sign up
+                          {isButtonDisabled ? "Signing..." : "Sign up" }
                         </button>
                       </div>
                       <p className="mt-4 mb-0 leading-normal text-sm">
