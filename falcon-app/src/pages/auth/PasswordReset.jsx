@@ -26,17 +26,17 @@ const PasswordReset = () => {
         try {
             setIsButtonDisabled(true)
             const response = await Axios.post(URL, { email, password })
-            // setIsButtonDisabled(true)
-            console.log(response.data.message)
             console.log(response.data.status)
             if (response.data.status === "Success") {
                 setIsButtonDisabled(false)
                 console.log(response.data.message)
-                popUp("top-right", true, response.data.message, "green", "success", 3500)
+                popUp("top-right", true, "password updated", "green", "success", 3500)
                 window.location.href = "/Login"
             }
-            setIsButtonDisabled(false)
-            popUp("top-right", true, response.data.message, "green", "", 2500)
+            else{
+                setIsButtonDisabled(false)
+                popUp("top-right", true, response.data.message, "black", "", 2500)
+            }
 
         }
         catch (error) {

@@ -225,8 +225,8 @@ const ManageStore = () => {
 
                                         <div style={{ padding: "15px" }}>
                                             <button
-                                                style={{ padding: "10px 40px 6px 40px" }}
-                                                className="inline-block w-32 mt-6 mb-0 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
+                                                style={{ padding: "10px 40px 6px 40px", background: "#72bd72" }}
+                                                className="inline-block w-32 mt-6 mb-0 font-bold text-center text-white uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25 bg-150 leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-[#72bd72] hover:scale-102 hover:shadow-soft-xs active:opacity-85"
                                                 type=""
                                                 onClick={addDiscountCode}
                                             >Add</button>

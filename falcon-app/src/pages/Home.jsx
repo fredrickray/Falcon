@@ -4,12 +4,18 @@ import useFetch from '../hooks/useFetch';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { MdOutlinePayments } from "react-icons/md"
 
 const Home = () => {
     const { count, data: product } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
     const [isNavOpen, setIsNavOpen] = useState(false)
     const [totalMoney, setTotalMoney] = useState(0.00)
+    const [totalTransaction, setTotalTransaction] = useState(0.00)
+    const [productsSold, setProductsSold] = useState(0)
     const { email } = localStorage
+    // console.log(product)
+    // const lastProduct = product[product.length - 1]
+    // console.log(lastProduct)
 
     const handleNavOpen = () =>  setIsNavOpen(prev => !prev)
     const popUp = ( position , message, color ) => {
@@ -25,6 +31,7 @@ const Home = () => {
 
   useEffect(() => {
     retrieveMoneyMade()
+    retrieveOrders()
   }, [])
   const retrieveMoneyMade = async () => {
     try {
@@ -41,17 +48,36 @@ const Home = () => {
       }
       else {
           const transactions = response.data.response;
+          console.log(transactions.length)
           const totalAmount = transactions.reduce((total, transaction) => {
             return total + transaction.amount;
           }, 0);
           const formattedTotalAmount = totalAmount.toLocaleString(); 
           setTotalMoney(formattedTotalAmount);
+          setTotalTransaction(transactions.length)
       }
   }
   catch (error) {
       popUp("top-end", error.response.data.message, "red")
       console.error(error.response.data.message);
   }
+  }
+
+  const retrieveOrders = async () => {
+    try{
+      const response = await axios.post("https://falcon-server-jaek.onrender.com/payment/orders", {my_email: email})
+      if(response.status === 404) {
+        popUp("top-end", response.data.message)
+      }
+      else{
+        console.log()
+        setProductsSold(response.data.orderItems.length)
+      }
+      
+    } 
+    catch(error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -121,7 +147,7 @@ const Home = () => {
                           Total Money
                         </p>
                         <h5 className="mb-0 font-bold">
-                          {totalMoney}
+                          NGN {totalMoney}
                           {/* <span className="leading-normal text-sm font-weight-bolder text-lime-500">
                             +55%
                           </span> */}
@@ -167,42 +193,43 @@ const Home = () => {
             </div>
 
             {/* <!-- card3 --> */}
-            {/* <div className="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
+            <div className="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
               <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
                 <div className="flex-auto p-4">
                   <div className="flex flex-row -mx-3">
                     <div className="flex-none w-2/3 max-w-full px-3">
                       <div>
                         <p className="mb-0 font-sans font-semibold leading-normal text-sm">
-                          New Clients
+                          Total Transactions
                         </p>
                         <h5 className="mb-0 font-bold">
-                          +3,462
+                          {totalTransaction}
                         </h5>
                       </div>
                     </div>
                     <div className="px-3 text-right basis-1/3">
                       <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
-                        <i className="ni leading-none ni-paper-diploma text-lg relative top-3.5 text-white" />
+                        {/* <i className="ni leading-none ni-mo text-lg relative top-3.5 text-white" /> */}
+                        <MdOutlinePayments className='leading-none text-lg relative top-3.5 text-white' style={{fontSize: "24px"}}/>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div> */}
+            </div>
 
             {/* <!-- card4 --> */}
-            {/* <div className="w-full max-w-full px-3 sm:w-1/2 sm:flex-none xl:w-1/4">
+            <div className="w-full max-w-full px-3 sm:w-1/2 sm:flex-none xl:w-1/4">
               <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
                 <div className="flex-auto p-4">
                   <div className="flex flex-row -mx-3">
                     <div className="flex-none w-2/3 max-w-full px-3">
                       <div>
                         <p className="mb-0 font-sans font-semibold leading-normal text-sm">
-                          Sales
+                          Total Orders
                         </p>
                         <h5 className="mb-0 font-bold">
-                          $103,430
+                          {productsSold}
                         </h5>
                       </div>
                     </div>
@@ -214,7 +241,7 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-            </div> */}
+            </div>
           </div>
 
           {/* <!-- cards row 2 --> */}
@@ -303,7 +330,6 @@ const Home = () => {
                       <p className="mb-0 leading-normal text-sm">
                         <i className="fa fa-check text-cyan-500" />
                         <span className="ml-1 font-semibold">{count} done </span>
-                        this month
                       </p>
                     </div>
                   </div>
@@ -381,7 +407,7 @@ const Home = () => {
 
             {/* <!-- card 2 --> */}
 
-            <div className="w-full max-w-full px-3 md:w-1/2 md:flex-none lg:w-1/3 lg:flex-none">
+            {/* <div className="w-full max-w-full px-3 md:w-1/2 md:flex-none lg:w-1/3 lg:flex-none">
               <div className="border-black/12.5 shadow-soft-xl relative flex h-full min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
                 <div className="border-black/12.5 mb-0 rounded-t-2xl border-b-0 border-solid bg-white p-6 pb-0">
                   <h6>Orders overview</h6>
@@ -473,7 +499,7 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
         {/* <!-- end cards --> */}
