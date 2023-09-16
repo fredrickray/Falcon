@@ -12,7 +12,7 @@ const Login = () => {
   const [isNavOpen, setIsNavOpen] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   // const [isNavOpen, setIsNavOpen] = useState(false)
-  const LOGIN_URL = 'https://falcon-server-jaek.onrender.com/auth/login';
+  const LOGIN_URL = 'https://falcon-server-jaek.onrender.com/admin/login';
 
   const response = (message) => {
     Swal.fire ({
@@ -44,13 +44,11 @@ const Login = () => {
         console.log (response);
         setIsButtonDisabled(false)
         // setIsLoading(true)
-        const {fname, lname, email, username, phone} = response.data.data;
+        const {fname, lname, email} = response.data.data;
         const token = response.data.token;
-        localStorage.setItem ('firstname', fname);
-        localStorage.setItem ('lastname', lname);
-        localStorage.setItem ('email', email);
-        localStorage.setItem ('username', username);
-        localStorage.setItem ('phone', phone);
+        localStorage.setItem ('Admin-firstname', fname);
+        localStorage.setItem ('Admin-lastname', lname);
+        localStorage.setItem ('Admin-email', email);
         localStorage.setItem ('token', token);
         sessionStorage.setItem ('token', token);
         setIsButtonDisabled (false);
