@@ -13,6 +13,7 @@ const Login = () => {
   const [isOpen, setIsOpen] = useState(false)
   // const [isNavOpen, setIsNavOpen] = useState(false)
   const LOGIN_URL = 'https://falcon-server-jaek.onrender.com/admin/login';
+  // const LOGIN_URL = "http://localhost:9000/admin/login"
 
   const response = (message) => {
     Swal.fire ({
@@ -43,6 +44,7 @@ const Login = () => {
       .then (response => {
         console.log (response);
         setIsButtonDisabled(false)
+        console.log(response)
         // setIsLoading(true)
         const {fname, lname, email} = response.data.data;
         const token = response.data.token;
@@ -68,7 +70,7 @@ const Login = () => {
         Toast.fire ({
           icon: 'success',
           title: `Signed in successfully ${fname}`,
-        }).then ((window.location.href = '/Home'));
+        }).then ((window.location.href = '/Overview'));
         // }
       })
       .catch (err => {
@@ -161,9 +163,9 @@ const Login = () => {
                 <div className="flex flex-col w-full max-w-full px-3 mx-auto md:flex-0 shrink-0 md:w-6/12 lg:w-5/12 xl:w-4/12">
                   <div className="relative flex flex-col min-w-0 mt-32 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border">
                     <div className="p-6 pb-0 mb-0 bg-transparent border-b-0 rounded-t-2xl">
-                      <h3 className="relative z-10 font-bold text-transparent bg-black bg-clip-text">
+                      {/* <h3 className="relative z-10 font-bold text-transparent bg-black bg-clip-text">
                         Welcome back
-                      </h3>
+                      </h3> */}
                       <div id="googleDiv">
                         
                       </div>
