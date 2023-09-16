@@ -29,7 +29,7 @@ const Merchants = () => {
     const handleGetPayments = async () => {
         setIsFetching(true)
         try {
-            const response = await axios.get('https://falcon-server-jaek.onrender.com/payment/get_payment', {
+            const response = await axios.get('https://falcon-server-jaek.onrender.com/admin/merchants', {
                 params: {
                     email,
                 },
@@ -154,7 +154,7 @@ const Merchants = () => {
                         <div className="flex-none w-full max-w-full px-3">
                             <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
                                 <div className="p-6 pb-0 mb-0 bg-white border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
-                                    <h6>{data.length} {data.length > 1 ? "Payments" : "Payment"}</h6>
+                                    <h6>{data?.length} {data?.length > 1 ? "Payments" : "Payment"}</h6>
                                 </div>
                                 <div className="flex-auto px-0 pt-0 pb-2">
                                     <div className="p-0 overflow-x-auto">

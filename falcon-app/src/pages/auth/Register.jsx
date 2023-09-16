@@ -64,13 +64,25 @@ const Register = () => {
       '_self'
     );
 }
-// const googleReg =  async() => {
+
+// const googleReg = async() => {
 //   try {
-//     const response = await Axios.request("http://localhost:9000/oauth/google/callback")
+//     const response = await Axios.get("http://localhost:9000/oauth/google/callback")
 //     console.log(response)
 //   } catch (error) {
 //     console.log(error)
 //   }
+// }
+// const googleReg =  async() => {
+//   try {
+//     const response = await Axios.get("http://localhost:9000/oauth/google/callback")
+//     console.log(response)
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
+
+
 // //  const response =  window.open("http://localhost:9000/oauth/google")
 // //  console.log(response)
 //   // window.location.href = "http://localhost:9000/oauth/google"

@@ -5,7 +5,7 @@ import Swal from "sweetalert2"
 import { LineWave } from "react-loader-spinner"
 
 const Transactions = () => {
-    const [data, setData] = useState("")
+    const [data, setData] = useState(null)
     const { email } = localStorage
     const [searchItem, setSearchItem] = useState("")
     const [filteredProducts, setFilteredProducts] = useState([]);
@@ -30,7 +30,7 @@ const Transactions = () => {
     const handleGetPayments = async () => {
         setIsFetching(true)
         try {
-            const response = await axios.get('https://falcon-server-jaek.onrender.com/payment/get_payment', {
+            const response = await axios.get('https://falcon-server-jaek.onrender.com/admin/transaction', {
                 params: {
                     email,
                 },
@@ -38,7 +38,7 @@ const Transactions = () => {
 
             // console.log(response.data)
 
-            if (response.data.message === 'No transactions found for this email') {
+            if (response.status === 404) {
                 popUp("center", response.data.message)
                 setIsFetching(false)
             }

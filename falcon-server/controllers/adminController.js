@@ -98,9 +98,9 @@ const getMerchantId = async (req, res) => {
 const getOrders = async (req, res) => {
   try {
     // Retrieve user data from the "Merchants" table
-    const users = await knex.select().from('Orders');
+    const orders = await knex.select().from('Orders');
 
-    if (users.length > 0) {
+    if (orders.length > 0) {
       // Respond with success and the retrieved users
       res.status(200).json({ message: 'Orders retrieved succesfully', users });
     } else {
