@@ -17,7 +17,7 @@ const cron = require('node-cron');
 
 app.use(cors())
 app.use(cors({
-    origin: ["https://falcon-app.vercel.app"],
+    origin: ["https://falcon-app.vercel.app", "https://falcon-admin.vercel.app"],
     methods: ["GET", "POST", "UPDATE", "DELETE", "OPTIONS"],
     credentials: true,
     allowedHeaders: "X-Requested-With,content-type"
@@ -36,7 +36,7 @@ app.use(
 // Middleware to handle preflight requests
 const handlePreflight = (req, res, next) => {
     // Set the CORS headers for the preflight request
-    res.setHeader("Access-Control-Allow-Origin", ["https://falcon-app.vercel.app", "http://localhost:3000", "http://localhost:3002"]); // Replace * with your allowed origins
+    res.setHeader("Access-Control-Allow-Origin", ["https://falcon-app.vercel.app", "http://localhost:3000", "http://localhost:3002", "https://falcon-admin.vercel.app"]); // Replace * with your allowed origins
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Include your allowed methods
     res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type"); // Include your allowed headers
   

@@ -17,10 +17,10 @@ const Orders = () => {
     const result = async () => {
       setIsFetching(true)
       try {
-        const response = await  axios.post("https://falcon-server-jaek.onrender.com/payment/orders", { my_email: email })
+        const response = await  axios.post("https://falcon-server-jaek.onrender.com/admin/orders")
         if(response.status === 200) {
-          console.log(response.data.orderItems)
-          setData(response.data.orderItems)
+          console.log(response.data.orders)
+          setData(response.data.orders)
           setIsFetching(false)
         }
         else{
