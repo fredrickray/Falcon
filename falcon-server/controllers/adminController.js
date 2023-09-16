@@ -3,37 +3,37 @@ const bcrypt = require ('bcrypt');
 const express = require ('express');
 // const session = require ('express-session');
 const cookieParser = require ('cookie-parser');
-
+const knex = require("../knex-db/knex")
 const app = express ();
 // const knex = require("../knex-db/knex")
 const {createToken, maxAge} = require("../utls/createToken")
 app.use (cookieParser ());
 
-const knex = require('knex')({
-  client: 'mysql',
-  connection: {
-    host: 'localhost',
-    port: 8889,
-    user: 'root',
-    password: 'root',
-    database: 'Falcon',
-  },
-});
+// const knex = require('knex')({
+//   client: 'mysql',
+//   connection: {
+//     host: 'localhost',
+//     port: 8889,
+//     user: 'root',
+//     password: 'root',
+//     database: 'Falcon',
+//   },
+// });
 
 const login = async (req, res) => {
   const {email, password} = req.body;
 
   try {
-    let user = await knex ('Merchants').where ({email}).first ();
+    let user = await knex ('Admin').where ({email}).first ();
 
     if (!user) {
-      res.status (401).json ({message: 'Wrong email or passsword, try again'});
+      res.status (401).json ({message: 'Invalid credentials'});
     } else {
       let hashedPassword = user.password;
       let isValid = await bcrypt.compare (password, hashedPassword);
       const token = createToken (user.id);
       if (!isValid) {
-        res.status (401).json ({message: 'Wrong email or password, try again'});
+        res.status (401).json ({message: 'Invalid credentials'});
       } else {
         // res.cookie("test", true)
         res.cookie ('jwts', token, {
@@ -45,7 +45,7 @@ const login = async (req, res) => {
         res.status (200).json ({
           status: 'success',
           data: user,
-          message: 'Logged in successfully',
+          message: `Welcome back ${user.firstname}`,
           token,
         });
       }
