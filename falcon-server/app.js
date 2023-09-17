@@ -17,7 +17,7 @@ const cron = require('node-cron');
 
 app.use(cors())
 app.use(cors({
-    origin: ["https://falcon-app.vercel.app"],
+    origin: ["https://falcon-app.vercel.app", "https://falcon-admin.vercel.app"],
     methods: ["GET", "POST", "UPDATE", "DELETE", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["X-Requested-With", "Content-Type"]
