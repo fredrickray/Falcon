@@ -56,7 +56,7 @@ const OrderDetail = () => {
 
     const handleNavOpen = () => setIsNavOpen(prev => !prev)
 
-    if (store) {
+    // if (store) {
         return (
             <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
                 <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen} />
@@ -132,7 +132,7 @@ const OrderDetail = () => {
                         <LineWave
                             height="300"
                             width="300"
-                            color="#4fa94d"
+                            color="black"
                             ariaLabel="line-wave"
                             wrapperStyle={{ justifyContent: "center", position: "fixed", display: "flex", alignItems: "center", transform: "translate(-30%, -70%)", top: "50%", left: "50%", }}
                             wrapperClass=""
@@ -266,83 +266,7 @@ const OrderDetail = () => {
                 </main>
             </div>
         );
-    }
-    else {
-        return (
-            <div className="sm-0 font-sans antialiased font-normal text-base leading-default bg-gray-50 text-slate-500">
-                <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen} />
-
-                <main className="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen rounded-xl transition-all duration-200">
-                    <nav
-                        className="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all shadow-none duration-250 ease-soft-in rounded-2xl lg:flex-nowrap lg:justify-start"
-                        navbar-main
-                        navbar-scroll="true"
-                    >
-                        <div className="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
-                            <nav>
-                                {/* <!-- breadcrumb --> */}
-                                <ol className="flex flex-wrap pt-1 mr-12 bg-transparent rounded-lg sm:mr-16">
-                                    <li className="leading-normal text-sm">
-                                        <a className="opacity-50 text-slate-700" href>
-                                            Home
-                                        </a>
-                                    </li>
-                                    <li className="leading-normal text-sm">
-                                        <a className="opacity-50 text-slate-700" href>
-                                            Order
-                                        </a>
-                                    </li>
-                                    <li
-                                        className="text-sm pl-2 capitalize leading-normal text-slate-700 before:float-left before:pr-2 before:text-gray-600 before:content-['/']"
-                                        aria-current="page"
-                                    >
-                                        Order List
-                                    </li>
-                                </ol>
-                                <h6 className="mb-0 font-bold capitalize">Order List</h6>
-                            </nav>
-
-                            <div className="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
-                                <div className="flex items-center md:ml-auto md:pr-4">
-                                    <div className="relative flex flex-wrap items-stretch w-full transition-all rounded-lg ease-soft">
-                                        <span className="text-sm ease-soft leading-5.6 absolute z-50 -ml-px flex h-full items-center whitespace-nowrap rounded-lg rounded-tr-none rounded-br-none border border-r-0 border-transparent bg-transparent py-2 px-2.5 text-center font-normal text-slate-500 transition-all">
-                                            <i className="fas fa-search" aria-hidden="true" />
-                                        </span>
-                                        <input
-                                            type="text"
-                                            className="pl-8.75 text-sm focus:shadow-soft-primary-outline ease-soft w-1/100 leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 pr-3 text-gray-700 transition-all placeholder:text-gray-500 focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
-                                            placeholder="Type here..."
-                                            onChange={e => setSearchItem(e.target.value)} value={searchItem}
-                                        />
-                                    </div>
-                                </div>
-                                <ul className="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
-                                    {/* <!-- online builder btn  --> */}
-
-
-                                    <li className="flex items-center pl-4 xl:hidden">
-                                        <a
-                                            href
-                                            className="block p-0 transition-all ease-nav-brand text-sm text-slate-500"
-                                            sidenav-trigger
-                                        >
-                                            <div className="w-4.5 overflow-hidden" onClick={handleNavOpen}>
-                                                <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`}></i>
-                                                <i className="ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all"></i>
-                                                <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`}></i>
-                                            </div>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </nav>
-
-
-                </main>
-            </div>
-        );
-    }
+    // }
 }
 
 export default OrderDetail;
