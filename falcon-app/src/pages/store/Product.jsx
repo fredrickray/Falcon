@@ -81,7 +81,7 @@ const Products = () => {
             <LineWave
               height="300"
               width="300"
-              color="#4fa94d"
+              color="black"
               ariaLabel="line-wave"
               wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, 40%)", top: "50%", left: "50%",  }}
               wrapperClass=""

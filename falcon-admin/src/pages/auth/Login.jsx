@@ -12,8 +12,8 @@ const Login = () => {
   const [isNavOpen, setIsNavOpen] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   // const [isNavOpen, setIsNavOpen] = useState(false)
-  const LOGIN_URL = 'https://falcon-server-jaek.onrender.com/admin/login';
-  // const LOGIN_URL = "http://localhost:9000/admin/login"
+  // const LOGIN_URL = 'https://falcon-server-jaek.onrender.com/admin/login';
+  const LOGIN_URL = "http://localhost:9000/admin/login"
 
   const response = (message) => {
     Swal.fire ({
@@ -46,13 +46,13 @@ const Login = () => {
         setIsButtonDisabled(false)
         console.log(response)
         // setIsLoading(true)
-        const {fname, lname, email} = response.data.data;
-        const token = response.data.token;
-        localStorage.setItem ('Admin-firstname', fname);
-        localStorage.setItem ('Admin-lastname', lname);
-        localStorage.setItem ('Admin-email', email);
-        localStorage.setItem ('token', token);
-        sessionStorage.setItem ('token', token);
+        // const {fname, lname, email} = response.data.data;
+        // const token = response.data.token;
+        // localStorage.setItem ('Admin-firstname', fname);
+        // localStorage.setItem ('Admin-lastname', lname);
+        // localStorage.setItem ('Admin-email', email);
+        // localStorage.setItem ('token', token);
+        // sessionStorage.setItem ('token', token);
         setIsButtonDisabled (false);
 
         const Toast = Swal.mixin ({
@@ -69,7 +69,7 @@ const Login = () => {
 
         Toast.fire ({
           icon: 'success',
-          title: `Signed in successfully ${fname}`,
+          title: `Signed in successfully `,
         }).then ((window.location.href = '/Overview'));
         // }
       })
@@ -79,6 +79,19 @@ const Login = () => {
         setIsButtonDisabled (false);
       });
   };
+
+
+  // const login = async() => {
+  //   try {
+  //     const response = await Axios.post(LOGIN_URL, {
+  //       email,
+  //       password
+  //     })
+  //     console.log(response)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   const facebookReg = () => {
     response('FaceBook authentication is disabled')

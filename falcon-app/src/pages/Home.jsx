@@ -5,28 +5,28 @@ import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { MdOutlinePayments } from "react-icons/md"
-
+import { LineWave } from 'react-loader-spinner';
 const Home = () => {
-    const { count, data: product } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
-    const [isNavOpen, setIsNavOpen] = useState(false)
-    const [totalMoney, setTotalMoney] = useState(0.00)
-    const [totalTransaction, setTotalTransaction] = useState(0.00)
-    const [productsSold, setProductsSold] = useState(0)
-    const { email } = localStorage
-    // console.log(product)
-    // const lastProduct = product[product.length - 1]
-    // console.log(lastProduct)
+  const { count, data: product, isFetching } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
+  const [isNavOpen, setIsNavOpen] = useState(false)
+  const [totalMoney, setTotalMoney] = useState(0.00)
+  const [totalTransaction, setTotalTransaction] = useState(0.00)
+  const [productsSold, setProductsSold] = useState(0)
+  const { email } = localStorage
+  // console.log(product)
+  // const lastProduct = product[product.length - 1]
+  // console.log(lastProduct)
 
-    const handleNavOpen = () =>  setIsNavOpen(prev => !prev)
-    const popUp = ( position , message, color ) => {
-      Swal.fire({
-          position: position,
-          toast: true,
-          title: message,
-          color: color,
-          showConfirmButton: false,
-          timer: 2500,
-      });
+  const handleNavOpen = () => setIsNavOpen(prev => !prev)
+  const popUp = (position, message, color) => {
+    Swal.fire({
+      position: position,
+      toast: true,
+      title: message,
+      color: color,
+      showConfirmButton: false,
+      timer: 2500,
+    });
   }
 
   useEffect(() => {
@@ -36,55 +36,55 @@ const Home = () => {
   const retrieveMoneyMade = async () => {
     try {
       const response = await axios.get('https://falcon-server-jaek.onrender.com/payment/get_payment', {
-          params: {
-              email,
-          },
+        params: {
+          email,
+        },
       });
 
       // console.log(response.data)
 
       if (response.data.message === 'No transactions found for this email') {
-          popUp("center", response.data.message)
+        popUp("center", response.data.message)
       }
       else {
-          const transactions = response.data.response;
-          console.log(transactions.length)
-          const totalAmount = transactions.reduce((total, transaction) => {
-            return total + transaction.amount;
-          }, 0);
-          const formattedTotalAmount = totalAmount.toLocaleString(); 
-          setTotalMoney(formattedTotalAmount);
-          setTotalTransaction(transactions.length)
+        const transactions = response.data.response;
+        console.log(transactions.length)
+        const totalAmount = transactions.reduce((total, transaction) => {
+          return total + transaction.amount;
+        }, 0);
+        const formattedTotalAmount = totalAmount.toLocaleString();
+        setTotalMoney(formattedTotalAmount);
+        setTotalTransaction(transactions.length)
       }
-  }
-  catch (error) {
+    }
+    catch (error) {
       popUp("top-end", error.response.data.message, "red")
       console.error(error.response.data.message);
-  }
+    }
   }
 
   const retrieveOrders = async () => {
-    try{
-      const response = await axios.post("https://falcon-server-jaek.onrender.com/payment/orders", {my_email: email})
-      if(response.status === 404) {
+    try {
+      const response = await axios.post("https://falcon-server-jaek.onrender.com/payment/orders", { my_email: email })
+      if (response.status === 404) {
         popUp("top-end", response.data.message)
       }
-      else{
+      else {
         console.log()
         setProductsSold(response.data.orderItems.length)
       }
-      
-    } 
-    catch(error) {
+
+    }
+    catch (error) {
       console.log(error)
     }
   }
 
   return (
     <div className="m-0 font-sans antialiased font-normal text-base leading-default  text-slate-500"
-        // style={{backgroundColor: "#051139"}}
-        >
-      <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen}/>
+    // style={{backgroundColor: "#051139"}}
+    >
+      <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen} />
       <main className="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen rounded-xl transition-all duration-200">
         {/* <!-- Navbar --> */}
         <nav
@@ -110,13 +110,13 @@ const Home = () => {
             </nav>
 
             <div className="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
-              <ul style={{marginLeft: "70%"}} className="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
+              <ul style={{ marginLeft: "70%" }} className="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
                 {/* <!-- online builder btn  --> */}
                 <li className="flex items-center pl-4 xl:hidden">
                   <a
                     href
                     className="block p-0 transition-all ease-nav-brand text-sm text-slate-500 sidenav-trigger"
-                    
+
                   >
                     <div className="w-4.5 overflow-hidden" onClick={handleNavOpen}>
                       <i className={`ease-soft mb-0.75 relative block h-0.5 rounded-sm bg-slate-500 transition-all ${isNavOpen ? "translate-x-[5px]" : ""}`} />
@@ -129,158 +129,127 @@ const Home = () => {
             </div>
           </div>
         </nav>
-
         {/* <!-- end Navbar --> */}
 
-        {/* <!-- cards --> */}
-        <div className="w-full px-6 py-6 mx-auto">
-          {/* <!-- row 1 --> */}
-          <div className="flex flex-wrap -mx-3">
-            {/* <!-- card1 --> */}
-            <div className="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
-              <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
-                <div className="flex-auto p-4">
-                  <div className="flex flex-row -mx-3">
-                    <div className="flex-none w-2/3 max-w-full px-3">
-                      <div>
-                        <p className="mb-0 font-sans font-semibold leading-normal text-sm">
-                          Total Money
-                        </p>
-                        <h5 className="mb-0 font-bold">
-                          NGN {totalMoney}
-                          {/* <span className="leading-normal text-sm font-weight-bolder text-lime-500">
+        {isFetching && (
+          <LineWave
+            height="300"
+            width="300"
+            color="black"
+            ariaLabel="line-wave"
+            wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, 40%)", top: "50%", left: "50%", }}
+            wrapperClass=""
+            visible={true}
+            firstLineColor="black"
+            middleLineColor="black"
+            lastLineColor="black"
+          />
+        )}
+
+        {!isFetching && product && (
+          <div className="w-full px-6 py-6 mx-auto">
+            {/* <!-- row 1 --> */}
+            <div className="flex flex-wrap -mx-3">
+              {/* <!-- card1 --> */}
+              <div className="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
+                <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
+                  <div className="flex-auto p-4">
+                    <div className="flex flex-row -mx-3">
+                      <div className="flex-none w-2/3 max-w-full px-3">
+                        <div>
+                          <p className="mb-0 font-sans font-semibold leading-normal text-sm">
+                            Total Money
+                          </p>
+                          <h5 className="mb-0 font-bold">
+                            NGN {totalMoney}
+                            {/* <span className="leading-normal text-sm font-weight-bolder text-lime-500">
                             +55%
                           </span> */}
-                        </h5>
+                          </h5>
+                        </div>
                       </div>
-                    </div>
-                    <div className="px-3 text-right basis-1/3">
-                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
-                        <i className="ni leading-none ni-money-coins text-lg relative top-3.5 text-white" />
+                      <div className="px-3 text-right basis-1/3">
+                        <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
+                          <i className="ni leading-none ni-money-coins text-lg relative top-3.5 text-white" />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* <!-- card2 --> */}
-            <div className="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
-              <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
-                <div className="flex-auto p-4">
-                  <div className="flex flex-row -mx-3">
-                    <div className="flex-none w-2/3 max-w-full px-3">
-                      <div>
-                        <p className="mb-0 font-sans font-semibold leading-normal text-sm">
-                          Total products
-                        </p>
-                        <h5 className="mb-0 font-bold">
-                          {count}
-                          {/* <span className="leading-normal text-sm font-weight-bolder text-lime-500">
+              {/* <!-- card2 --> */}
+              <div className="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
+                <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
+                  <div className="flex-auto p-4">
+                    <div className="flex flex-row -mx-3">
+                      <div className="flex-none w-2/3 max-w-full px-3">
+                        <div>
+                          <p className="mb-0 font-sans font-semibold leading-normal text-sm">
+                            Total products
+                          </p>
+                          <h5 className="mb-0 font-bold">
+                            {count}
+                            {/* <span className="leading-normal text-sm font-weight-bolder text-lime-500">
                             +3%
                           </span> */}
-                        </h5>
+                          </h5>
+                        </div>
                       </div>
-                    </div>
-                    <div className="px-3 text-right basis-1/3">
-                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
-                        <i className="ni leading-none ni-world text-lg relative top-3.5 text-white" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* <!-- card3 --> */}
-            <div className="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
-              <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
-                <div className="flex-auto p-4">
-                  <div className="flex flex-row -mx-3">
-                    <div className="flex-none w-2/3 max-w-full px-3">
-                      <div>
-                        <p className="mb-0 font-sans font-semibold leading-normal text-sm">
-                          Total Transactions
-                        </p>
-                        <h5 className="mb-0 font-bold">
-                          {totalTransaction}
-                        </h5>
-                      </div>
-                    </div>
-                    <div className="px-3 text-right basis-1/3">
-                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
-                        {/* <i className="ni leading-none ni-mo text-lg relative top-3.5 text-white" /> */}
-                        <MdOutlinePayments className='leading-none text-lg relative top-3.5 text-white' style={{fontSize: "24px"}}/>
+                      <div className="px-3 text-right basis-1/3">
+                        <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
+                          <i className="ni leading-none ni-world text-lg relative top-3.5 text-white" />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* <!-- card4 --> */}
-            <div className="w-full max-w-full px-3 sm:w-1/2 sm:flex-none xl:w-1/4">
-              <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
-                <div className="flex-auto p-4">
-                  <div className="flex flex-row -mx-3">
-                    <div className="flex-none w-2/3 max-w-full px-3">
-                      <div>
-                        <p className="mb-0 font-sans font-semibold leading-normal text-sm">
-                          Total Orders
-                        </p>
-                        <h5 className="mb-0 font-bold">
-                          {productsSold}
-                        </h5>
+              {/* <!-- card3 --> */}
+              <div className="w-full max-w-full px-3 mb-6 sm:w-1/2 sm:flex-none xl:mb-0 xl:w-1/4">
+                <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
+                  <div className="flex-auto p-4">
+                    <div className="flex flex-row -mx-3">
+                      <div className="flex-none w-2/3 max-w-full px-3">
+                        <div>
+                          <p className="mb-0 font-sans font-semibold leading-normal text-sm">
+                            Total Transactions
+                          </p>
+                          <h5 className="mb-0 font-bold">
+                            {totalTransaction}
+                          </h5>
+                        </div>
                       </div>
-                    </div>
-                    <div className="px-3 text-right basis-1/3">
-                      <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
-                        <i className="ni leading-none ni-cart text-lg relative top-3.5 text-white" />
+                      <div className="px-3 text-right basis-1/3">
+                        <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
+                          {/* <i className="ni leading-none ni-mo text-lg relative top-3.5 text-white" /> */}
+                          <MdOutlinePayments className='leading-none text-lg relative top-3.5 text-white' style={{ fontSize: "24px" }} />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* <!-- cards row 2 --> */}
-          <div className="flex flex-wrap mt-6 -mx-3">
-            <div className="w-full px-3 mb-6 lg:mb-0 lg:w-7/12 lg:flex-none">
-              <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
-                <div className="flex-auto p-4">
-                  <div className="flex flex-wrap -mx-3">
-                    <div className="max-w-full px-3 lg:w-1/2 lg:flex-none">
-                      <div className="flex flex-col h-full">
-                        <p className="pt-2 mb-1 font-semibold">
-                          Most recent product
-                        </p>
-                        <h5 className="font-bold">I'm my own Bo$$</h5>
-                        <p className="mb-12">
-                          From clothing line, to various products, advertise them now easily and faster
-                        </p>
-                        <Link
-                          className="mt-auto mb-0 font-semibold leading-normal text-sm group text-slate-500"
-                          to="/store/Products/new"
-                        >
-                          Get started
-                          <i className="fas fa-arrow-right ease-bounce text-sm group-hover:translate-x-1.25 ml-1 leading-normal transition-all duration-200" />
-                        </Link>
+              {/* <!-- card4 --> */}
+              <div className="w-full max-w-full px-3 sm:w-1/2 sm:flex-none xl:w-1/4">
+                <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
+                  <div className="flex-auto p-4">
+                    <div className="flex flex-row -mx-3">
+                      <div className="flex-none w-2/3 max-w-full px-3">
+                        <div>
+                          <p className="mb-0 font-sans font-semibold leading-normal text-sm">
+                            Total Orders
+                          </p>
+                          <h5 className="mb-0 font-bold">
+                            {productsSold}
+                          </h5>
+                        </div>
                       </div>
-                    </div>
-                    <div className="max-w-full px-3 mt-12 ml-auto text-center lg:mt-0 lg:w-5/12 lg:flex-none">
-                      <div className="h-full bg-white rounded-xl" style={{ background: "linear-gradient(to right, rgb(49, 52, 58), rgb(2, 3, 34))"}}>
-                        <img
-                          src="../assets/img/shapes/waves-white.svg"
-                          className="absolute top-0 hidden w-1/2 h-full lg:block"
-                          alt="waves"
-                        />
-                        <div className="relative flex items-center justify-center h-full">
-                          <img
-                            className="relative z-20 w-full pt-6"
-                            src="../assets/img/illustrations/rocket-white.png"
-                            alt="rocket"
-                          />
+                      <div className="px-3 text-right basis-1/3">
+                        <div className="inline-block w-12 h-12 text-center rounded-lg bg-black">
+                          <i className="ni leading-none ni-cart text-lg relative top-3.5 text-white" />
                         </div>
                       </div>
                     </div>
@@ -288,126 +257,171 @@ const Home = () => {
                 </div>
               </div>
             </div>
-            <div className="w-full max-w-full px-3 lg:w-5/12 lg:flex-none">
-              <div className="border-black/12.5 shadow-soft-xl relative flex h-full min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border p-4">
-                <div
-                  className="relative h-full overflow-hidden bg-cover rounded-xl"
-                  style={{backgroundImage: "url('../assets/img/ivancik.jpg')"}}
-                >
-                  <span className="absolute top-0 left-0 w-full h-full bg-center bg-cover bg-gradient-to-tl from-gray-900 to-slate-800 opacity-80" />
-                  <div className="relative z-10 flex flex-col flex-auto h-full p-4">
-                    <h5 className="pt-2 mb-6 font-bold text-white">
-                      Take your business to the next level🚀🚀🚀
-                    </h5>
-                    <p className="text-white">
-                      Wealth creation is an evolutionarily recent positive-sum game. It is all about who take the opportunity first.
-                    </p>
-                    <a
-                      className="mt-auto mb-0 font-semibold leading-normal text-white group text-sm"
-                      href
-                    >
-                      Read More
-                      <i className="fas fa-arrow-right ease-bounce text-sm group-hover:translate-x-1.25 ml-1 leading-normal transition-all duration-200" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-
-          {/* <!-- cards row 4 --> */}
-
-          <div className="flex flex-wrap my-6 -mx-3">
-            {/* <!-- card 1 --> */}
-
-            <div className="w-full max-w-full px-3 mt-0 mb-6 md:mb-0 md:w-1/2 md:flex-none lg:w-2/3 lg:flex-none">
-              <div className="border-black/12.5 shadow-soft-xl relative flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
-                <div className="border-black/12.5 mb-0 rounded-t-2xl border-b-0 border-solid bg-white p-6 pb-0">
-                  <div className="flex flex-wrap mt-0 -mx-3">
-                    <div className="flex-none w-7/12 max-w-full px-3 mt-0 lg:w-1/2 lg:flex-none">
-                      <h6>Projects</h6>
-                      <p className="mb-0 leading-normal text-sm">
-                        <i className="fa fa-check text-cyan-500" />
-                        <span className="ml-1 font-semibold">{count} done </span>
-                      </p>
+            {/* <!-- cards row 2 --> */}
+            <div className="flex flex-wrap mt-6 -mx-3">
+              <div className="w-full px-3 mb-6 lg:mb-0 lg:w-7/12 lg:flex-none">
+                <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
+                  <div className="flex-auto p-4">
+                    <div className="flex flex-wrap -mx-3">
+                      <div className="max-w-full px-3 lg:w-1/2 lg:flex-none">
+                        <div className="flex flex-col h-full">
+                          <p className="pt-2 mb-1 font-semibold">
+                            Most recent product
+                          </p>
+                          <h5 className="font-bold">I'm my own Bo$$</h5>
+                          <p className="mb-12">
+                            From clothing line, to various products, advertise them now easily and faster
+                          </p>
+                          <Link
+                            className="mt-auto mb-0 font-semibold leading-normal text-sm group text-slate-500"
+                            to="/store/Products/new"
+                          >
+                            Get started
+                            <i className="fas fa-arrow-right ease-bounce text-sm group-hover:translate-x-1.25 ml-1 leading-normal transition-all duration-200" />
+                          </Link>
+                        </div>
+                      </div>
+                      <div className="max-w-full px-3 mt-12 ml-auto text-center lg:mt-0 lg:w-5/12 lg:flex-none">
+                        <div className="h-full bg-white rounded-xl" style={{ background: "linear-gradient(to right, rgb(49, 52, 58), rgb(2, 3, 34))" }}>
+                          <img
+                            src="../assets/img/shapes/waves-white.svg"
+                            className="absolute top-0 hidden w-1/2 h-full lg:block"
+                            alt="waves"
+                          />
+                          <div className="relative flex items-center justify-center h-full">
+                            <img
+                              className="relative z-20 w-full pt-6"
+                              src="../assets/img/illustrations/rocket-white.png"
+                              alt="rocket"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                <div className="flex-auto p-6 px-0 pb-2">
-                  <div className="overflow-x-auto">
-                    <table className="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
-                      <thead className="align-bottom">
-                        <tr>
-                          <th className="px-6 py-3 font-bold tracking-normal text-left uppercase align-middle bg-transparent border-b letter border-b-solid text-xxs whitespace-nowrap border-b-gray-200 text-slate-400 opacity-70">
-                            Products
-                          </th>
-                          <th className="px-6 py-3 pl-2 font-bold tracking-normal text-left uppercase align-middle bg-transparent border-b letter border-b-solid text-xxs whitespace-nowrap border-b-gray-200 text-slate-400 opacity-70">
-                            Qunatity
-                          </th>
-                          <th className="px-6 py-3 font-bold tracking-normal text-center uppercase align-middle bg-transparent border-b letter border-b-solid text-xxs whitespace-nowrap border-b-gray-200 text-slate-400 opacity-70">
-                            Price
-                          </th>
-                          <th className="px-6 py-3 font-bold tracking-normal text-center uppercase align-middle bg-transparent border-b letter border-b-solid text-xxs whitespace-nowrap border-b-gray-200 text-slate-400 opacity-70">
-                            Completion
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {product?.map((result) => (
-                        <tr 
-                            key={result.id}>
-                          <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap">
-                            <div className="flex px-2 py-1">
-                              <div>
-                                <img
-                                  src={result.image.split('\r\n')[0]}
-                                  className="inline-flex items-center justify-center mr-4 text-white transition-all duration-200 ease-soft-in-out text-sm h-9 w-9 rounded-xl"
-                                  alt="xd"
-                                />
-                              </div>
-                              <div className="flex flex-col justify-center">
-                                <h6 className="mb-0 leading-normal text-sm">
-                                  {result.name}
-                                </h6>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="p-2 leading-normal text-center align-middle bg-transparent border-b text-sm whitespace-nowrap">
-                            <span className="font-semibold leading-tight text-xs">
-                              {result.quantity}
-                            </span>
-                          </td>
-                          <td className="p-2 leading-normal text-center align-middle bg-transparent border-b text-sm whitespace-nowrap">
-                            <span className="font-semibold leading-tight text-xs">
-                              ₦{result.price.toLocaleString()}
-                            </span>
-                          </td>
-                          <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap">
-                          <div className="w-3/4 mx-auto">
-                            <div>
-                              <div>
-                                <span className="font-semibold leading-tight text-xs">100%</span>
-                              </div>
-                            </div>
-                            <div className="text-xs h-0.75 w-30 m-0 flex overflow-visible rounded-lg bg-gray-200">
-                              <div className="duration-600 ease-soft bg-gradient-to-tl from-green-600 to-lime-400 -mt-0.38 -ml-px flex h-1.5 w-full flex-col justify-center overflow-hidden whitespace-nowrap rounded bg-fuchsia-500 text-center text-white transition-all" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                          </div>
-                        </td>
-                        </tr>
-                        ))}
-                      </tbody>
-                    </table>
+              </div>
+              <div className="w-full max-w-full px-3 lg:w-5/12 lg:flex-none">
+                <div className="border-black/12.5 shadow-soft-xl relative flex h-full min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border p-4">
+                  <div
+                    className="relative h-full overflow-hidden bg-cover rounded-xl"
+                    style={{ backgroundImage: "url('../assets/img/ivancik.jpg')" }}
+                  >
+                    <span className="absolute top-0 left-0 w-full h-full bg-center bg-cover bg-gradient-to-tl from-gray-900 to-slate-800 opacity-80" />
+                    <div className="relative z-10 flex flex-col flex-auto h-full p-4">
+                      <h5 className="pt-2 mb-6 font-bold text-white">
+                        Take your business to the next level🚀🚀🚀
+                      </h5>
+                      <p className="text-white">
+                        Wealth creation is an evolutionarily recent positive-sum game. It is all about who take the opportunity first.
+                      </p>
+                      <a
+                        className="mt-auto mb-0 font-semibold leading-normal text-white group text-sm"
+                        href
+                      >
+                        Read More
+                        <i className="fas fa-arrow-right ease-bounce text-sm group-hover:translate-x-1.25 ml-1 leading-normal transition-all duration-200" />
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* <!-- card 2 --> */}
 
-            {/* <div className="w-full max-w-full px-3 md:w-1/2 md:flex-none lg:w-1/3 lg:flex-none">
+            {/* <!-- cards row 4 --> */}
+
+            <div className="flex flex-wrap my-6 -mx-3">
+              {/* <!-- card 1 --> */}
+
+              <div className="w-full max-w-full px-3 mt-0 mb-6 md:mb-0 md:w-1/2 md:flex-none lg:w-2/3 lg:flex-none">
+                <div className="border-black/12.5 shadow-soft-xl relative flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
+                  <div className="border-black/12.5 mb-0 rounded-t-2xl border-b-0 border-solid bg-white p-6 pb-0">
+                    <div className="flex flex-wrap mt-0 -mx-3">
+                      <div className="flex-none w-7/12 max-w-full px-3 mt-0 lg:w-1/2 lg:flex-none">
+                        <h6>Projects</h6>
+                        <p className="mb-0 leading-normal text-sm">
+                          <i className="fa fa-check text-cyan-500" />
+                          <span className="ml-1 font-semibold">{count} done </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex-auto p-6 px-0 pb-2">
+                    <div className="overflow-x-auto">
+                      <table className="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
+                        <thead className="align-bottom">
+                          <tr>
+                            <th className="px-6 py-3 font-bold tracking-normal text-left uppercase align-middle bg-transparent border-b letter border-b-solid text-xxs whitespace-nowrap border-b-gray-200 text-slate-400 opacity-70">
+                              Products
+                            </th>
+                            <th className="px-6 py-3 pl-2 font-bold tracking-normal text-left uppercase align-middle bg-transparent border-b letter border-b-solid text-xxs whitespace-nowrap border-b-gray-200 text-slate-400 opacity-70">
+                              Qunatity
+                            </th>
+                            <th className="px-6 py-3 font-bold tracking-normal text-center uppercase align-middle bg-transparent border-b letter border-b-solid text-xxs whitespace-nowrap border-b-gray-200 text-slate-400 opacity-70">
+                              Price
+                            </th>
+                            <th className="px-6 py-3 font-bold tracking-normal text-center uppercase align-middle bg-transparent border-b letter border-b-solid text-xxs whitespace-nowrap border-b-gray-200 text-slate-400 opacity-70">
+                              Completion
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {product?.map((result) => (
+                            <tr
+                              key={result.id}>
+                              <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap">
+                                <div className="flex px-2 py-1">
+                                  <div>
+                                    <img
+                                      src={result.image.split('\r\n')[0]}
+                                      className="inline-flex items-center justify-center mr-4 text-white transition-all duration-200 ease-soft-in-out text-sm h-9 w-9 rounded-xl"
+                                      alt="xd"
+                                    />
+                                  </div>
+                                  <div className="flex flex-col justify-center">
+                                    <h6 className="mb-0 leading-normal text-sm">
+                                      {result.name}
+                                    </h6>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-2 leading-normal text-center align-middle bg-transparent border-b text-sm whitespace-nowrap">
+                                <span className="font-semibold leading-tight text-xs">
+                                  {result.quantity}
+                                </span>
+                              </td>
+                              <td className="p-2 leading-normal text-center align-middle bg-transparent border-b text-sm whitespace-nowrap">
+                                <span className="font-semibold leading-tight text-xs">
+                                  ₦{result.price.toLocaleString()}
+                                </span>
+                              </td>
+                              <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap">
+                                <div className="w-3/4 mx-auto">
+                                  <div>
+                                    <div>
+                                      <span className="font-semibold leading-tight text-xs">100%</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-xs h-0.75 w-30 m-0 flex overflow-visible rounded-lg bg-gray-200">
+                                    <div className="duration-600 ease-soft bg-gradient-to-tl from-green-600 to-lime-400 -mt-0.38 -ml-px flex h-1.5 w-full flex-col justify-center overflow-hidden whitespace-nowrap rounded bg-fuchsia-500 text-center text-white transition-all" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* <!-- card 2 --> */}
+
+              {/* <div className="w-full max-w-full px-3 md:w-1/2 md:flex-none lg:w-1/3 lg:flex-none">
               <div className="border-black/12.5 shadow-soft-xl relative flex h-full min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
                 <div className="border-black/12.5 mb-0 rounded-t-2xl border-b-0 border-solid bg-white p-6 pb-0">
                   <h6>Orders overview</h6>
@@ -500,8 +514,11 @@ const Home = () => {
                 </div>
               </div>
             </div> */}
+            </div>
           </div>
-        </div>
+        )}
+        {/* <!-- cards --> */}
+
         {/* <!-- end cards --> */}
       </main>
     </div>
