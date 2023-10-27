@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require ("express");
 const authR = require("./routes/authRoute")
 const adminR = require("./routes/adminRoute")
@@ -5,7 +6,6 @@ const storeR = require("./routes/storeRoute")
 const customerRoute = require("./routes/customerRoute")
 const payRoute = require("./routes/paymentRoute")
 const openaiR = require("./routes/openaiRoute")
-require("dotenv").config()
 const session = require("express-session")
 const passport = require("passport")
 const OauthRoute = require("./routes/googleRoute")
@@ -29,7 +29,8 @@ app.use(
     session({
         secret: 'your_session_secret',
         resave: false,
-        saveUninitialized: false
+        saveUninitialized: false,
+        cookie: { secure: true}
     })
 )
 
@@ -51,6 +52,7 @@ const handlePreflight = (req, res, next) => {
 
 
 app.use(handlePreflight)
+
 // Initialize Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
@@ -62,7 +64,6 @@ app.use("/store", storeR)
 app.use("/stores", customerRoute)
 app.use("/payment", payRoute)
 app.use("/openai", openaiR)
-// app.get("/auth", authR)
 
 // cron.schedule('*/5 * * * * *', () => {
 //     console.log('running a task every 5 seconds');
@@ -73,9 +74,5 @@ app.get("/", (req, res) => {
 })
 
 app.listen(port, () => {
-    // console.log(`Server is running on port http://localhost:${port}`)
     console.log(`Server is running on ${server}`)
 })
-
-
-// module.exports = app

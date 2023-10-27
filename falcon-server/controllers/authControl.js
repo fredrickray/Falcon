@@ -1,14 +1,17 @@
-// const nodemailer = require ('nodemailer');
 const saltRounds = 10;
+
+// Packages imports
 const bcrypt = require ('bcrypt');
 const express = require ('express');
-// const session = require ('express-session');
+const { query } = require("express-validator")
 const cookieParser = require ('cookie-parser');
-const sendEmail = require ('../utls/sendEmail');
-// const crypto = require ('crypto');
-const app = express ();
+
+// Middleware Imports
 const knex = require("../knex-db/knex")
-const {createToken, maxAge} = require("../utls/createToken")
+const transporter = require("../middlewares/sendEmail")
+const {createToken, maxAge} = require("../middlewares/createToken")
+
+const app = express ();
 app.use (cookieParser ());
 
 
@@ -17,6 +20,8 @@ app.use (cookieParser ());
 const register = async (req, res) => {
   bcrypt.hash (req.body.password, saltRounds, async (err, hash) => {
     const {fname, lname, email, phone, username, authType} = req.body;
+    // Generate a random verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000,).toString();
     const password = hash;
       try {
         const userExist = await knex("Merchants").where({email}).first()
@@ -31,8 +36,9 @@ const register = async (req, res) => {
             password,
             username,
             phone,
-            authType
-            // token,
+            authType,
+            verified: false,
+            token: verificationCode
           });
           const token = createToken (user.id);
   
@@ -43,21 +49,24 @@ const register = async (req, res) => {
             maxAge: maxAge * 1000,
           });
 
+          const mailOptions = {
+            from: 'fredrickraymond2004@gmail.com',
+            to: email,
+            subject: 'Email Verification',
+            text: `Your verification code is: ${verificationCode}`,
+          };
+
+           // Send the email
+          await transporter.sendMail(mailOptions);
+
           res.status (200).json ({
             success: true,
-            message: 'Registration was successful',
-            status: 'success',
-            User: user,
-            token,
+            message: 'A verification code was sent to your email',
+            // status: 'success',
+            // User: user,
+            // token,
           });
         }
-        
-        // res
-        //   .status (201)
-        //   .send ({message: 'An email was sent to your account, please verify'});
-        // crypto.randomBytes (32).toString ('hex');
-        // const url = `${process.env.BASE_URL}user/${user.id}/verify/${token}`;
-        // await sendEmail (user.email, 'Verify Email', url);
         
         // console.log (user);
       } catch (error) {
@@ -69,42 +78,116 @@ const register = async (req, res) => {
   });
 };
 
-//To Login a Merchant
-const login = async (req, res) => {
-  const {email, password} = req.body;
+const verifyEmail = async (req, res) => {
+  const { email, verificationCode } = req.body
 
   try {
-    let user = await knex ('Merchants').where ({email}).first ();
+    if (!email || !verificationCode) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and verification code are required.',
+        data: null,
+      });
+    }
+  
+    const user = await knex("Merchants").where({ email, token: verificationCode })
+  
+    if(!user[0]) {
+      res.status(401).send({message: "Invalid email or verification code"})
+    }  
+    else{
+      await knex("Merchants").where({ email }).update({token: null, verified: true})
+  
+      res.status(200).json({
+        success: true,
+        message: 'Token verified',
+        data: user,
+      });
+    }
+  } catch (error) {
+    res.send(error.message)
+  }
+}
+
+
+// To Login a Merchant
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    let user = await knex('Merchants').where({ email }).first();
 
     if (!user) {
-      res.status (401).json ({message: 'Wrong email or passsword, try again'});
+      res.status(401).json({ message: 'Invalid login credentials' });
     } else {
-      let hashedPassword = user.password;
-      let isValid = await bcrypt.compare (password, hashedPassword);
-      const token = createToken (user.id);
-      if (!isValid) {
-        res.status (401).json ({message: 'Wrong email or password, try again'});
+      // Check if the user's account is verified
+      if (!user.verified || user.verified == "false") {
+        res.status(401).json({ message: 'Your account has not been verified yet.' });
       } else {
-        // res.cookie("test", true)
-        res.cookie ('jwts', token, {
-          httpOnly: true,
-          withCredentials: true,
-          maxAge: maxAge * 1000,
-        });
-        // console.log ({user: user, token});
-        res.status (200).json ({
-          status: 'success',
-          data: user,
-          message: 'Logged in successfully',
-          token,
-        });
+        let hashedPassword = user.password;
+        let isValid = await bcrypt.compare(password, hashedPassword);
+        const token = createToken(user.id);
+        if (!isValid) {
+          res.status(401).json({ message: 'Invalid login credentials' });
+        } else {
+          // res.cookie("test", true)
+          res.cookie('jwts', token, {
+            httpOnly: false,
+            withCredentials: true,
+            maxAge: maxAge * 1000,
+          });
+          // console.log ({user: user, token});
+          res.status(200).json({
+            status: 'success',
+            data: user,
+            message: 'Logged in successfully',
+            token,
+          });
+        }
       }
     }
-  } 
-  catch (error) {
-    res.status(500).send({message: "Internal server error", err: error.message})
+  } catch (error) {
+    res.status(500).send({ message: 'Internal server error', err: error.message });
   }
 };
+
+
+//To Login a Merchant
+// const login = async (req, res) => {
+//   const {email, password} = req.body;
+
+//   try {
+//     let user = await knex ('Merchants').where ({email}).first ();
+
+//     if (!user) {
+//       res.status (401).json ({message: 'Wrong email or passsword, try again'});
+//     } else {
+//       let hashedPassword = user.password;
+//       let isValid = await bcrypt.compare (password, hashedPassword);
+//       const token = createToken (user.id);
+//       if (!isValid) {
+//         res.status (401).json ({message: 'Wrong email or password, try again'});
+//       } else {
+//         // res.cookie("test", true)
+//         res.cookie ('jwts', token, {
+//           httpOnly: true,
+//           withCredentials: true,
+//           maxAge: maxAge * 1000,
+//         });
+//         // console.log ({user: user, token});
+//         res.status (200).json ({
+//           status: 'success',
+//           data: user,
+//           message: 'Logged in successfully',
+//           token,
+//         });
+//       }
+//     }
+//   } 
+//   catch (error) {
+//     res.status(500).send({message: "Internal server error", err: error.message})
+//   }
+// };
 
 
 const update = async (req, res) =>{
@@ -220,6 +303,7 @@ const passwordReset = async (req, res) => {
 
 module.exports= {
   register,
+  verifyEmail,
   login,
   update,
   social,

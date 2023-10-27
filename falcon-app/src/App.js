@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from './pages/auth/Register';
 import Login from "./pages/auth/Login"
 import PasswordReset from './pages/auth/PasswordReset';
+import VerifyEmail from './pages/auth/VerifyEmail';
 //------->> AUTH END <-----------
 
 import Index from './pages/Index';
@@ -39,6 +40,7 @@ const App = () => {
         <Routes>
         <Route exact path="/" element={<Index />} />
         <Route exact path="/Register" element={<Register />} />
+        <Route exact path="/Verify" element={<VerifyEmail />} />
         <Route exact path="/Login" element={<Login />} />
         <Route exact path="/Reset-password" element={<PasswordReset />} />
         <Route exact path="/Products" element={<Products />} />

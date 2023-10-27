@@ -12,7 +12,8 @@ const Login = () => {
   const [isNavOpen, setIsNavOpen] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   // const [isNavOpen, setIsNavOpen] = useState(false)
-  const LOGIN_URL = 'https://falcon-server-jaek.onrender.com/auth/login';
+  // const LOGIN_URL = 'https://falcon-server-jaek.onrender.com/auth/login';
+  const LOGIN_URL = "http://localhost:9000/auth/login"
 
   const response = (message) => {
     Swal.fire ({
@@ -94,11 +95,12 @@ const Login = () => {
         Toast.fire ({
           icon: 'success',
           title: `Signed in successfully ${fname}`,
-        }).then ((window.location.href = '/Home'));
+        })
+        .then ((window.location.href = '/Home'));
         // }
       })
       .catch (err => {
-        console.log (err.response.data);
+        // console.log (err.response.data);
         response(err.response.data.message)
         setIsButtonDisabled (false);
       });
@@ -190,9 +192,7 @@ const Login = () => {
                       <h3 className="relative z-10 font-bold text-transparent bg-black bg-clip-text">
                         Welcome back
                       </h3>
-                      <div id="googleDiv">
-                        
-                      </div>
+                     
                       <div className="flex flex-wrap px-3 -mx-3  lg:px-6 xl:px-12">
 
                         <div className="w-3/12 max-w-full px-1 ml-auto flex-0">
@@ -343,7 +343,7 @@ const Login = () => {
                             disabled={isButtonDisabled ? true : false}
                             onClick={login}
                           >
-                            {isButtonDisabled ? 'Loading....' : 'Sign in'}
+                            {isButtonDisabled ? 'Signin....' : 'Sign in'}
                           </button>
                         </div>
                       </form>
@@ -355,10 +355,11 @@ const Login = () => {
                     </div>
                     <div className="p-6 px-1 pt-0 text-center bg-transparent border-t-0 border-t-solid rounded-b-2xl lg:px-2">
                       <p className="mx-auto mb-6 leading-normal text-sm">
-                        Don't have an account?
+                        Don't have an account? 
                         <Link
                           to="/Register"
-                          className="relative z-10 font-semibold  text-slate-700 bg-clip-text"
+                          className="relative z-10 font-semibold text-slate-700 bg-clip-text"
+                          style={{padding: "10px"}}
                         >
                            Sign up
                         </Link>

@@ -46,13 +46,13 @@ const Login = () => {
         setIsButtonDisabled(false)
         console.log(response)
         // setIsLoading(true)
-        // const {fname, lname, email} = response.data.data;
-        // const token = response.data.token;
-        // localStorage.setItem ('Admin-firstname', fname);
-        // localStorage.setItem ('Admin-lastname', lname);
-        // localStorage.setItem ('Admin-email', email);
-        // localStorage.setItem ('token', token);
-        // sessionStorage.setItem ('token', token);
+        const {firstname, lastname, email} = response.data.data;
+        const token = response.data.token;
+        localStorage.setItem ('Admin-firstname', firstname);
+        localStorage.setItem ('Admin-lastname', lastname);
+        localStorage.setItem ('email', email);
+        localStorage.setItem ('token', token);
+        sessionStorage.setItem ('token', token);
         setIsButtonDisabled (false);
 
         const Toast = Swal.mixin ({
@@ -65,12 +65,13 @@ const Login = () => {
             toast.addEventListener ('mouseenter', Swal.stopTimer);
             toast.addEventListener ('mouseleave', Swal.resumeTimer);
           },
-        });
+        }); 
 
         Toast.fire ({
           icon: 'success',
           title: `Signed in successfully `,
-        }).then ((window.location.href = '/Overview'));
+        })
+        .then ((window.location.href = '/Overview'));
         // }
       })
       .catch (err => {

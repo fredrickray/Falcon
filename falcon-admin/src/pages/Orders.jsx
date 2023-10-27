@@ -1,61 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import AsideBar from '../components/AsideBar';
 import axios from "axios";
-// import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { LineWave } from 'react-loader-spinner';
 const Orders = () => {
 
-  const [data, setData] = useState(null)
-  const { email } = localStorage
+  // const [totalOrders, setData] = useState(null)
+  const [totalOrders, setTotalOrders] = useState(null)
+  const { token } = sessionStorage
   const [searchItem, setSearchItem] = useState("")
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isNavOpen, setIsNavOpen] = useState(false)
   const [isFetching, setIsFetching] = useState(false)
   const navigate = useNavigate()
+  const popUp = (position, message, color) => {
+    Swal.fire({
+      position: position,
+      toast: true,
+      title: message,
+      color: color,
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  }
+
   useEffect(() => {
-    const result = async () => {
+    retrieveTotalOrders()
+  }, [])
+
+
+
+  const retrieveTotalOrders = async () => {
+    try {
       setIsFetching(true)
-      try {
-        const response = await  axios.post("https://falcon-server-jaek.onrender.com/admin/orders")
-        if(response.status === 200) {
-          console.log(response.data.orders)
-          setData(response.data.orders)
-          setIsFetching(false)
+      const orders = await axios.get("http://localhost:9000/admin/orders", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         }
-        else{
-          console.log(response.data.message)
-        }
-        console.log(response.status)
+      })
+      setIsFetching(false)
+      console.log(orders)
+      orders.status === 404 ? popUp("top-end", orders.data.message, "red") : setTotalOrders(orders.data.orders)
+    } catch (error) {
+      setIsFetching(false)
+      if(error.response.status === 401) {
+        console.log(error.message)
+        popUp("top-end", error.response.data.error, "red")
+        window.location.href = "/Login"
       } 
-      catch (error) {
-        console.log(error)
-        setIsFetching(false)
-      }
+      console.log(error.response.status)
     }
-    result()
-  }, [email])
-
- 
+  }
 
   useEffect(() => {
-    if (data) {
-      // Filter the data and update filteredProducts
-      const filtered = data.filter(item =>
+    if (totalOrders) {
+      // Filter the totalOrders and update filteredProducts
+      const filtered = totalOrders.filter(item =>
         item.firstname.toLowerCase().includes(searchItem.toLowerCase()) ||
         item.lastname.toLowerCase().includes(searchItem.toLowerCase())
         // item.customer_emai.toLowerCase().includes(searchItem.toLowerCase())
       );
       setFilteredProducts(filtered);
     }
-  }, [data, searchItem]);
+  }, [totalOrders, searchItem]);
 
-  const handleNavOpen = () =>  setIsNavOpen(prev => !prev)
+  const handleNavOpen = () => setIsNavOpen(prev => !prev)
 
   return (
     <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
       {/* <!-- sidenav  --> */}
-      <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen}/>
+      <AsideBar handleNavOpen={handleNavOpen} isNavOpen={isNavOpen} />
       {/* <!-- end sidenav --> */}
 
       <main className="ease-soft-in-out xl:ml-68.5 relative h-full max-h-screen rounded-xl transition-all duration-200">
@@ -120,26 +136,26 @@ const Orders = () => {
         </nav>
 
         {isFetching && (
-            <LineWave
-              height="300"
-              width="300"
-              color="black"
-              ariaLabel="line-wave"
-              wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, 40%)", top: "50%", left: "50%",  }}
-              wrapperClass=""
-              visible={true}
-              firstLineColor=""
-              middleLineColor=""
-              lastLineColor=""
-            />
-          )}
+          <LineWave
+            height="300"
+            width="300"
+            color="black"
+            ariaLabel="line-wave"
+            wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, 40%)", top: "50%", left: "50%", }}
+            wrapperClass=""
+            visible={true}
+            firstLineColor=""
+            middleLineColor=""
+            lastLineColor=""
+          />
+        )}
 
-          {!isFetching && data && (
-            <div className="flex flex-wrap -mx-3 mt-5%" style={{ marginTop: '5%' }}>
+        {!isFetching && totalOrders && (
+          <div className="flex flex-wrap -mx-3 mt-5%" style={{ marginTop: '5%' }}>
             <div className="flex-none w-full max-w-full px-3">
               <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
                 <div className="p-6 pb-0 mb-0 bg-white border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
-                  <h6>{data.length} Orders</h6>
+                  <h6>{totalOrders.length} Orders</h6>
                 </div>
                 <div className="flex-auto px-0 pt-0 pb-2">
                   <div className="p-0 overflow-x-auto">
@@ -166,45 +182,45 @@ const Orders = () => {
                       {filteredProducts?.length === 0 ? (
                         <p style={{ marginLeft: "140%", fontSize: "20px" }} className='p-2 align-middle bg-transparent whitespace-nowrap shadow-transparent'>No item found</p>
                       ) : (
-                      <tbody>
-                        {filteredProducts?.map((result) => (
-                          <tr
-                            key={result.id}
-                            onClick={() => navigate(`/Orders/detail/${result.tx_ref}`)}
-                            className='cursor-pointer'>
+                        <tbody>
+                          {filteredProducts?.map((result) => (
+                            <tr
+                              key={result.id}
+                              onClick={() => navigate(`/Orders/detail/${result.tx_ref}`)}
+                              className='cursor-pointer'>
 
-                            <td className="p-2 px-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                              <p className=" px-4 mb-0 font-semibold leading-tight text-xs">
-                                {result.firstname} {result.lastname}
-                              </p>
-                            </td>
+                              <td className="p-2 px-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                <p className=" px-4 mb-0 font-semibold leading-tight text-xs">
+                                  {result.firstname} {result.lastname}
+                                </p>
+                              </td>
 
-                            <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                              <p className="mb-0 font-semibold leading-tight text-xs">
-                                ₦{result.total_amount.toLocaleString()}
-                              </p>
-                            </td>
+                              <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                <p className="mb-0 font-semibold leading-tight text-xs">
+                                  ₦{result.total_amount.toLocaleString()}
+                                </p>
+                              </td>
 
-                            <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                              <span className="font-semibold leading-tight text-xs text-black-400">
-                                {result.status}
-                              </span>
-                            </td>
+                              <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                <span className="font-semibold leading-tight text-xs text-black-400">
+                                  {result.status}
+                                </span>
+                              </td>
 
-                            <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                              <span className="font-semibold leading-tight text-xs text-black-400">
-                                {result.tx_ref}
-                              </span>
-                            </td>
+                              <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                <span className="font-semibold leading-tight text-xs text-black-400">
+                                  {result.tx_ref}
+                                </span>
+                              </td>
 
-                            <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                              <span className="font-semibold leading-tight text-xs text-slate-400">
-                                {new Date(result.created_at).toLocaleDateString()}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
+                              <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                <span className="font-semibold leading-tight text-xs text-slate-400">
+                                  {new Date(result.created_at).toLocaleDateString()}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
                       )}
                     </table>
                   </div>
@@ -212,19 +228,19 @@ const Orders = () => {
               </div>
             </div>
           </div>
-          )}
+        )}
 
-          {!isFetching && (!data || data.length === 0) && (
-            <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
-            <h1 className='text-md' style={{fontSize: "25px", paddingTop: "20%"}}>
+        {!isFetching && (!totalOrders || totalOrders.length === 0) && (
+          <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
+            <h1 className='text-md' style={{ fontSize: "25px", paddingTop: "20%" }}>
               There are no orders to show <br />within this period.
             </h1>
-            <p>
+            {/* <p>
               Your customers might be looking for ways to pay you, create a product<br /> and start selling.
-            </p>
+            </p> */}
           </div>
-          )}
-                  
+        )}
+
       </main>
 
     </div>

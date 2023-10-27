@@ -6,7 +6,7 @@ const cookieParser = require ('cookie-parser');
 const knex = require("../knex-db/knex")
 const app = express ();
 // const knex = require("../knex-db/knex")
-const {createToken, maxAge} = require("../utls/createToken")
+const {createToken, maxAge} = require("../middlewares/createToken")
 app.use (cookieParser ());
 
 // const knex = require('knex')({
@@ -56,6 +56,51 @@ const login = async (req, res) => {
   }
 };
 
+// To Update Merchant's Password
+const passwordReset = async (req, res) => {
+  const { email, password } = req.body;
+
+  // Check if email and password are provided
+  if (!email || !password) {
+    return res.send({
+      status: 'Failed',
+      message: 'Email and password are required.',
+    });
+  }
+
+  try {
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Update the password in the database for the given email
+    const updatedRows = await knex('Admin')
+      .where({ email: email })
+      .update({ password: hashedPassword });
+
+    if (updatedRows > 0) {
+      return res.json({
+        status: 'Success',
+        message: 'Email found and password updated successfully',
+      });
+    } 
+    else {
+      return res.status(404).json({
+        status: 'Failed',
+        message: 'Email not found and password was not updated',
+      });
+    }
+  } 
+  catch (error) {
+    console.log(error);
+    res.send(error)
+    // return res.status(error).json({
+    //   status: 'Error',
+    //   message: 'Internal server error',
+    //   err: error.message
+    // });
+  }
+};
+
 // get all merchants
 const getMerchants = async (req, res) => {
   try {
@@ -102,7 +147,7 @@ const getOrders = async (req, res) => {
 
     if (orders.length > 0) {
       // Respond with success and the retrieved users
-      res.status(200).json({ message: 'Orders retrieved succesfully', users });
+      res.status(200).json({ message: 'Orders retrieved succesfully', orders });
     } else {
       // Respond with a not found status and message
       res.status(404).json({ message: 'No users found' });
@@ -210,12 +255,53 @@ const getTransactionId = async (req, res) => {
   }
 }
 
+const getMultipleTable = async(req, res) => {
+  const  { email }  = req.query
+  try {
+    if (!email) {
+      return res.status(400).json({ error: "Email is required in the request body" });
+    }
+    const response = await knex("Merchants")
+    .select("*")
+    .where("Merchants.email",email)
+    .join("Transactions", "Merchants.email", "=", "Transactions.email" )
+    .join("Products", "Merchants.email", "=", "Products.email")
+    
+    if(response.length === 0) {
+      return res.status(404).send({error: "Email not found"})
+    }
+ 
+      res.status(200).json(response)
+  } catch (error) {
+    res.send(error.message)
+  }
+}
+
+const testMultipleRequest = async (req, res) => {
+  try {
+    const { email } = req.body
+
+    await knex.transaction(async(trx) => {
+
+      await trx("Transactions").where({ email })
+      await trx("Products").where({ email })
+      await trx("Merchants").where({ email })
+
+      await Promise.all(async())
+    })
+  } catch (error) {
+    
+  }
+}
+
 module.exports = {
   login,
+  passwordReset,
   getMerchants,
   getMerchantId,
   getOrders,
   getOrderId,
   getTransaction,
-  getTransactionId
+  getTransactionId,
+  getMultipleTable
 }

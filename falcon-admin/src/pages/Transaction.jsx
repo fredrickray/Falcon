@@ -1,12 +1,12 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import AsideBar from '../components/AsideBar';
 import axios from "axios"
 import Swal from "sweetalert2"
 import { LineWave } from "react-loader-spinner"
 
 const Transactions = () => {
-    const [data, setData] = useState(null)
-    const { email } = localStorage
+    const [totalTransaction, setTotalTransaction] = useState(null)
+    const { token } = sessionStorage
     const [searchItem, setSearchItem] = useState("")
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [isNavOpen, setIsNavOpen] = useState(false)
@@ -24,48 +24,37 @@ const Transactions = () => {
     }
 
     useEffect(() => {
-        handleGetPayments()
-    }, [email])
+        retrieveTotalTransaction()
+    }, [])
 
-    const handleGetPayments = async () => {
-        setIsFetching(true)
+    const retrieveTotalTransaction = async () => {
         try {
-            const response = await axios.get('https://falcon-server-jaek.onrender.com/admin/transaction', {
-                params: {
-                    email,
-                },
-            });
-
-            // console.log(response.data)
-
-            if (response.status === 404) {
-                popUp("center", response.data.message)
-                setIsFetching(false)
-            }
-            else {
-                popUp("top-end", response.data.message)
-                setData(response.data.response)
-                setIsFetching(false)
-            }
-        }
-        catch (error) {
-            popUp("top-end", error.response.data.message, "red")
+            setIsFetching(true)
+            const transaction = await axios.get("http://localhost:9000/admin/transaction", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            })
             setIsFetching(false)
-            console.error(error.response.data.message);
+            transaction.status === 404 ? popUp("top-end", transaction.data.message, "red") : setTotalTransaction(transaction.data.data)
+        } catch (error) {
+            setIsFetching(false)
+            popUp("top-end", error.message, "red")
         }
-    };
+    }
 
     useEffect(() => {
-        if (data) {
+        if (totalTransaction) {
             // Filter the data and update filteredProducts
-            const filtered = data.filter(item =>
+            const filtered = totalTransaction.filter(item =>
                 item.firstname.toLowerCase().includes(searchItem.toLowerCase()) ||
                 item.lastname.toLowerCase().includes(searchItem.toLowerCase())
                 // item.customer_emai.toLowerCase().includes(searchItem.toLowerCase())
             );
             setFilteredProducts(filtered);
         }
-    }, [data, searchItem]);
+    }, [totalTransaction, searchItem]);
 
     const handleNavOpen = () => setIsNavOpen(prev => !prev)
 
@@ -94,10 +83,10 @@ const Transactions = () => {
                                     className="text-sm pl-2 capitalize leading-normal text-slate-700 before:float-left before:pr-2 before:text-gray-600 before:content-['/']"
                                     aria-current="page"
                                 >
-                                    Payments
+                                    Transactions
                                 </li>
                             </ol>
-                            <h6 className="mb-0 font-bold capitalize">Payments</h6>
+                            <h6 className="mb-0 font-bold capitalize">Transactions</h6>
                         </nav>
 
                         <div className="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
@@ -140,7 +129,7 @@ const Transactions = () => {
                     <LineWave
                         height="300"
                         width="300"
-                        color="#4fa94d"
+                        color="black"
                         ariaLabel="line-wave"
                         wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, 40%)", top: "50%", left: "50%", }}
                         wrapperClass=""
@@ -151,12 +140,12 @@ const Transactions = () => {
                     />
                 )}
 
-                {!isFetching && data && (
+                {!isFetching && totalTransaction && (
                     <div className="flex flex-wrap -mx-3 mt-5%" style={{ marginTop: '5%' }}>
                         <div className="flex-none w-full max-w-full px-3">
                             <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
                                 <div className="p-6 pb-0 mb-0 bg-white border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
-                                    <h6>{data.length} {data.length > 1 ? "Payments" : "Payment"}</h6>
+                                    <h6>{totalTransaction.length} {totalTransaction.length > 1 ? "Payments" : "Payment"}</h6>
                                 </div>
                                 <div className="flex-auto px-0 pt-0 pb-2">
                                     <div className="p-0 overflow-x-auto">
@@ -229,14 +218,14 @@ const Transactions = () => {
                     </div>
                 )}
 
-                {!isFetching && (!data || data.length === 0) && (
+                {!isFetching && (!totalTransaction || totalTransaction.length === 0) && (
                     <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
-                        <h1 className='text-md '>
+                        <h1 className='text-md ' style={{ fontSize: "24px" }}>
                             There are no Payments to show <br />within this period.
                         </h1>
-                        <p>
+                        {/* <p>
                             Your customers might be looking for ways to pay you, create a product<br /> and start selling.
-                        </p>
+                        </p> */}
                     </div>
                 )}
 
@@ -247,5 +236,5 @@ const Transactions = () => {
         </div>
     );
 }
- 
+
 export default Transactions;

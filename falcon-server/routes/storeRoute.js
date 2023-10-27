@@ -3,7 +3,7 @@ const router  = express.Router()
 const storeController = require("../controllers/storeControl")
 const bodyParser = require ('body-parser');
 const cors = require("cors");
-const requireAuth  = require("../utls/authMiddleware");
+const requireAuth  = require("../middlewares/authMiddleware");
 router.use (bodyParser.urlencoded ({extended: true}));
 router.use (bodyParser.json ());
 router.use (express.json ());

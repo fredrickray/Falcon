@@ -7,7 +7,7 @@ passport.use(
   new GoogleStrategy({
     clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
     clientSecret: process.env.GOOGLE_AUTH_CLIENT_SECRET,
-    callbackURL: "https://falcon-server-jaek.onrender.com/oauth/google/callback",
+    callbackURL: "http://localhost:9000/oauth/google/callback",
     scope: ["email", "profile"]
   }, async (accessToken, refreshToken, profile, done) => {
     try {

@@ -11,7 +11,10 @@ import Swal from 'sweetalert2';
 
 
 const AsideBar = ({isNavOpen}) => {
-  const Logout = localStorage.clear()
+  const Logout = () => {
+    window.location.href = "/Login"
+    localStorage.clear()
+  }
   
 
   const coming_soon = () => {
@@ -113,7 +116,7 @@ const AsideBar = ({isNavOpen}) => {
             >
               <Link
                 className="py-2.7 shadow-soft-xl text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors"
-                to="/Orders"
+                to="/Products"
               >
                 <div className="shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white bg-center stroke-0 text-center xl:p-2.5 p-2">
                   <ImScissors size="500%" style={{height: '100%'}} />

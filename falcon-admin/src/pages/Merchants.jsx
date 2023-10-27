@@ -4,12 +4,14 @@ import Swal from 'sweetalert2';
 import axios from "axios"
 import { LineWave } from "react-loader-spinner"
 const Merchants = () => {
-    const [data, setData] = useState(null)
-    const { email } = localStorage
+    // const [data, setData] = useState(null)
+    const [totalMerchants, setTotalMerchants] = useState(null)
+    // const { email } = localStorage
     const [searchItem, setSearchItem] = useState("")
-    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [filteredMerchants, setFilteredMerchants] = useState([]);
     const [isNavOpen, setIsNavOpen] = useState(false)
     const [isFetching, setIsFetching] = useState(false)
+    const { token } = sessionStorage
 
     const popUp = (position, message, color) => {
         Swal.fire({
@@ -23,48 +25,37 @@ const Merchants = () => {
     }
 
     useEffect(() => {
-        handleGetPayments()
-    }, [email])
+        retrieveTotalMerchants()
+    }, [])
 
-    const handleGetPayments = async () => {
-        setIsFetching(true)
+    const retrieveTotalMerchants = async () => {
         try {
-            const response = await axios.get('https://falcon-server-jaek.onrender.com/admin/merchants', {
-                params: {
-                    email,
-                },
-            });
-
-            // console.log(response.data)
-
-            if (response.data.message === 'No transactions found for this email') {
-                popUp("center", response.data.message)
-                setIsFetching(false)
-            }
-            else {
-                popUp("top-end", response.data.message)
-                setData(response.data.response)
-                setIsFetching(false)
-            }
-        }
-        catch (error) {
-            popUp("top-end", error.response.data.message, "red")
+            setIsFetching(true)
+            const merchants = await axios.get("http://localhost:9000/admin/merchants", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                  }
+            })
             setIsFetching(false)
-            console.error(error.response.data.message);
+            merchants.status === 404 ? popUp("top-end", merchants.data.message, "red") : setTotalMerchants(merchants.data.users)
+        } catch (error) {
+            setIsFetching(false)
+            console.log(error.message)
         }
-    };
+      }
 
-    useEffect(() => {
-        if (data) {
+      useEffect(() => {
+        if (totalMerchants) {
             // Filter the data and update filteredProducts
-            const filtered = data.filter(item =>
-                item.firstname.toLowerCase().includes(searchItem.toLowerCase()) ||
-                item.lastname.toLowerCase().includes(searchItem.toLowerCase())
+            const filtered = totalMerchants.filter(item =>
+                item.fname.toLowerCase().includes(searchItem.toLowerCase()) ||
+                item.lname.toLowerCase().includes(searchItem.toLowerCase())
                 // item.customer_emai.toLowerCase().includes(searchItem.toLowerCase())
             );
-            setFilteredProducts(filtered);
+            setFilteredMerchants(filtered);
         }
-    }, [data, searchItem]);
+    }, [totalMerchants, searchItem]);
 
     const handleNavOpen = () => setIsNavOpen(prev => !prev)
     return (
@@ -92,10 +83,10 @@ const Merchants = () => {
                                     className="text-sm pl-2 capitalize leading-normal text-slate-700 before:float-left before:pr-2 before:text-gray-600 before:content-['/']"
                                     aria-current="page"
                                 >
-                                    Payments
+                                    Merchants
                                 </li>
                             </ol>
-                            <h6 className="mb-0 font-bold capitalize">Payments</h6>
+                            <h6 className="mb-0 font-bold capitalize">Merchants</h6>
                         </nav>
 
                         <div className="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
@@ -149,12 +140,12 @@ const Merchants = () => {
                     />
                 )}
 
-                {!isFetching && data && (
+                {!isFetching && totalMerchants && (
                     <div className="flex flex-wrap -mx-3 mt-5%" style={{ marginTop: '5%' }}>
                         <div className="flex-none w-full max-w-full px-3">
                             <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
                                 <div className="p-6 pb-0 mb-0 bg-white border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
-                                    <h6>{data?.length} {data?.length > 1 ? "Payments" : "Payment"}</h6>
+                                    <h6>{totalMerchants?.length} {totalMerchants?.length > 1 ? "Merchants" : "Merchants"}</h6>
                                 </div>
                                 <div className="flex-auto px-0 pt-0 pb-2">
                                     <div className="p-0 overflow-x-auto">
@@ -162,25 +153,25 @@ const Merchants = () => {
                                             <thead className="align-bottom">
                                                 <tr>
                                                     <th className="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900 ">
-                                                        Name
+                                                        Fullname
                                                     </th>
                                                     <th className="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900">
-                                                        Amount
+                                                        Username
                                                     </th>
                                                     <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900">
-                                                        Trasaction_id
+                                                        Email
                                                     </th>
                                                     <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900">
-                                                        Status
+                                                        Verified
                                                     </th>
                                                     <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900">
-                                                        Date
+                                                        Created_at
                                                     </th>
                                                 </tr>
                                             </thead>
 
                                             <tbody>
-                                                {filteredProducts?.map((result) => (
+                                                {filteredMerchants?.map((result) => (
                                                     <tr
                                                         key={result.id}
                                                         // onClick={() => navigate(`/Store/Product/${result.id}`)}
@@ -188,25 +179,25 @@ const Merchants = () => {
 
                                                         <td className="p-2 px-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                                                             <p className=" px-4 mb-0 font-semibold leading-tight text-xs">
-                                                                {result.firstname} {result.lastname}
+                                                                {result.fname} {result.lname}
                                                             </p>
                                                         </td>
 
                                                         <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                                                             <p className="mb-0 font-semibold leading-tight text-xs">
-                                                                ₦{result.amount.toLocaleString()}
+                                                                {result.username}
                                                             </p>
                                                         </td>
 
                                                         <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                                                             <span className="font-semibold leading-tight text-xs text-black-400">
-                                                                {result.transaction_id}
+                                                                {result.email}
                                                             </span>
                                                         </td>
 
                                                         <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                                                             <span className="font-semibold leading-tight text-xs text-black-400">
-                                                                {result.status}
+                                                                {result.verified === "false" ? result.verified : "true"}
                                                             </span>
                                                         </td>
 
@@ -227,14 +218,14 @@ const Merchants = () => {
                     </div>
                 )}
 
-                {!isFetching && (!data || data.length === 0) && (
+                {!isFetching && (!totalMerchants || totalMerchants.length === 0) && (
                     <div className='mt-4 ml-20' style={{ marginTop: "15%", marginLeft: "5%" }}>
                         <h1 className='text-md '>
-                            There are no Payments to show <br />within this period.
+                            There are no Merchants to show <br />within this period.
                         </h1>
-                        <p>
+                        {/* <p>
                             Your customers might be looking for ways to pay you, create a product<br /> and start selling.
-                        </p>
+                        </p> */}
                     </div>
                 )}
 

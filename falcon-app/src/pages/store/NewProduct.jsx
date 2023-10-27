@@ -31,9 +31,24 @@ const NewProduct = () => {
   // const [value, setValue] = useState('4');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false)
+  const [listOfTags, setListOfTags] = useState(["css", "html"]);
+  const [inputText, setInputText] = useState("")
   const { email, token } = localStorage;
-  const { store, isFetching } = useFetchStore("https://falcon-server-jaek.onrender.com/store/get-store")
+  const { store, isFetching } = useFetchStore("http://localhost:9000/store/get-store")
+  // useFetchStore("https://falcon-server-jaek.onrender.com/store/get-store")
   // const { store } = useFetch("http://localhost:9000/store/get-products")
+
+  function handleInput(e)  {
+    setInputText(e.target.value)
+  }
+
+  function handleKeydown(e) {
+    if(e.key === 'Enter') {
+      console.log(e.target.value)
+      setListOfTags(prev => [...prev, inputText])
+      setInputText("")
+    }
+  }
   // console.log(description)
   const handleOptionChange = () => {
     setShowInputField(true);
@@ -398,6 +413,16 @@ const NewProduct = () => {
   
     return (
       <div className="bg-white">
+        <div style={{outline: "1px solid red", display: "flex", width: "30px"}}>
+          <ul style={{outline: "1px solid lime", display: "flex"}}>
+            {
+              listOfTags.map((each, index) => (
+                <li key={index} style={{listStyleType: "none", backgroundColor: "black", color: "white"}}>{each}</li>
+              ))
+            }
+          </ul>
+          <input style={{border: "1px solid blue", flexBasis: "100%"}} type="text" name="" value={inputText} onChange={e => setInputText(e.target.value)} onKeyDown={handleKeydown}/>
+        </div>
         {!isFetching && store && (
           <nav
             navbar-main
@@ -633,6 +658,10 @@ const NewProduct = () => {
                           + Add Option
                         </button>
 
+                        <ul className=' top-1 left-2 rounded-lg w-[100px] px-3 py-2 text-[#F3F3F3] bg-[#3a416f] flex items-center justify-between text-xs' style={{ background: "#3a416f", color: "white", width: "80px", top: "48px", left: "20px" }}>
+                          <li>html</li>
+                        </ul>
+
                         <div className="flex flex-wrap mt-4 items-center">
                           {showInputField &&
                             <div
@@ -663,8 +692,13 @@ const NewProduct = () => {
                             <div
                               className="flex items-center justify-between w-full md:w-8/12 px-3 pb"
                               style={{ marginTop: '2%' }}
+                              onKeyDown={handleKeydown}
                             >
-                              <div className='relative w-full'>
+                              {/* <div className='relative w-full'> */}
+                              <div>
+                              <ul>
+                                <li className=' top-1 left-2 rounded-lg w-[100px] px-3 py-2 text-[#F3F3F3] bg-[#3a416f] flex items-center justify-between text-xs' style={{ background: "#3a416f", color: "white", width: "80px", top: "48px", left: "20px" }}>html</li>
+                              </ul>
                                 <input
                                   className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
                                   id="Style"
@@ -674,7 +708,9 @@ const NewProduct = () => {
                                   onChange={multipleOptionChnage}
                                 // value="0.00"
                                 />
-                                <div style={{ background: "#3a416f", color: "white", width: "80px", top: "48px", left: "20px" }} className='absolute top-1 left-2 rounded-lg w-[100px] px-3 py-2 text-[#F3F3F3] bg-[#3a416f] flex items-center justify-between text-xs'>
+                              </div>
+                              
+                                {/* <div style={{ background: "#3a416f", color: "white", width: "80px", top: "48px", left: "20px" }} className='absolute top-1 left-2 rounded-lg w-[100px] px-3 py-2 text-[#F3F3F3] bg-[#3a416f] flex items-center justify-between text-xs'>
                                   <div className='flex items-center'>
                                     <div className=''>
                                       MMaa
@@ -683,8 +719,8 @@ const NewProduct = () => {
                                       <i className="fa fa-times" aria-hidden="true"></i>
                                     </div>
                                   </div>
-                                </div>
-                              </div>
+                                </div> */}
+                              {/* </div> */}
 
                               <div className="mt-4 cursor-pointer">
                                 <BsTrashFill onClick={trashInput} />
@@ -771,7 +807,9 @@ const NewProduct = () => {
                                 id="Colour"
                                 type={'text'}
                                 style={{ marginTop: '8%' }}
-                                onChange={multipleOptionChnage}
+                                onChange={handleInput}
+                                value={inputText}
+                                // onChange={multipleOptionChnage}
                               // value={colour}
                               />
                               <div className="mt-4 cursor-pointer">

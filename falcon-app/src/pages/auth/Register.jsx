@@ -15,7 +15,7 @@ const Register = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isNavOpen, setIsNavOpen] = useState(false)
   const [isButtonDisabled, setIsButtonDisabled] = useState (false);
-
+  const authType = "form"
   // const check = () => setIsOpen(!true)
 
   const handleNavOpen = () => {
@@ -59,7 +59,7 @@ const Register = () => {
 
   const googleReg = () => {
     window.open(
-      "http://localhost:9000/OAuth/google",
+      "https://falcon-server-jaek.onrender.com/oauth/google",
       // `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'http://localhost:9000'}/oauth/google/callback`,
       '_self'
     );
@@ -222,16 +222,17 @@ const Register = () => {
       email: emailReg,
       password: passwordReg,
       phone: phone,
+      authType
     })
       .then(response => {
         // console.log (response.data);
         if (response.data.status === "success") {
           setIsButtonDisabled(false)
-          localStorage.setItem('firstname', fnameReg);
-          localStorage.setItem('lastname', lnameReg);
-          localStorage.setItem('email', emailReg);
-          localStorage.setItem('username', username);
-          localStorage.setItem('phone', phone);
+          // localStorage.setItem('firstname', fnameReg);
+          // localStorage.setItem('lastname', lnameReg);
+          // localStorage.setItem('email', emailReg);
+          // localStorage.setItem('username', username);
+          // localStorage.setItem('phone', phone);
           const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -246,7 +247,7 @@ const Register = () => {
           Toast.fire({
             icon: 'success',
             title: response.data.message,
-          }).then((window.location.href = '/Home'));
+          })
         }
         else {
           console.log(response.data)

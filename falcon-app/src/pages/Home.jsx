@@ -53,6 +53,7 @@ const Home = () => {
           return total + transaction.amount;
         }, 0);
         const formattedTotalAmount = totalAmount.toLocaleString();
+        console.log(formattedTotalAmount)
         setTotalMoney(formattedTotalAmount);
         setTotalTransaction(transactions.length)
       }

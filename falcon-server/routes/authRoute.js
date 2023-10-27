@@ -18,6 +18,8 @@ router.use(cors({
 router
 .post("/register", authController.register)
 
+router.post("/verify", authController.verifyEmail)
+
 router
 .post("/login", authController.login)
 
