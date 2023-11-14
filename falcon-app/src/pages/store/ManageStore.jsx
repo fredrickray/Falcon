@@ -10,7 +10,7 @@ import useFetch from '../../hooks/useFetch';
 import { LineWave } from 'react-loader-spinner';
 
 const ManageStore = () => {
-    const { store, isFetching } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
+    const { store, isFetching } =  useFetch("http://localhost:9000/store/product")
     // useFetchStore(`https://falcon-server-jaek.onrender.com/store/get-store`)
     const link = `https://falcon-app.vercel.app/Store/${store}`
     const [isNavOpen, setIsNavOpen] = useState(false)

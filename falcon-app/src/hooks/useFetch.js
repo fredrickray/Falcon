@@ -1,70 +1,55 @@
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-// import { axiosInstance } from '../services/axiosHandler';
+
 const useFetch = url => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  const [isFetching, setIsFetching] = useState(false)
-  const [count, setCount] = useState(0)
-  const [store, setStore] = useState("")
-  // const [location, setLocation] = useState("")
-  // const [fee, setFee] = useState("")
+  const [isFetching, setIsFetching] = useState(false);
+  const [count, setCount] = useState(0);
+  const [store, setStore] = useState("");
   const { email, token } = localStorage;
 
-
-
-
-  useEffect(
-    () => {
-      setIsFetching(true)
-      axios.post(url, { email }, {
+  useEffect(() => {
+    setIsFetching(true);
+    axios
+      .get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         },
+        params: {
+          email // Include email as a query parameter
+        }
       })
-        .then(response => {
-          // console.log (response.data.data2.fee);
-          // console.log(token)
-          let data = response.data.data2;
-          // console.log(data[0].store)
-          setData(data);
-          setCount(data.length)
-          setStore(data[0].store)
-          setIsFetching(false)
-          // setFee(data.data2.slice(0,3).fee)
-          // setLocation(data.data2.location)
-        })
-        .catch(err => {
-          //  console.log(err)
-          // if(err.response.data.message) {
-          //   console.log(err.response.data.message)
-          // }
-      
-          if (err.response.data.error) {
-            setIsFetching(false)
-            console.log(err.response.data.error)
-            Swal.fire({
-              position: 'top-end',
-              // icon: 'success',
-              toast: true,
-              color: "red",
-              title: err.response.data.error,
-              showConfirmButton: false,
-              timer: 3000,
-            })
-            setTimeout(() => {
-              window.location.href = "/Login"
-            }, 3000)
-            setError(error);
+      .then(response => {
+        let data = response.data.data2;
+        setData(data);
+        setCount(data.length);
+        setStore(data[0].store);
+        setIsFetching(false);
+      })
+      .catch(err => {
+        setIsFetching(false);
+        if (err.response.data.error) {
+          console.log(err.response.data.error);
+          Swal.fire({
+            position: 'top-end',
+            toast: true,
+            icon: 'error',
+            title: err.response.data.error,
+            showConfirmButton: false,
+            timer: 3000,
+          });
+          setError(err); // Set the error state
+          setTimeout(() => {
+            window.location.href = "/Login";
+          }, 3000);
+        }
+      });
+  }, [url, email, token]);
 
-          }
-        });
-    },
-    [url, error, email,token]
-  );
-  return { data, count, store, isFetching };
+  return { data, count, store, isFetching, error };
 };
 
 export default useFetch;

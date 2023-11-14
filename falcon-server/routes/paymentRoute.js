@@ -8,19 +8,21 @@ router.use (bodyParser.json ());
 router.use (express.json ());
 
 router.use(cors({
-    origin: ["https://falcon-app.vercel.app", "http://localhost:3000"],
+    // origin: ["https://falcon-app.vercel.app", "http://localhost:3000"],
+    origin: "*",
     methods: ["GET", "POST", "UPDATE", "DELETE", "OPTIONS"],
     credentials: true,
     allowedHeaders:  ["X-Requested-With", "Content-Type", "Authorization"],
 }))
 
-
+router
+.post("/initiate", paymentController.initiatePayment)
 
 router
-.post("/new_payment", paymentController.savePayment)
+.post("/payment", paymentController.savePayment)
 
 router
-.get("/get_payment", paymentController.getPayments)
+.get("/payment", paymentController.getPayments)
 
 router
 .post("/orders", paymentController.getAllOrders)

@@ -17,7 +17,7 @@ const Orders = () => {
     const result = async () => {
       setIsFetching(true)
       try {
-        const response = await  axios.post("https://falcon-server-jaek.onrender.com/payment/orders", { my_email: email })
+        const response = await  axios.post("http://localhost:9000/payment/orders", { my_email: email })
         if(response.status === 200) {
           console.log(response.data.orderItems)
           setData(response.data.orderItems)
@@ -123,7 +123,7 @@ const Orders = () => {
             <LineWave
               height="300"
               width="300"
-              color="#4fa94d"
+              color="black"
               ariaLabel="line-wave"
               wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, 40%)", top: "50%", left: "50%",  }}
               wrapperClass=""

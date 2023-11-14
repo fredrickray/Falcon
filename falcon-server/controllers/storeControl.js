@@ -1,7 +1,7 @@
 const knex = require("../knex-db/knex")
 
 //creating store for a merchant
-exports.createStore = async (req, res) => {
+const createStore = async (req, res) => {
   const { name, link, email, logo } = req.body;
   if (name == '') {
     res.send('Name field must not be empty');
@@ -13,7 +13,7 @@ exports.createStore = async (req, res) => {
     try {
       let store = await knex('Store').insert({
         name: name,
-        link:  `http://localhost:9000/stores/get-store/${link}`,
+        link: `http://localhost:9000/stores/get-store/${link}`,
         email: email,
         logo: logo,
         // "http://localhost:9000/stores/get-store/" +
@@ -30,10 +30,10 @@ exports.createStore = async (req, res) => {
   }
 };
 
-exports.updateStore = async (req, res) => {
-  const { id } = req.params; 
+const updateStore = async (req, res) => {
+  const { id } = req.params;
   const { name, link, logo, email } = req.body;
-  
+
   try {
     const existingProduct = await knex('Products')
       .where({ email })
@@ -62,37 +62,101 @@ exports.updateStore = async (req, res) => {
   }
 };
 
-
-
-//creating products
-exports.createProduct = async (req, res) => {
-  const { name, description, price, compare_price, email, weight, quantity, image, category, style, size, colour, store } = req.body;
-
+const createCategory = async (req, res) => {
   try {
-    const response = await  knex('Products').insert({
-      name,
-      price,
-      compare_price,
-      email,
-      quantity,
-      description,
-      weight,
-      image,
-      category,
-      style,
-      colour,
-      size,
-      store
-    })
-    res.status(201).send({message: "Product created succesfully", status: "Success", response})
+    const { collection, description, store } = req.body
+
+    const response = await knex("Collections").insert({ name: collection, description, store })
+    res.send(response)
   } 
   catch (error) {
-    res.status(500).send({message: "Internal serer error", err: error.message})
+    res.send(error)
+  }
+}
+
+// retrieving collection for a merchant
+const getCategory = async (req, res) => {
+  const { collection } = req.params
+  try {
+    const response = await knex("Collection").where({ collection })
+    if (response == "") {
+      res.status(404).send({ message: "No collection with that name" })
+    }
+    else{
+      res.send({response})
+    }
+  
+  } catch (error) {
+    res.send(error)
+  }
+}
+
+// Saving customization data
+const saveCustomization = async(req, res) => {
+  try {
+    const { logo, color, theme, banner, email } = req.body
+
+    const response = await knex("").where({ email })
+    if(response) {
+      knex.insert({
+        color,
+        logo,
+        theme,
+        banner,
+      })
+    }
+    else{}
+    res.status(200).send({message: "Customization saved"})
+  } catch (error) {
+    res.send(error)
+  }
+}
+
+//creating products
+const createProduct = async (req, res) => {
+  const { name, description, price, compare_price, email, weight, quantity, image, collection, style, size, colour, store } = req.body;
+
+  try {
+    const response = await knex('Products')
+      .insert({
+        name,
+        price,
+        compare_price,
+        email,
+        quantity,
+        description,
+        weight,
+        image,
+        collection,
+        style,
+        colour,
+        size,
+        store,
+      })
+
+    await knex("Collection")
+      .insert({
+        collection,
+        productName: name,
+        productPrice: price,
+        productWeight: weight,
+        productQuantity: quantity,
+        productImage: image,
+        productStyle: style,
+        productSize: size,
+        productColour: colour,
+        store
+      })
+    res.status(201).send({ message: "Product created succesfully", status: "Success", response })
+  }
+  catch (error) {
+    // res.status(500).send({message: "Internal serer error", err: error.message})
+    res.send(error)
   }
 };
 
 
-exports.updateProduct = async (req, res) => {
+const updateProduct = async (req, res) => {
   const { id } = req.params;
   const { name, price, compare_price, quantity, description, weight, image, category, style, colour, size } = req.body; // Assuming you're sending the updated product data in the request body
 
@@ -101,7 +165,7 @@ exports.updateProduct = async (req, res) => {
     const updatedRows = await knex('Products')
       .where({ id }) // Assuming your product table has an 'id' column
       .update({ name, price, compare_price, quantity, description, weight, image, category, style, colour, size });
-      
+
     if (updatedRows === 1) {
       // Product updated successfully
       res.status(200).json({ message: 'Product updated successfully', updatedRows });
@@ -117,33 +181,11 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-// Controller function to get products by category
-exports.getCategory = async (req, res) => {
-  const { category } = req.params;
-
-  try {
-    const products = await knex("Products").where({ category })
-
-    // Check if products were found for the specified category
-    if (products === null) {
-      return res.status(404).send({ message: "No products found for the specified category." })
-    }
-
-    // Send the products as a response to the client
-    res.json(products);
-  }
-  catch (error) {
-    // If an error occurs during the database query or processing, handle the error and send an error response.
-    console.log(error);
-    return res.status(500).send({ message: "Internal server error", err: error.message });
-  }
-};
-
 // getting all products of a merchants
-exports.getProducts = async (req, res) => {
-  let { email } = req.body
+const getProducts = async (req, res) => {
+  let { email } = req.query
   try {
-    let response = await knex("Products").where({ email: email })
+    let response = await knex("Products").where({ email })
     if (response == "") {
       res.status(404).json({ message: "No products with this email" })
     }
@@ -161,26 +203,27 @@ exports.getProducts = async (req, res) => {
 }
 
 // getting store for the merchant
-exports.store = async (req, res) => {
-  const { email } = req.body
+const store = async (req, res) => {
+  const { email } = req.query
+  // console.log(re.)
 
   try {
     const response = await knex("Store").where({ email })
-    if(response.length === 0) {
+    if (response.length === 0) {
       return res.status(404).json({ message: 'Store not found for this email' });
     }
     return res.status(200).json({
       message: 'Store retrieved successfully',
       response
     });
-  } 
+  }
   catch (error) {
-    res.send({message: "Internal server error", err: error})
+    res.send({ message: "Internal server error", err: error })
   }
 }
 
 // getting the store of a merchant for the customer
-exports.getStore = async (req, res) => {
+const getStore = async (req, res) => {
   const name = req.params.store;
 
   try {
@@ -198,24 +241,7 @@ exports.getStore = async (req, res) => {
   }
 };
 
-exports.checkStoreExist = async (req, res) => {
-  const email = req.body;
-
-  try {
-    let response = await knex("Store").where(email)
-    if (response == "") {
-      res.status(404).json({ status: "Not found", message: "There's no Store for this user" })
-    }
-    else {
-      res.status(200).json({ status: "Success", message: "Retrieved Store for user", response })
-    }
-  }
-  catch (err) {
-    res.status(500).json({ status: " Inrternal Server Error", message: err })
-  }
-};
-
-exports.queryProducts = async (req, res) => {
+const queryProducts = async (req, res) => {
   let { q } = req.query
   const keys = ["fname", "lname", "email", "username", "phone"]
 
@@ -236,32 +262,12 @@ exports.queryProducts = async (req, res) => {
   }
 }
 
-exports.query3Products = async (req, res) => {
-  let { q } = req.query
-  const { email } = req.body
-
-  try {
-    const search = await knex("Products").where({ email })
-    if (search == "") {
-      res.status(404).send({ message: "email not found" })
-    }
-    else {
-      // console.log(search.splice(0,3))
-      console.log(search)
-      res.send({ message: "Data retrieved", user: search })
-      // res.send(search.splice)
-    }
-  } catch (error) {
-    console.log(error)
-    res.status(500).send({ message: "server error" })
-  }
-}
 // To get a single product for a merchant
-exports.getProductID = async (req, res) => {
-  const id = req.params.id;
+const getProductID = async (req, res) => {
+  const { id } = req.params
 
   try {
-    let response = await knex('Products').where({ id: id });
+    let response = await knex('Products').where({ id });
     // console.log (response);
     // res.send(response)
     if (response == '') {
@@ -282,7 +288,7 @@ exports.getProductID = async (req, res) => {
 };
 
 //deleting a product
-exports.deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res) => {
   const id = req.params.id;
   if (!id) {
     res.send({ message: "Thers's no id" });
@@ -314,31 +320,7 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// purchased item 
-// itwOption are things like size, color, style
-exports.itemPurchased = async (req, res) => {
-  const { firstname, lastname, email, phone, itemName, itemPrice, itemOption } = req.body
-
-  try {
-    const response = await knex("Purchased").insert({
-      firstname,
-      lastname,
-      email,
-      phone,
-      itemName,
-      itemPrice,
-      itemOption
-    })
-    console.log(response)
-    res.send(response)
-  } catch (error) {
-    console.log(error)
-    res.status(500).send({ message: "There was a server error", error })
-  }
-}
-
-
-exports.createDiscount = async (req, res) => {
+const createDiscount = async (req, res) => {
   const { email, name, price } = req.body
 
   try {
@@ -352,7 +334,7 @@ exports.createDiscount = async (req, res) => {
   }
 }
 
-exports.getDiscounts = async (req, res) => {
+const getDiscounts = async (req, res) => {
   const { email } = req.body; // Assuming the email is passed as a parameter
 
   try {
@@ -369,8 +351,7 @@ exports.getDiscounts = async (req, res) => {
   }
 };
 
-
-exports.deleteDiscount = async (req, res) => {
+const deleteDiscount = async (req, res) => {
   const { id } = req.params; // Assuming the discount's unique identifier is passed as a parameter
 
   try {
@@ -378,7 +359,7 @@ exports.deleteDiscount = async (req, res) => {
     if (response === 0) {
       res.status(404).json({ message: "Discount not found" });
     } else {
-      res.status(200).send({message: "Discount deleted"}); // Status 204 means "No Content" after successful deletion
+      res.status(200).send({ message: "Discount deleted" }); // Status 204 means "No Content" after successful deletion
     }
   } catch (error) {
     res.status(500).json({ status: "Server Error", message: "There was an error in the server" });
@@ -386,7 +367,7 @@ exports.deleteDiscount = async (req, res) => {
 };
 
 //delivery information
-exports.createDelivery = async (req, res) => {
+const createDelivery = async (req, res) => {
   const { location, fee, email } = req.body;
 
   try {
@@ -401,7 +382,7 @@ exports.createDelivery = async (req, res) => {
 };
 
 
-exports.getDelivery = async (req, res) => {
+const getDelivery = async (req, res) => {
   const { email } = req.body
 
   try {
@@ -422,7 +403,7 @@ exports.getDelivery = async (req, res) => {
   }
 }
 
-exports.deleteDelivery = async (req, res) => {
+const deleteDelivery = async (req, res) => {
   const { id } = req.params
 
   try {
@@ -441,4 +422,55 @@ exports.deleteDelivery = async (req, res) => {
   }
 }
 
+// Create a review
+const createReview = async (req, res) => {
+  const { name, description, rating } = req.body
 
+  try {
+    const response = await knex("Reviews")
+    insert({
+      name,
+      description,
+      rating
+    })
+
+    res.send(response)
+  } catch (error) {
+    res.send({message: "Error occured while creating a review", error})
+  }
+}
+
+const getReviews = async (req, res) => {
+  const { id } = req.query
+
+  try {
+    const response = await knex("Reviews").where({ id })
+    res.send(response)
+  } catch (error) {
+    res.send(error)
+  }
+}
+
+module.exports = {
+  createStore,
+  updateStore,
+  createCategory,
+  getCategory,
+  saveCustomization,
+  createProduct,
+  updateProduct,
+  getProducts,
+  getProductID,
+  queryProducts,
+  deleteProduct,
+  store,
+  getStore,
+  createDiscount,
+  getDiscounts,
+  deleteDiscount,
+  createDelivery,
+  getDelivery,
+  deleteDelivery,
+  createReview,
+  getReviews
+}

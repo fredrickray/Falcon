@@ -1,6 +1,6 @@
 const express = require("express")
 const router  = express.Router()
-const storeController = require("../controllers/storeControl")
+// const storeController = require("../controllers/storeControl")
 const bodyParser = require ('body-parser');
 const cors = require("cors");
 const requireAuth  = require("../middlewares/authMiddleware");
@@ -15,63 +15,96 @@ router.use(cors({
     allowedHeaders:  ["X-Requested-With", "Content-Type", "Authorization"],
 }))
 
+const {
+  createStore,
+  updateStore,
+  createCategory,
+  getCategory,
+  saveCustomization,
+  createProduct,
+  updateProduct,
+  getProducts,
+  getProductID,
+  queryProducts,
+  deleteProduct,
+  store,
+  getStore,
+  createDiscount,
+  getDiscounts,
+  deleteDiscount,
+  createDelivery,
+  getDelivery,
+  deleteDelivery,
+  createReview,
+  getReviews
+} = require("../controllers/storeControl")
+
+
+// Vendor Routes
+
+router
+.post("/", requireAuth, createStore)
+
+router
+.put("/:id", requireAuth, updateStore)
+
+router
+.get("/", requireAuth, store)
+
+router
+.post("/category", createCategory)
+
+router
+.get("/category/:category", getCategory)
+
 // router
-// .use(requireAuth)
-
-
-router
-.post("/Create-Store", requireAuth, storeController.createStore)
+// .post("/product", requireAuth, createProduct)
 
 router
-.put("/update-store/:id", requireAuth, storeController.updateStore)
+.get("/product", getProducts)
 
 router
-.post("/create-product", requireAuth, storeController.createProduct)
+.put("/product/:id", requireAuth, updateProduct)
+
+// router
+// .get("/products", requireAuth, queryProducts)
 
 router
-.put("/update-product/:id", requireAuth, storeController.updateProduct)
+.get("/product/:id", getProductID)
 
 router
-.post("/category/:category", requireAuth, storeController.getCategory)
+.delete("/product/:id", requireAuth, deleteProduct)
 
 router
-.post("/get-products", requireAuth, storeController.getProducts)
-
-
-router
-.post("/get-store", requireAuth, storeController.store)
-router
-.post("/check-store", requireAuth, storeController.checkStoreExist)
+.post("/discount", requireAuth, createDiscount)
 
 router
-.get("/products", requireAuth, storeController.queryProducts)
+.get("/discount", getDiscounts)
 
 router
-.get("/3products", requireAuth, storeController.query3Products)
+.delete("/discount/:id", requireAuth, deleteDiscount)
 
 router
-.get("/get-product/:id", storeController.getProductID)
+.post("/delivery", requireAuth, createDelivery)
 
 router
-.get("/delete-product/:id", requireAuth, storeController.deleteProduct)
+.get("/delivery", getDelivery)
 
 router
-.post("/create-discount", requireAuth, storeController.createDiscount)
+.delete("/delivery/:id", requireAuth, deleteDelivery)
+
+
+// CUSTOMER ROUTES
+router
+.get("/store/:store", getStore)
+
+// router
+// .get("/product/:id", )
+router
+.post("/review", createReview)
 
 router
-.post("/get-discount", storeController.getDiscounts)
-
-router
-.delete("/delete-discount/:id", requireAuth, storeController.deleteDiscount)
-
-router
-.post("/create-delivery", requireAuth, storeController.createDelivery)
-
-router
-.post("/get-delivery", storeController.getDelivery)
-
-router
-.delete("/delete-delivery/:id", requireAuth, storeController.deleteDelivery)
+.get("/review", getReviews)
 
 
 

@@ -34,7 +34,7 @@ const NewProduct = () => {
   const [listOfTags, setListOfTags] = useState(["css", "html"]);
   const [inputText, setInputText] = useState("")
   const { email, token } = localStorage;
-  const { store, isFetching } = useFetchStore("http://localhost:9000/store/get-store")
+  const { store, isFetching } = useFetchStore("http://localhost:9000/store")
   // useFetchStore("https://falcon-server-jaek.onrender.com/store/get-store")
   // const { store } = useFetch("http://localhost:9000/store/get-products")
 

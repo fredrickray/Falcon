@@ -7,7 +7,7 @@ import axios from 'axios';
 import { MdOutlinePayments } from "react-icons/md"
 import { LineWave } from 'react-loader-spinner';
 const Home = () => {
-  const { count, data: product, isFetching } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
+  const { count, data: product, isFetching } = useFetch("http://localhost:9000/store/product")
   const [isNavOpen, setIsNavOpen] = useState(false)
   const [totalMoney, setTotalMoney] = useState(0.00)
   const [totalTransaction, setTotalTransaction] = useState(0.00)
@@ -35,7 +35,7 @@ const Home = () => {
   }, [])
   const retrieveMoneyMade = async () => {
     try {
-      const response = await axios.get('https://falcon-server-jaek.onrender.com/payment/get_payment', {
+      const response = await axios.get('http://localhost:9000/payment/payment', {
         params: {
           email,
         },
@@ -66,7 +66,7 @@ const Home = () => {
 
   const retrieveOrders = async () => {
     try {
-      const response = await axios.post("https://falcon-server-jaek.onrender.com/payment/orders", { my_email: email })
+      const response = await axios.post("http://localhost:9000/payment/orders", { my_email: email })
       if (response.status === 404) {
         popUp("top-end", response.data.message)
       }

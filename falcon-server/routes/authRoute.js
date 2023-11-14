@@ -1,9 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const authController = require("../controllers/authControl")
 const bodyParser = require ('body-parser');
 const cors = require ('cors');
-// const { requireAuth } = require("../utls/authMiddleWare");
+
+const {
+    register,
+    login,
+    verifyEmail,
+    update,
+    passwordReset
+} = require("../controllers/authControl")
 
 router.use (bodyParser.urlencoded ({extended: true}));
 router.use (bodyParser.json ());
@@ -15,26 +21,15 @@ router.use(cors({
 
 }))
 
-router
-.post("/register", authController.register)
+router.post("/register", register)
 
-router.post("/verify", authController.verifyEmail)
+router.post("/verify", verifyEmail)
 
-router
-.post("/login", authController.login)
+router.post("/login", login)
 
-router
-.get("/getUser", authController.getUser)
+router.put("/update", update)
 
-router
-.put("/update", authController.update)
+router.post("/password_reset", passwordReset)
 
-
-
-router
-.post("/password_reset", authController.passwordReset)
-
-router
-.post("/socials", authController.social)
 
 module.exports = router

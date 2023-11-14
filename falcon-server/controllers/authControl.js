@@ -1,5 +1,4 @@
 const saltRounds = 10;
-
 // Packages imports
 const bcrypt = require ('bcrypt');
 const express = require ('express');
@@ -152,51 +151,12 @@ const login = async (req, res) => {
 };
 
 
-//To Login a Merchant
-// const login = async (req, res) => {
-//   const {email, password} = req.body;
-
-//   try {
-//     let user = await knex ('Merchants').where ({email}).first ();
-
-//     if (!user) {
-//       res.status (401).json ({message: 'Wrong email or passsword, try again'});
-//     } else {
-//       let hashedPassword = user.password;
-//       let isValid = await bcrypt.compare (password, hashedPassword);
-//       const token = createToken (user.id);
-//       if (!isValid) {
-//         res.status (401).json ({message: 'Wrong email or password, try again'});
-//       } else {
-//         // res.cookie("test", true)
-//         res.cookie ('jwts', token, {
-//           httpOnly: true,
-//           withCredentials: true,
-//           maxAge: maxAge * 1000,
-//         });
-//         // console.log ({user: user, token});
-//         res.status (200).json ({
-//           status: 'success',
-//           data: user,
-//           message: 'Logged in successfully',
-//           token,
-//         });
-//       }
-//     }
-//   } 
-//   catch (error) {
-//     res.status(500).send({message: "Internal server error", err: error.message})
-//   }
-// };
-
-
 const update = async (req, res) =>{
-  const { image, email, username } = req.body
+  const { image, email, username, twitter, tiktok, instagram } = req.body
 
   try {
     let user = await knex("Merchants")
       .where({email: email})
-      // .first()
       
       if (!user || user === "") {
         res.status(404).send({ message: "Can't update, user not found" });
@@ -205,15 +165,15 @@ const update = async (req, res) =>{
       else {
         await knex("Merchants")
           .where({ email: email })
-          .update({ image: image, username });
+          .update({ image, username, twitter, tiktok, instagram });
       
         res.status(200).send({ message: "Updated successfully", status: "success", user })
-        // console.log(user)
       }
       
   } 
   catch (error) {
-    res.status(500).send({message: "Internal server error", err: error.message})
+    // res.status(500).send({message: "Internal server error", err: error.message})
+    res.send(error.message)
   }
 }
 
@@ -222,12 +182,10 @@ const social = async (req, res) => {
   const {instagram, tiktok, twitter, email} = req.body;
 
   try {
-    let user = await knex ('Socials').insert ({
-      instagram,
-      twitter,
-      tiktok,
-      email,
-    });
+    let user = await knex ('Merchants')
+    .where({ email })
+    
+    if(!user) res.status(404).send({ message: "User not found"}) 
 
     // console.log (user);
     res.send (user);
@@ -237,24 +195,7 @@ const social = async (req, res) => {
   }
 };
 
-const getUser = async (req, res) => {
-  const { email } = req.body
 
-  try {
-    const user = await knex("Merchants").where({email});
-    if(!user || user == ""){
-      res.status(404).send({message: "Email not found"})
-      // console.log("Email not found")
-    }
-    else{
-      res.status(200).send({message: "User found", user})
-    }
-  } 
-  catch (error) {
-    // console.log(error)
-    res.status(500).send({message: "There was a server error", error})
-  }
-}
 
 // To Update Merchant's Password
 const passwordReset = async (req, res) => {
@@ -307,6 +248,5 @@ module.exports= {
   login,
   update,
   social,
-  getUser,
   passwordReset
 }

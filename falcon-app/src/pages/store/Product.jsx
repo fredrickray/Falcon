@@ -4,9 +4,11 @@ import AsideBar from '../../components/AsideBar';
 import useFetch from '../../hooks/useFetch';
 import CopyToClipboardLink from '../../components/ClipBoard';
 import { LineWave } from 'react-loader-spinner';
+
 const Products = () => {
   const [searchItem, setSearchItem] = useState("")
-  const { data: products, count, store, isFetching } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
+  const { data: products, count, store, isFetching } = useFetch("http://localhost:9000/store/product")
+  // useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
   const [isNavOpen, setIsNavOpen] = useState(false)
   const filteredProducts = products?.filter((data) =>
     data.name.toLowerCase().includes(searchItem.toLowerCase())

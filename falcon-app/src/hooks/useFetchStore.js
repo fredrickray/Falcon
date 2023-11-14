@@ -11,12 +11,13 @@ const useFetchStore = url => {
 
     useEffect(() => {
       setIsFetching(true)
-        axios.post(url, {
-          email
-        }, {
+        axios.get(url, {
           headers: {
             Authorization : `Bearer ${token}`,
             "Content-Type": "application/json"
+          },
+          params: {
+            email // Include email as a query parameter
           }
         })
         .then(response => {

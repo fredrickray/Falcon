@@ -15,7 +15,8 @@ const NewStore = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isNavOpen, setIsNavOpen] = useState(false)
   const CLOUDINARY_API = process.env.REACT_APP_CLOUDINARY_API;
-  const { store, isFetching } = useFetchStore("https://falcon-server-jaek.onrender.com/store/get-store")
+  const { store, isFetching } = useFetchStore("http://localhost:9000/store")
+  // useFetchStore("https://falcon-server-jaek.onrender.com/store")
 
   const showForm = () => {
     setShowFormField(!showFormField)
@@ -46,7 +47,7 @@ const NewStore = () => {
     }
   };
 
-  const CREATE_STORE_URL = 'https://falcon-server-jaek.onrender.com/store/Create-Store';
+  const CREATE_STORE_URL = 'http://localhost:9000/store/store';
 
   const create = () => {
     const formData = new FormData();
@@ -238,9 +239,9 @@ const NewStore = () => {
 
           {isFetching && (
             <LineWave
-              height="200"
-              width="200"
-              color="#4fa94d"
+              height="300"
+              width="300"
+              color="black"
               ariaLabel="line-wave"
               wrapperStyle={{ justifyContent: "center", position: "absolute", display: "flex", alignItems: "center", transform: "translate(-30%, -70%)", top: "50%", left: "50%",  }}              
               wrapperClass=""

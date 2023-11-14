@@ -1,28 +1,41 @@
 const knex = require("../knex-db/knex")
+const axios = require("axios")
+require("dotenv").config()
 
+const initiatePayment = async (req, res) => {
+  const { customer_email, firstname, lastname, totalPrice, phone, logo } = req.body
+  try {
+    const response = await axios.post("https://api.flutterwave.com/v3/payments", {
+      tx_ref: Date.now(),
+      amount: totalPrice,
+      currency: "NGN",
+      redirect_url: "https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc",
+      meta: {
+        consumer_id: 23,
+        consumer_mac: "92a3-912ba-1192a"
+      },
+      customer: {
+        email: customer_email,
+        phonenumber: phone,
+        name: firstname + " " + lastname
+      },
+      customizations: {
+        title: "Payment for items in cart",
+        logo: logo || "https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg"
+      }
+    }, {
+      headers: {
+        Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`
+      }
+    });
+    const { link } = response.data.data
+    res.status(200).send({message: link});
+  } catch (error) {
+    res.status(500).send({ message: "Error occurred while making the request", error: error.message });
+    console.error("An error occurred:", error);
+  }
+}
 
-
-// const savePayment = async (req, res) => {
-//     let { product_Id, name, quantity, amount, currency, tx_ref, transaction_id, email, firstname, lastname, customer_email, status, price, shipping_money, discount, state, address, delivery_note }= req.body;
-
-//     try {
-//       await knex.transaction(async (trx) => {
-//         await trx("Transactions").insert({ amount, currency, tx_ref, transaction_id, customer_email, email, firstname, lastname, status });
-
-//         await trx("Orders").insert({ firstname, lastname, email: customer_email, tx_ref, shipping_money, total_amount: amount, discount, state, address, delivery_note, status });
-
-//         await trx("Order_details").insert({ product_Id, name, price, quantity, tx_ref });
-
-//       });
-
-//       // console.log(response)
-//       res.status(201).send({message: "Transaction completed succesfully"})
-//     } 
-//     catch (error) {
-//       console.log(error.message)
-//       res.status(500).send({ message: "Internal server error", err: error.message })
-//     }
-// }
 
 const savePayment = async (req, res) => {
   let { mainData, itemsData } = req.body;
@@ -109,7 +122,7 @@ const getPayments = async (req, res) => {
 
   try {
     const response = await knex("Transactions").where({ email });
-    console.log(response);
+    // console.log(response);
 
     if (response.length === 0) {
       return res.status(404).send({ message: "No transactions found for this email" });
@@ -117,7 +130,7 @@ const getPayments = async (req, res) => {
       return res.status(200).send({ message: "Transactions retrieved successfully", response });
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(500).send({ message: "Internal server error", err: error.message });
   }
 };
@@ -236,6 +249,7 @@ const getAllPayments = async (req, res) => {
 }
 
 module.exports = {
+  initiatePayment,
   savePayment,
   getPayments,
   getAllOrders,

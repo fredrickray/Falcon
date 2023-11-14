@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import AsideBar from '../../components/AsideBar';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import useFetch from '../../hooks/useFetch';
 import { LineWave } from 'react-loader-spinner';
 
 const OrderDetail = () => {
     const { tx_ref } = useParams()
-    const { store } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
     const [orderDetail, setOrderDetail] = useState(null)
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [isFetching, setIsFetching] = useState(false)
@@ -18,7 +16,7 @@ const OrderDetail = () => {
         const fetchData = async () => {
             setIsFetching(true)
             try {
-                const response = await axios.get(`https://falcon-server-jaek.onrender.com/payment/order/order_details/${tx_ref}`)
+                const response = await axios.get(`http://localhost:9000/payment/order/order_details/${tx_ref}`)
                 if (response.status === 400) {
                     setIsFetching(false)
                     return
