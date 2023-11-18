@@ -1,0 +1,1 @@
+bcrypt body-parser cookie-parser cors dotenv express express-session jsonwebtoken knex mysql node-cron nodemailer nodemon openai passport passport-google-oauth20 

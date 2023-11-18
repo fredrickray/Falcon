@@ -1,37 +1,18 @@
-const express = require("express")
-const router  = express.Router()
-const paymentController = require("../controllers/paymentController")
-const bodyParser = require ('body-parser');
-const cors = require("cors");
-router.use (bodyParser.urlencoded ({extended: true}));
-router.use (bodyParser.json ());
-router.use (express.json ());
+const express = require('express');
+const paymentController = require('../controllers/paymentController');
 
-router.use(cors({
-    // origin: ["https://falcon-app.vercel.app", "http://localhost:3000"],
-    origin: "*",
-    methods: ["GET", "POST", "UPDATE", "DELETE", "OPTIONS"],
-    credentials: true,
-    allowedHeaders:  ["X-Requested-With", "Content-Type", "Authorization"],
-}))
+const router = express.Router();
 
-router
-.post("/initiate", paymentController.initiatePayment)
+router.post('/initiate', paymentController.initiatePayment);
 
-router
-.post("/payment", paymentController.savePayment)
+router.post('/payment', paymentController.savePayment);
 
-router
-.get("/payment", paymentController.getPayments)
+router.get('/payment', paymentController.getPayments);
 
-router
-.post("/orders", paymentController.getAllOrders)
+router.post('/orders', paymentController.getAllOrders);
 
-router
-.get("/orders/:tx_ref", paymentController.getOrdersByTxRef)
+router.get('/orders/:tx_ref', paymentController.getOrdersByTxRef);
 
-router
-.get("/order/order_details/:tx_ref", paymentController.getItemsByTxRef)
+router.get('/order/order_details/:tx_ref', paymentController.getItemsByTxRef);
 
-
-module.exports = router
+module.exports = router;
