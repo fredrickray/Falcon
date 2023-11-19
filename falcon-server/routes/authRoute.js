@@ -7,14 +7,19 @@ const {
   update,
   passwordReset,
 } = require('../controllers/authControl');
+const {
+  registerValidator,
+  emailValidator,
+  loginValidator,
+} = require('../validators/authValidator');
 
 const router = express.Router();
 
-router.post('/register', register);
+router.post('/register', registerValidator, register);
 
-router.post('/verify', verifyEmail);
+router.post('/verify', emailValidator, verifyEmail);
 
-router.post('/login', login);
+router.post('/login', loginValidator, login);
 
 router.put('/update', update);
 

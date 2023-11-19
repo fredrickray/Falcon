@@ -13,6 +13,7 @@ const {
   openaiR,
   OauthRoute,
 } = require('./routes/index');
+const { errorHandler, routeNotFound } = require('./middlewares/errorHandler');
 
 const app = express();
 const port = process.env.PORT || 9000;
@@ -87,6 +88,9 @@ app.use('/openai', openaiR);
 app.get('/', (req, res) => {
   res.send('Server is live and running');
 });
+
+app.use(errorHandler);
+app.use(routeNotFound);
 
 app.listen(port, () => {
   console.log(`Server is running on ${server}`);

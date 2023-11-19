@@ -9,12 +9,13 @@ const cookieParser = require('cookie-parser');
 const knex = require('../knex-db/knex');
 const transporter = require('../middlewares/sendEmail');
 const { createToken, maxAge } = require('../middlewares/createToken');
+const { Conflict } = require('../middlewares/errorHandler');
 
 const app = express();
 app.use(cookieParser());
 
 //Registering merchant
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
     const { fname, lname, email, phone, username, authType } = req.body;
     // Generate a random verification code
@@ -25,7 +26,7 @@ const register = async (req, res) => {
     try {
       const userExist = await knex('Merchants').where({ email }).first();
       if (userExist) {
-        res.status(409).send({ message: 'Email already exist, try again' });
+        throw new Conflict('Email already exist, try again');
       } else {
         let user = await knex('Merchants').insert({
           email,
@@ -69,9 +70,7 @@ const register = async (req, res) => {
       // console.log (user);
     } catch (error) {
       console.log(error);
-      res
-        .status(500)
-        .json({ status: 'Error', message: 'Internal server error', error });
+      next(error);
     }
   });
 };
@@ -163,7 +162,9 @@ const update = async (req, res) => {
     let user = await knex('Merchants').where({ email: email });
 
     if (!user || user === '') {
-      res.status(404).send({ message: "Can't update, user not found" });
+      res
+        .status(404)
+        .send({ success: false, message: "Can't update, user not found" });
       console.log("Can't update, user not found");
     } else {
       await knex('Merchants')
@@ -187,7 +188,8 @@ const social = async (req, res) => {
   try {
     let user = await knex('Merchants').where({ email });
 
-    if (!user) res.status(404).send({ message: 'User not found' });
+    if (!user)
+      res.status(404).send({ success: false, message: 'User not found' });
 
     // console.log (user);
     res.send(user);
@@ -204,6 +206,7 @@ const passwordReset = async (req, res) => {
   // Check if email and password are provided
   if (!email || !password) {
     return res.send({
+      success: false,
       status: 'Failed',
       message: 'Email and password are required.',
     });
