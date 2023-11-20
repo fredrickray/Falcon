@@ -7,9 +7,14 @@ const cookieParser = require('cookie-parser');
 
 // Middleware Imports
 const knex = require('../knex-db/knex');
-const transporter = require('../middlewares/sendEmail');
-const { createToken, maxAge } = require('../middlewares/createToken');
-const { Conflict } = require('../middlewares/errorHandler');
+const transporter = require('../helpers/sendEmail');
+const { createToken, maxAge } = require('../helpers/createToken');
+const {
+  Conflict,
+  BadRequest,
+  Unauthorized,
+} = require('../middlewares/errorHandler');
+const { sendVerificationEmail } = require('../helpers/mailService');
 
 const app = express();
 app.use(cookieParser());
@@ -48,15 +53,7 @@ const register = async (req, res, next) => {
           maxAge: maxAge * 1000,
         });
 
-        const mailOptions = {
-          from: 'fredrickraymond2004@gmail.com',
-          to: email,
-          subject: 'Email Verification',
-          text: `Your verification code is: ${verificationCode}`,
-        };
-
-        // Send the email
-        await transporter.sendMail(mailOptions);
+        await sendVerificationEmail(fname, email, verificationCode);
 
         res.status(200).json({
           success: true,
@@ -69,31 +66,22 @@ const register = async (req, res, next) => {
 
       // console.log (user);
     } catch (error) {
-      console.log(error);
       next(error);
     }
   });
 };
 
-const verifyEmail = async (req, res) => {
+const verifyEmail = async (req, res, next) => {
   const { email, verificationCode } = req.body;
 
   try {
-    if (!email || !verificationCode) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email and verification code are required.',
-        data: null,
-      });
-    }
-
     const user = await knex('Merchants').where({
       email,
       token: verificationCode,
     });
 
     if (!user[0]) {
-      res.status(401).send({ message: 'Invalid email or verification code' });
+      throw new Unauthorized('Invalid email or verification code');
     } else {
       await knex('Merchants')
         .where({ email })
@@ -106,66 +94,62 @@ const verifyEmail = async (req, res) => {
       });
     }
   } catch (error) {
-    res.send(error.message);
+    next(error);
   }
 };
 
 // To Login a Merchant
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    let user = await knex('Merchants').where({ email }).first();
+    const user = await knex('Merchants').where({ email }).first();
 
     if (!user) {
-      res.status(401).json({ message: 'Invalid login credentials' });
-    } else {
-      // Check if the user's account is verified
-      if (!user.verified || user.verified == 'false') {
-        res
-          .status(401)
-          .json({ message: 'Your account has not been verified yet.' });
-      } else {
-        let hashedPassword = user.password;
-        let isValid = await bcrypt.compare(password, hashedPassword);
-        const token = createToken(user.id);
-        if (!isValid) {
-          res.status(401).json({ message: 'Invalid login credentials' });
-        } else {
-          // res.cookie("test", true)
-          res.cookie('jwts', token, {
-            httpOnly: false,
-            withCredentials: true,
-            maxAge: maxAge * 1000,
-          });
-          // console.log ({user: user, token});
-          res.status(200).json({
-            status: 'success',
-            data: user,
-            message: 'Logged in successfully',
-            token,
-          });
-        }
-      }
+      throw new Unauthorized('Invalid login credentials');
     }
+
+    // Check if the user's account is verified
+    if (!user.verified) {
+      throw new Unauthorized('Your account has not been verified yet.');
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
+      throw new Unauthorized('Invalid login credentials');
+    }
+
+    const token = createToken(user.id);
+
+    // Omit password from the response
+    const userWithoutPassword = { ...user };
+    delete userWithoutPassword.password;
+
+    res.cookie('jwts', token, {
+      httpOnly: false,
+      withCredentials: true,
+      maxAge: maxAge * 1000,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: userWithoutPassword,
+      message: 'Logged in successfully',
+      token,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: 'Internal server error', err: error.message });
+    next(error);
   }
 };
 
-const update = async (req, res) => {
+const update = async (req, res, next) => {
   const { image, email, username, twitter, tiktok, instagram } = req.body;
 
   try {
     let user = await knex('Merchants').where({ email: email });
 
     if (!user || user === '') {
-      res
-        .status(404)
-        .send({ success: false, message: "Can't update, user not found" });
-      console.log("Can't update, user not found");
+      throw new BadRequest("Can't update, user not found");
     } else {
       await knex('Merchants')
         .where({ email: email })
@@ -177,30 +161,29 @@ const update = async (req, res) => {
     }
   } catch (error) {
     // res.status(500).send({message: "Internal server error", err: error.message})
-    res.send(error.message);
+    next(error);
   }
 };
 
 // Adding Social details to user
-const social = async (req, res) => {
+const social = async (req, res, next) => {
   const { instagram, tiktok, twitter, email } = req.body;
 
   try {
     let user = await knex('Merchants').where({ email });
 
-    if (!user)
-      res.status(404).send({ success: false, message: 'User not found' });
+    if (!user) throw new BadRequest('User not found');
 
     // console.log (user);
     res.send(user);
   } catch (error) {
     // console.log (error);
-    res.send(error);
+    next(error);
   }
 };
 
 // To Update Merchant's Password
-const passwordReset = async (req, res) => {
+const passwordReset = async (req, res, next) => {
   const { email, password } = req.body;
 
   // Check if email and password are provided
@@ -227,18 +210,10 @@ const passwordReset = async (req, res) => {
         message: 'Email found and password updated successfully',
       });
     } else {
-      return res.json({
-        status: 'Failed',
-        message: 'Email not found and password was not updated',
-      });
+      throw new Unauthorized('Email not found and password was not updated');
     }
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: 'Error',
-      message: 'Internal server error',
-      err: error.message,
-    });
+    next(error);
   }
 };
 

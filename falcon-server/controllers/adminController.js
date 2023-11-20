@@ -1,7 +1,7 @@
 const saltRounds = 10;
 const bcrypt = require('bcrypt');
 const knex = require('../knex-db/knex');
-const { createToken, maxAge } = require('../middlewares/createToken');
+const { createToken, maxAge } = require('../helpers/createToken');
 
 const login = async (req, res) => {
   const { email, password } = req.body;

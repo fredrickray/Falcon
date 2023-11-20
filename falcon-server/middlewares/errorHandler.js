@@ -1,7 +1,4 @@
 class HttpError extends Error {
-  status;
-  success = false;
-
   constructor(statusCode, message) {
     super(message);
     this.name = this.constructor.name;
@@ -57,11 +54,13 @@ const routeNotFound = (req, res, next) => {
 };
 
 const errorHandler = (err, _req, res, _next) => {
-  const { success, status, message } = err;
-  const cleanedMessage = message.replace(/"/g, '');
-  res.status(status).json({
-    success,
-    status,
+  const statusCode = err.status || 500;
+  const cleanedMessage = (
+    statusCode === 500 ? 'Internal Server Error' : err.message
+  ).replace(/"/g, '');
+  res.status(statusCode).json({
+    success: false,
+    statusCode,
     message: cleanedMessage,
   });
 };

@@ -44,15 +44,16 @@ const loginValidator = (req, res, next) => {
 
 const emailSchema = Joi.object({
   email: Joi.string().email().required(),
-  verificationCode: Joi.string().required(),
+  verificationCode: Joi.string().length(6).required(),
 });
 
 const emailValidator = (req, res, next) => {
   const { error } = emailSchema.validate(req.body);
 
   if (error) {
-    const errorMessages = error.details.map((detail) => detail.message);
-    throw new BadRequest(errorMessages);
+    // const errorMessages = error.details.map((detail) => detail.message);
+    // throw new InvalidInput(errorMessages);
+    throw new BadRequest('Invalid Email or verification code');
   }
 
   next();
