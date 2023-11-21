@@ -60,6 +60,7 @@ const errorHandler = (err, _req, res, _next) => {
   ).replace(/"/g, '');
   res.status(statusCode).json({
     success: false,
+    status: 'error',
     statusCode,
     message: cleanedMessage,
   });
