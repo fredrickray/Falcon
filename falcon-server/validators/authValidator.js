@@ -51,8 +51,6 @@ const emailValidator = (req, res, next) => {
   const { error } = emailSchema.validate(req.body);
 
   if (error) {
-    // const errorMessages = error.details.map((detail) => detail.message);
-    // throw new InvalidInput(errorMessages);
     throw new BadRequest('Invalid Email or verification code');
   }
 

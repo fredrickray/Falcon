@@ -40,7 +40,7 @@ const register = async (req, res, next) => {
           password,
           username,
           phone,
-          authType,
+          authType: 'email',
           verified: false,
           token: verificationCode,
         });
@@ -55,7 +55,7 @@ const register = async (req, res, next) => {
 
         await sendVerificationEmail(fname, email, verificationCode);
 
-        res.status(200).json({
+        res.status(201).json({
           success: true,
           message: 'A verification code was sent to your email',
           // status: 'success',
