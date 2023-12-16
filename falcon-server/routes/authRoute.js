@@ -7,8 +7,9 @@ const {
     register,
     login,
     verifyEmail,
-    update,
-    passwordReset
+    passwordReset,
+    forgotPassword,
+    updateUser
 } = require("../controllers/authControl")
 
 router.use (bodyParser.urlencoded ({extended: true}));
@@ -27,9 +28,10 @@ router.post("/verify", verifyEmail)
 
 router.post("/login", login)
 
-router.put("/update", update)
+router.put("/profile", updateUser)
 
 router.post("/password_reset", passwordReset)
 
+router.post("/forgot-password", forgotPassword)
 
 module.exports = router

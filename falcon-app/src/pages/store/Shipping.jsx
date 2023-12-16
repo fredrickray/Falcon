@@ -10,10 +10,10 @@ const Shipping = () => {
     const [priceValue, setPriceValue] = useState('');
     const [savedValues, setSavedValues] = useState([]);
     const [isNavOpen, setIsNavOpen] = useState(false)
-    const { store, isFetching } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
+    const { store, isFetching } = useFetch(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/product`)
     const { email, token } = localStorage
-    const CREATE_DELIVERY_URL = "https://falcon-server-jaek.onrender.com/store/create-delivery"
-    const GET_DELIVERY_URL = "https://falcon-server-jaek.onrender.com/store/get-delivery"
+    const CREATE_DELIVERY_URL = `${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/delivery`
+    const GET_DELIVERY_URL = `${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/delivery`
     // const DELETE_DELIVERY_URL = 
     const handleInputChange = () => {
         setShowInputField(true)
@@ -45,7 +45,7 @@ const Shipping = () => {
 
     const fetchSavedValues = async () => {
         try {
-            const response = await axios.post(GET_DELIVERY_URL, { email },
+            const response = await axios.get(GET_DELIVERY_URL, { email },
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.token}`,

@@ -335,10 +335,10 @@ const createDiscount = async (req, res) => {
 }
 
 const getDiscounts = async (req, res) => {
-  const { email } = req.body; // Assuming the email is passed as a parameter
+  const { email } = req.body;
 
   try {
-    const discounts = await knex("Discounts").where({ email });
+    const [discounts] = await knex("Discounts").where({ email });
 
     if (discounts.length === 0) {
       res.status(404).json({ message: "No discounts found for the provided email" });
@@ -386,7 +386,7 @@ const getDelivery = async (req, res) => {
   const { email } = req.body
 
   try {
-    let response = await knex("Delivery").where({ email: email })
+    let response = await knex("Delivery").where({ email })
     if (response == "") {
       // console.log("Email not found")
       res.status(404).json({ message: "Email not found" })
@@ -399,7 +399,9 @@ const getDelivery = async (req, res) => {
     }
   }
   catch (error) {
-    res.status(500).send({ status: "Server Error", message: "There was an error in the server" })
+    console.log(error)
+    res.send(error)
+    // res.status(500).send({ status: "Server Error", message: "There was an error in the server" })
   }
 }
 

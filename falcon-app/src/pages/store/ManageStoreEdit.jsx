@@ -26,7 +26,7 @@ const ManageStoreEdit = () => {
 
     const fetchStore = async () => {
         try {
-            const response = await axios.post("https://falcon-server-jaek.onrender.com/store/get-store", { email }, {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/store`, { email }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -62,7 +62,7 @@ const ManageStoreEdit = () => {
 
     const saveChange = async () => {
         try {
-            const response = await axios.put(`https://falcon-server-jaek.onrender.com/store/update-store/${id}`, { name, link: name, description }, {
+            const response = await axios.put(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/${id}`, { name, link: name, description }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Axios from "axios"
 import Swal from 'sweetalert2';
-
+import img from "../../assets/img/verify.png"
+// import bgimfg from "../../assets/img/curved-images/"
 const VerifyEmail = () => {
 
     const [verificationCode, setverificationCode] = useState("")
@@ -13,27 +14,27 @@ const VerifyEmail = () => {
     // const URL = "https://falcon-server-jaek.onrender.com/auth/verify"
     const URL = "http://localhost:9000/auth/verify"
 
-   
+
 
     useEffect(() => {
         const timer = setInterval(() => {
-          if (minutes === 0 && seconds === 0) {
-            clearInterval(timer);
-            // You can add code to perform an action when the timer reaches 0.
-          } else {
-            if (seconds === 0) {
-              setMinutes(minutes - 1);
-              setSeconds(59);
+            if (minutes === 0 && seconds === 0) {
+                clearInterval(timer);
+                // You can add code to perform an action when the timer reaches 0.
             } else {
-              setSeconds(seconds - 1);
+                if (seconds === 0) {
+                    setMinutes(minutes - 1);
+                    setSeconds(59);
+                } else {
+                    setSeconds(seconds - 1);
+                }
             }
-          }
         }, 1000);
-    
-        return () => clearInterval(timer);
-      }, [minutes, seconds]);
 
-   
+        return () => clearInterval(timer);
+    }, [minutes, seconds]);
+
+
     const popUp = (position, toast, title, color, icon, timer) => {
         Swal.fire({
             position: position,
@@ -50,30 +51,41 @@ const VerifyEmail = () => {
         try {
             setIsButtonDisabled(true)
             const response = await Axios.post(URL, { email, verificationCode })
-            // console.log(response)
+            console.log(response)
             if (response.status === 200) {
                 setIsButtonDisabled(false)
                 // console.log(response.data.message)
                 popUp("top-right", true, response.data.message, "lightgreen", "success", 3500)
                 window.location.href = "/Login"
             }
-            else{
+            else {
                 setIsButtonDisabled(false)
                 popUp("top-right", true, response.data.message, "red", "", 2500)
             }
 
         }
         catch (error) {
+            console.log(error)
             popUp("top-end", true, error.response.data.message, "red", "", 2500)
             setIsButtonDisabled(false)
+        }
+    }
+
+    const resend = async () => {
+        try {
+            const response = await Axios.post(URL, { email, verificationCode })
+            console.log(response)
+        } catch (error) {
+            console.log(error)
         }
     }
 
     // const handleNavOpen = () => {
     //     setIsNavOpen(prev => !prev)
     // }
-    return ( 
+    return (
         <div className="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
+            <img src={img} alt="" style={{ position: "absolute", top: "6%", left: "20%" }} />
             <div className="container sticky top-0 z-sticky">
                 <div className="flex flex-wrap -mx-3">
                     <div className="w-full max-w-full px-3 flex-0">
@@ -133,20 +145,14 @@ const VerifyEmail = () => {
                             <div className="flex flex-wrap mt-0 -mx-3">
                                 <div className="flex flex-col w-full max-w-full px-3 mx-auto md:flex-0 shrink-0 md:w-6/12 lg:w-5/12 xl:w-4/12">
                                     <div className="relative flex flex-col min-w-0 mt-32 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border">
-                                        <div className="p-6 pb-0 mb-0 bg-transparent border-b-0 rounded-t-2xl">
-                                            <p className="mb-0">
-                                                Enter verification code
-                                            </p>
-
-                                        </div>
                                         <div className="flex-auto p-6">
                                             <form>
-                                                <label className="mb-2 ml-1 font-bold text-xs text-slate-700">
-                                                    Token
-                                                </label>
+                                                <p className="mb-2 ml-1 font-bold text-xs text-slate-700">
+                                                    Confirm your email address
+                                                </p>
                                                 <div className="mb-4 flex gap-5 justify-between">
                                                     <input
-                                                        type="text"
+                                                        type="tel"
                                                         className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-10 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                                                         placeholder="*"
                                                         aria-label="validationCode"
@@ -155,7 +161,7 @@ const VerifyEmail = () => {
                                                         maxLength={1}
                                                     />
                                                     <input
-                                                        type="text"
+                                                        type="tel"
                                                         className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-10 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                                                         placeholder="*"
                                                         aria-label="validationCode"
@@ -164,7 +170,7 @@ const VerifyEmail = () => {
                                                         maxLength={1}
                                                     />
                                                     <input
-                                                        type="text"
+                                                        type="tel"
                                                         className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-10 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                                                         placeholder="*"
                                                         aria-label="validationCode"
@@ -173,7 +179,7 @@ const VerifyEmail = () => {
                                                         maxLength={1}
                                                     />
                                                     <input
-                                                        type="text"
+                                                        type="tel"
                                                         className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-10 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                                                         placeholder="*"
                                                         aria-label="validationCode"
@@ -182,7 +188,7 @@ const VerifyEmail = () => {
                                                         maxLength={1}
                                                     />
                                                     <input
-                                                        type="text"
+                                                        type="tel"
                                                         className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-10 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow placeholder:justify-center"
                                                         placeholder="*"
                                                         aria-label="validationCode"
@@ -191,7 +197,7 @@ const VerifyEmail = () => {
                                                         maxLength={1}
                                                     />
                                                     <input
-                                                        type="text"
+                                                        type="tel"
                                                         className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-10 appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                                                         placeholder="*"
                                                         aria-label="validationCode"
@@ -200,7 +206,7 @@ const VerifyEmail = () => {
                                                         maxLength={1}
                                                     />
                                                 </div>
-                                                <p style={{color: "red"}}>  Time Remaining: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}</p>
+                                                <p style={{ color: "red" }}>  Time Remaining: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}</p>
                                                 <div className="text-center">
                                                     <button
                                                         type="button"
@@ -212,29 +218,31 @@ const VerifyEmail = () => {
                                                         {isButtonDisabled ? 'Verifying....' : 'Verify'}
                                                         {/* Verify */}
                                                     </button>
+                                                    <p className='text-[red] mt-3 cursor-pointer' style={{ color: "red", marginTop: "4%" }}>Resend Code</p>
                                                 </div>
                                             </form>
                                         </div>
 
                                     </div>
                                 </div>
-                                {/* <div className="w-full max-w-full px-3 lg:flex-0 shrink-0 md:w-6/12">
-                    <div className="absolute top-0 hidden w-3/5 h-full -mr-32 overflow-hidden -skew-x-10 -right-40 rounded-bl-xl md:block">
-                      <div
-                        className="absolute inset-x-0 top-0 z-0 h-full -ml-16 bg-cover skew-x-10"
-                        style={{
-                          backgroundImage: "url('../assets/img/curved-images/curved6.jpg')",
-                        }}
-                      />
-                    </div>
-                  </div> */}
+
+                                <div className="w-full max-w-full px-3 lg:flex-0 shrink-0 md:w-6/12">
+                                    <div className="absolute top-0 hidden w-3/5 h-full -mr-32 overflow-hidden -skew-x-10 -right-40 rounded-bl-xl md:block">
+                                        <div
+                                            className="absolute inset-x-0 top-0 z-0 h-full -ml-16 bg-cover skew-x-10"
+                                            style={{
+                                                backgroundImage: "url('../assets/img/curved-images/curved6.jpg')",
+                                            }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
             </main>
         </div>
-     );
+    );
 }
- 
+
 export default VerifyEmail;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Axios from 'axios';
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs"
@@ -14,20 +14,21 @@ const Register = () => {
   const [phone, setPhone] = useState('');
   const [isOpen, setIsOpen] = useState(false)
   const [isNavOpen, setIsNavOpen] = useState(false)
-  const [isButtonDisabled, setIsButtonDisabled] = useState (false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const authType = "form"
   // const check = () => setIsOpen(!true)
 
+  const navigate = useNavigate()
   const handleNavOpen = () => {
     setIsNavOpen(prev => !prev)
   }
 
   // const API_URL = 'https://falcon-server-jaek.onrender.com/auth/register';
   const API_URL = "http://localhost:9000/auth/register"
-  const response = (message) => {
+  const response = (color, message) => {
     Swal.fire({
       position: 'top-end',
-      color: "red",
+      color: color,
       toast: true,
       title: message,
       showConfirmButton: false,
@@ -57,60 +58,60 @@ const Register = () => {
     });
   };
 
-  const googleReg = () => {
-    window.open(
-      "https://falcon-server-jaek.onrender.com/oauth/google",
-      // `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'http://localhost:9000'}/oauth/google/callback`,
-      '_self'
-    );
-}
+  // const googleReg = () => {
+  //   window.open(
+  //     "https://falcon-server-jaek.onrender.com/oauth/google",
+  //     // `${process.env.REACT_APP_GOOGLE_BACKEND_API_URL || 'http://localhost:9000'}/oauth/google/callback`,
+  //     '_self'
+  //   );
+  // }
 
-// const googleReg = async() => {
-//   try {
-//     const response = await Axios.get("http://localhost:9000/oauth/google/callback")
-//     console.log(response)
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
-// const googleReg =  async() => {
-//   try {
-//     const response = await Axios.get("http://localhost:9000/oauth/google/callback")
-//     console.log(response)
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
+  // const googleReg = async() => {
+  //   try {
+  //     const response = await Axios.get("http://localhost:9000/oauth/google/callback")
+  //     console.log(response)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+  // const googleReg =  async() => {
+  //   try {
+  //     const response = await Axios.get("http://localhost:9000/oauth/google/callback")
+  //     console.log(response)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
 
-// //  const response =  window.open("http://localhost:9000/oauth/google")
-// //  console.log(response)
-//   // window.location.href = "http://localhost:9000/oauth/google"
-// }
+  // //  const response =  window.open("http://localhost:9000/oauth/google")
+  // //  console.log(response)
+  //   // window.location.href = "http://localhost:9000/oauth/google"
+  // }
 
 
   // const googleReg = () => {
   //   response('Google authentication, coming soon!!!')
   // };
 
-  
+
 
   const register = () => {
     setIsButtonDisabled(true)
     if (fnameReg.length === 0) {
-      response('First Name field can not be empty')
+      response('red', 'First Name field can not be empty')
       setIsButtonDisabled(false)
       return
     }
 
     if (lnameReg.length === 0) {
-      response("Last Name field must not be empty")
+      response("red", "Last Name field must not be empty")
       setIsButtonDisabled(false)
       return
     }
 
     if (username.length === 0) {
-      response("Username field can not be empty")
+      response("red", "Username field can not be empty")
       setIsButtonDisabled(false)
       return
     }
@@ -118,7 +119,7 @@ const Register = () => {
     // Check if the Email is an Empty string or not.
 
     if (emailReg.length === 0) {
-      response('Email Address can not be empty')
+      response('red', 'Email Address can not be empty')
       setIsButtonDisabled(false)
       return
     }
@@ -129,12 +130,13 @@ const Register = () => {
 
     if (passwordReg.length < 8) {
       response(
+        'red',
         'Password must be greater than or equal to 8 characters.',
       )
       setIsButtonDisabled(false)
       return
     }
-  
+
     // variable to count upper case characters in the passwordReg.
     let countUpperCase = 0
     // variable to count lowercase characters in the passwordReg.
@@ -190,28 +192,28 @@ const Register = () => {
 
     if (countLowerCase === 0) {
       // invalid form, 0 lowercase characters
-      response('Password must include lowercase')
+      response("red", 'Password must include lowercase')
       setIsButtonDisabled(false)
       return
     }
 
     if (countUpperCase === 0) {
       // invalid form, 0 upper case characters
-      response('Password must include uppercase')
+      response('red', 'Password must include uppercase')
       setIsButtonDisabled(false)
       return
     }
 
     if (countDigit === 0) {
       // invalid form, 0 digit characters
-      response('Password must include a number')
+      response('red', 'Password must include a number')
       setIsButtonDisabled(false)
       return
     }
 
     if (countSpecialCharacters === 0) {
       // invalid form, 0 special characters characters
-      response('Password must have special characters')
+      response('red', 'Password must have special characters')
       setIsButtonDisabled(false)
       return
     }
@@ -225,46 +227,32 @@ const Register = () => {
       authType
     })
       .then(response => {
-        // console.log (response.data);
-        if (response.data.status === "success") {
-          setIsButtonDisabled(false)
-          // localStorage.setItem('firstname', fnameReg);
-          // localStorage.setItem('lastname', lnameReg);
-          // localStorage.setItem('email', emailReg);
-          // localStorage.setItem('username', username);
-          // localStorage.setItem('phone', phone);
-          const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: toast => {
-              toast.addEventListener('mouseenter', Swal.stopTimer);
-              toast.addEventListener('mouseleave', Swal.resumeTimer);
-            },
-          });
-          Toast.fire({
-            icon: 'success',
-            title: response.data.message,
-          })
-        }
-        else {
-          console.log(response.data)
-          setIsButtonDisabled(false)
-        }
+        localStorage.setItem('firstname', fnameReg);
+        localStorage.setItem('lastname', lnameReg);
+        localStorage.setItem('email', emailReg);
+        localStorage.setItem('username', username);
+        localStorage.setItem('phone', phone);
+
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: toast => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+          },
+        });
+        Toast.fire({
+          icon: 'success',
+          title: response.data.message,
+        })
+        navigate("/Verify")
       })
       .catch(err => {
-        // console.log('ERROR', err.message);
+        response("red", err.response.data.message)
         setIsButtonDisabled(false)
-        Swal.fire({
-          position: 'top-end',
-          icon: 'error',
-          toast: true,
-          title: err.response.data.message,
-          showConfirmButton: false,
-          timer: 2500,
-        });
       });
   };
 
@@ -306,7 +294,7 @@ const Register = () => {
             <ul className="flex flex-col pl-0 mx-auto mb-0 list-none lg:flex-row xl:ml-auto">
               <li>
                 <Link
-                  className={`block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 ${isNavOpen ?  "lg-max:opacity-100" : "lg-max:opacity-0"} lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75`}
+                  className={`block px-4 py-2 mr-2 font-normal text-white transition-all duration-250 ${isNavOpen ? "lg-max:opacity-100" : "lg-max:opacity-0"} lg-max:text-slate-700 ease-soft-in-out text-sm lg:px-2 lg:hover:text-white/75`}
                   to
                 >
                   <i className="mr-1 text-white lg-max:text-slate-700 fas fa-user-circle opacity-60" />
@@ -341,7 +329,7 @@ const Register = () => {
                 <div className="w-full max-w-full px-3 mx-auto mt-0 text-center lg:flex-0 shrink-0 lg:w-5/12">
                   <h1 className="mt-12 mb-2 text-white">Welcome!</h1>
                   <p className="text-white">
-                  Sign up now to discover exclusive features, personalized experiences, and exciting opportunities tailored just for you. Your journey starts here!
+                    Sign up now to discover exclusive features, personalized experiences, and exciting opportunities tailored just for you. Your journey starts here!
                   </p>
                 </div>
               </div>
@@ -416,10 +404,11 @@ const Register = () => {
                     <div className="w-3/12 max-w-full px-1 mr-auto flex-0">
                       <a
                         className="inline-block w-full px-6 py-3 mb-4 font-bold text-center text-gray-200 uppercase align-middle transition-all bg-transparent border border-gray-200 border-solid rounded-lg shadow-none cursor-pointer hover:scale-102 leading-pro text-xs ease-soft-in tracking-tight-soft bg-150 bg-x-25 hover:bg-transparent hover:opacity-75"
-                        href
+                        href="http://localhost:9000/oauth/google"
                       >
                         <svg width="24px" height="32px" viewBox="0 0 64 64"
-                          onClick={googleReg}>
+                        // onClick={googleReg}
+                        >
                           <g
                             stroke="none"
                             stroke-width="1"
@@ -527,7 +516,7 @@ const Register = () => {
                           required
                           onChange={e => setPasswordReg(e.target.value)}
                         />
-                        <div onClick={() => setIsOpen(prevState => !prevState)} className="absolute inset-y-0 left-3 flex items-center" style={{marginLeft: "90%"}}>
+                        <div onClick={() => setIsOpen(prevState => !prevState)} className="absolute inset-y-0 left-3 flex items-center" style={{ marginLeft: "90%" }}>
                           {isOpen ? <BsEyeFill /> : <BsEyeSlashFill />}
                         </div>
                       </div>
@@ -554,7 +543,7 @@ const Register = () => {
                           disabled={isButtonDisabled ? true : false}
                           onClick={register}
                         >
-                          {isButtonDisabled ? "Signing..." : "Sign up" }
+                          {isButtonDisabled ? "Signing..." : "Sign up"}
                         </button>
                       </div>
                       <p className="mt-4 mb-0 leading-normal text-sm">

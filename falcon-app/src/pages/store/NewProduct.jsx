@@ -34,7 +34,7 @@ const NewProduct = () => {
   const [listOfTags, setListOfTags] = useState(["css", "html"]);
   const [inputText, setInputText] = useState("")
   const { email, token } = localStorage;
-  const { store, isFetching } = useFetchStore("http://localhost:9000/store")
+  const { store, isFetching } = useFetchStore(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/store`)
   // useFetchStore("https://falcon-server-jaek.onrender.com/store/get-store")
   // const { store } = useFetch("http://localhost:9000/store/get-products")
 
@@ -131,7 +131,7 @@ const NewProduct = () => {
   };
   const CLOUDINARY_API =
     'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
-  const PRODUCT_URL = 'https://falcon-server-jaek.onrender.com/store/create-product';
+  const PRODUCT_URL = `${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/product`;
 
   const response = (message) => {
     Swal.fire({

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BsTrashFill } from 'react-icons/bs';
 import axios from 'axios';
@@ -16,26 +16,44 @@ const StoreProduct = () => {
   const [showInputField, setShowInputField] = useState(false);
   const [showSecondInput, setShowSecondInput] = useState(false);
   const [showThirdInput, setShowThirdInput] = useState(false);
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('0.00');
-  const [comparePrice, setComparePrice] = useState("0.00")
-  const [quantity, setQuantity] = useState('');
-  const [description, setDescription] = useState('');
-  const [weight, setWeight] = useState('');
-  const [image, setImage] = useState('');
-  const [style, setStyle] = useState('');
-  const [colour, setColour] = useState('');
-  const [size, setSize] = useState('');
-  const [editing, setEditing] = useState(false);
+  const [description,setDescription] = useState("")
+  // const [name, setName] = useState('');
+  // const [price, setPrice] = useState('0.00');
+  // const [comparePrice, setComparePrice] = useState("0.00")
+  // const [quantity, setQuantity] = useState('');
+  // const [description, setDescription] = useState('');
+  // const [weight, setWeight] = useState('');
+  // const [image, setImage] = useState('');
+  // const [style, setStyle] = useState('');
+  // const [colour, setColour] = useState('');
+  // const [size, setSize] = useState('');
+  // const [editing, setEditing] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [value, setValue] = useState('4');
-  const email = localStorage.email;
+  // const email = localStorage.email;
   // const token = localStorage.token;
   // useEffect(() => setWeight())
 
-  const { data: productDetail } = useProductId(`https://falcon-server-jaek.onrender.com/store/get-product/${id}`)
-  const { store } = useFetchStore("https://falcon-server-jaek.onrender.com/store/get-store")
+  const { data: productDetail } = useProductId(`http://localhost:9000/store/product/${id}`)
+  // const { store } = useFetchStore("http://localhost:9000/store")
+
+  const [getData, setGetData] = useState([])
+
+  useEffect(() => {
+    if(productDetail) {
+      setDescription(productDetail[0].description)
+      const detail = productDetail
+    console.log("Product Detail runnning")
+    setGetData(detail)
+    }
+  }, [productDetail])
+  const changeInputHandler = (e) => {
+    const { name, value } = e.target
+    setGetData(([prev]) => ([{...prev, [name]: value}]))
+  }
+  console.log(getData)
+
   // console.log(productDetail[0].price)
   const handleOptionChange = () => {
     setShowInputField(true);
@@ -58,24 +76,24 @@ const StoreProduct = () => {
   };
 
   // Change a span tag to input tag
-  const handleSpanClick = () => {
-    setEditing(true);
-  };
+  // const handleSpanClick = () => {
+  //   setEditing(true);
+  // };
 
-  // Quantity change
-  const handleQuntityChange = event => {
-    setQuantity(event.target.value);
-    // setValue (event.target.value);
-  };
+  // // Quantity change
+  // const handleQuntityChange = event => {
+  //   setQuantity(event.target.value);
+  //   // setValue (event.target.value);
+  // };
 
-  const handleInputChange = event => {
-    setValue(event.target.value);
-    setQuantity(event.target.value);
-  };
+  // const handleInputChange = event => {
+  //   setValue(event.target.value);
+  //   setQuantity(event.target.value);
+  // };
 
-  const handleInputBlur = () => {
-    setEditing(false);
-  };
+  // const handleInputBlur = () => {
+  //   setEditing(false);
+  // };
 
   // to handle image upload
   function handleImageUpload(event) {
@@ -90,7 +108,7 @@ const StoreProduct = () => {
   // to use the function "handleImageUpload" and set Image to send to the backend
   const saveImage = event => {
     handleImageUpload(event);
-    setImage(event.target.value);
+    // setImage(event.target.value);
   };
 
   // To restrict amount of images to select to 5
@@ -116,101 +134,97 @@ const StoreProduct = () => {
     'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
   const PRODUCT_URL = `https://falcon-server-jaek.onrender.com/store/update-product/${id}`;
 
-  const update = () => {
-    const formData = new FormData();
-    formData.append('file', image);
-    formData.append('upload_preset', 'b74r48f2');
-    setIsButtonDisabled(true);
-    // const headers = {
-    //   'Content-Type': 'application/json',
-    //   Authorization: `Bearer ${token}`,
-    //   'Access-Control-Allow-Origin': "https://api.cloudinary.com/v1_1/dlokxjygn/image/upload' ",
-    // };
+  // const update = () => {
+  //   const formData = new FormData();
+  //   formData.append('file', image);
+  //   formData.append('upload_preset', 'b74r48f2');
+  //   setIsButtonDisabled(true);
+   
 
-    axios
-      .put(CLOUDINARY_API, formData)
-      .then(imageResponse => {
-        console.log(imageResponse.data.secure_url);
-        const imageUrl = imageResponse.data.secure_url;
+  //   axios
+  //     .put(CLOUDINARY_API, formData)
+  //     .then(imageResponse => {
+  //       console.log(imageResponse.data.secure_url);
+  //       const imageUrl = imageResponse.data.secure_url;
 
-        axios
-          .post(PRODUCT_URL, {
-            name: name,
-            description: description,
-            quantity: quantity,
-            weight: weight,
-            price: price,
-            compare_price: comparePrice,
-            image: imageUrl,
-            style: style,
-            size: size,
-            colour: colour,
-            email: email,
-            store: store
-          })
-          .then(response => {
-            console.log(response.data.message);
-            setIsButtonDisabled(false);
+  //       axios
+  //         .post(PRODUCT_URL, {
+  //           name: name,
+  //           description: description,
+  //           quantity: quantity,
+  //           weight: weight,
+  //           price: price,
+  //           compare_price: comparePrice,
+  //           image: imageUrl,
+  //           style: style,
+  //           size: size,
+  //           colour: colour,
+  //           email: email,
+  //           store: store
+  //         })
+  //         .then(response => {
+  //           console.log(response.data.message);
+  //           setIsButtonDisabled(false);
 
-            const Toast = Swal.mixin({
-              toast: true,
-              position: 'top-end',
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true,
-              didOpen: toast => {
-                toast.addEventListener('mouseenter', Swal.stopTimer);
-                toast.addEventListener('mouseleave', Swal.resumeTimer);
-              },
-            });
-            Toast.fire({
-              icon: 'success',
-              title: "Product created succesfully",
-            })
-            setTimeout(() => {
-              window.location.href = "/Products"
-            }, 3000)
-          })
-          .catch(error => {
-            console.log("Log error for the post to the backend")
-            console.log(error);
-            setIsButtonDisabled(false);
-            Swal.fire({
-              position: 'center',
-              toast: true,
-              title: `${error.data}`,
-              color: 'red',
-              showConfirmButton: false,
-              timer: 2500,
-            });
-          });
-      })
-      .catch(error => {
-        console.log("Log error for the image upload")
-        console.log(error);
-        setIsButtonDisabled(false);
-        Swal.fire({
-          position: 'center',
-          toast: true,
-          title: `${error.data}`,
-          color: 'red',
-          showConfirmButton: false,
-          timer: 2500,
-        });
-      });
-  };
+  //           const Toast = Swal.mixin({
+  //             toast: true,
+  //             position: 'top-end',
+  //             showConfirmButton: false,
+  //             timer: 3000,
+  //             timerProgressBar: true,
+  //             didOpen: toast => {
+  //               toast.addEventListener('mouseenter', Swal.stopTimer);
+  //               toast.addEventListener('mouseleave', Swal.resumeTimer);
+  //             },
+  //           });
+  //           Toast.fire({
+  //             icon: 'success',
+  //             title: "Product created succesfully",
+  //           })
+  //           setTimeout(() => {
+  //             window.location.href = "/Products"
+  //           }, 3000)
+  //         })
+  //         .catch(error => {
+  //           console.log("Log error for the post to the backend")
+  //           console.log(error);
+  //           setIsButtonDisabled(false);
+  //           Swal.fire({
+  //             position: 'center',
+  //             toast: true,
+  //             title: `${error.data}`,
+  //             color: 'red',
+  //             showConfirmButton: false,
+  //             timer: 2500,
+  //           });
+  //         });
+  //     })
+  //     .catch(error => {
+  //       console.log("Log error for the image upload")
+  //       console.log(error);
+  //       setIsButtonDisabled(false);
+  //       Swal.fire({
+  //         position: 'center',
+  //         toast: true,
+  //         title: `${error.data}`,
+  //         color: 'red',
+  //         showConfirmButton: false,
+  //         timer: 2500,
+  //       });
+  //     });
+  // };
 
   const multipleOptionChnage = event => {
     const { id, value } = event.target;
 
     if (id === 'Style') {
-      setStyle(value);
+      // setStyle(value);
       // setType("text")
     } else if (id === 'Size') {
-      setSize(value);
+      // setSize(value);
       // setType("number")
     } else if (id === 'Colour') {
-      setColour(value);
+      // setColour(value);
       // setType("text")
     }
   };
@@ -228,7 +242,6 @@ const StoreProduct = () => {
     ],
   };
 
-  console.log(weight)
 
   return (
     <div className="bg-white">
@@ -255,7 +268,7 @@ const StoreProduct = () => {
                   type="button"
                   class="ml-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
                   style={{ background: '#828282' }}
-                  onClick={update}
+                  // onClick={update}
                 >
                   Save & Preview{' '}
                 </button>
@@ -272,7 +285,7 @@ const StoreProduct = () => {
         </div>
       </nav>
 
-      {productDetail?.map((result) => (
+      {!getData ? <p>Loading....</p> : getData.map((result) => (
         <div key={result.index} className="container-fluid">
           <div className="flex flex-col lg:flex-row mx-auto container-fluid items-start p-[10px]">
             <div className="flex flex-row">
@@ -295,7 +308,8 @@ const StoreProduct = () => {
                           id="name"
                           type="text"
                           value={result.name}
-                          onChange={e => setName(e.target.value)}
+                          name='name'
+                          onChange={changeInputHandler}
                         />
                       </div>
 
@@ -311,8 +325,9 @@ const StoreProduct = () => {
                         </label>
                         <ReactQuill
                           // className="form-input focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
-                          value={result.description}
-                          onChange={setDescription}
+                          value={description}
+                          onChange={e => setDescription(e)}
+                          name='description'
                           modules={modules}
                           placeholder="Type your text here..."
                           style={{ height: "300px", marginBottom: "10%" }}
@@ -333,8 +348,9 @@ const StoreProduct = () => {
                           className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                           id="price"
                           type="number"
+                          name='price'
                           value={result.price}
-                          onChange={e => setPrice(e.target.value)}
+                          onChange={changeInputHandler}
                         />
                       </div>
 
@@ -352,8 +368,9 @@ const StoreProduct = () => {
                           className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                           id="price"
                           type="number"
+                          name='compare_price'
                           value={result.compare_price}
-                          onChange={e => setComparePrice(e.target.value)}
+                          onChange={changeInputHandler}
                         />
                       </div>
 
@@ -369,12 +386,12 @@ const StoreProduct = () => {
                         </label>
                         <input
                           className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
-                          id="quantity"
+                          id="weight"
                           type="number"
-                          // value={weight}
+                          name='weight'
                           value={result.weight}
                           // value={parseFloat(result.weight) + parseFloat(weight)}
-                          onChange={e => setWeight(e.target.value)}
+                          onChange={changeInputHandler}
                         />
                       </div>
 
@@ -389,8 +406,9 @@ const StoreProduct = () => {
                           className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                           id="quantity"
                           type="number"
+                          name='quantity'
                           value={result.quantity}
-                          onChange={handleQuntityChange}
+                          onChange={changeInputHandler}
                         // {e => setQuantity (e.target.value)}
                         />
                       </div>
@@ -625,7 +643,7 @@ const StoreProduct = () => {
                     </p>
                   </div>
                 </div>
-                <table className="items-center w-full mb-0 align-top border-gray-200 text-black-500">
+                {/* <table className="items-center w-full mb-0 align-top border-gray-200 text-black-500">
                   <thead className="align-bottom">
                     <tr>
                       <th className="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-black-900 ">
@@ -736,14 +754,14 @@ const StoreProduct = () => {
                             onClick={handleSpanClick}
                             onChange={e => setQuantity(e.target.value)}
                           >
-                            {/* 4 */}
+                           
                             {value}
                           </span>}
                       </td>
                     </tr>
 
                   </tbody>
-                </table>
+                </table> */}
               </div>
             </div>
 
@@ -891,7 +909,7 @@ const StoreProduct = () => {
               type="button"
               className="inline-block ml-5 mr-4 px-6 py-3 mt-6 mb-0 font-bold text-center text-black uppercase align-middle transition-all bg-transparent border-0 rounded-lg cursor-pointer shadow-soft-md bg-x-25  leading-pro text-xs ease-soft-in tracking-tight-soft bg-gradient-to-tl from-blue-600 to-cyan-400 hover:scale-102 hover:shadow-soft-xs active:opacity-85"
               style={{ background: '#828282' }}
-              onClick={update}
+              // onClick={update}
               disabled={isButtonDisabled ? true : false}
             >
               {isButtonDisabled ? 'Saving...' : 'Save & Preview'}

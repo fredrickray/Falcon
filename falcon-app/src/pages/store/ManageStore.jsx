@@ -10,9 +10,9 @@ import useFetch from '../../hooks/useFetch';
 import { LineWave } from 'react-loader-spinner';
 
 const ManageStore = () => {
-    const { store, isFetching } =  useFetch("http://localhost:9000/store/product")
+    const { store, isFetching } =  useFetch(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/product`)
     // useFetchStore(`https://falcon-server-jaek.onrender.com/store/get-store`)
-    const link = `https://falcon-app.vercel.app/Store/${store}`
+    const link = `http://localhost:3000/Store/${store}`
     const [isNavOpen, setIsNavOpen] = useState(false)
     const textToCopy = link
     const navigate = useNavigate()
@@ -20,7 +20,7 @@ const ManageStore = () => {
 
     const handleNavOpen = () => setIsNavOpen(prev => !prev)
 
-    const viewStore = () => window.open(`https://falcon-app.vercel.app/Store/${store}`)
+    const viewStore = () => window.open(`http://localhost:3000/Store/${store}`)
 
     const [discountCodes, setDiscountCodes] = useState([]);
     const [newDiscountName, setNewDiscountName] = useState('');

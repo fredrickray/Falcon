@@ -15,7 +15,7 @@ const NewStore = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isNavOpen, setIsNavOpen] = useState(false)
   const CLOUDINARY_API = process.env.REACT_APP_CLOUDINARY_API;
-  const { store, isFetching } = useFetchStore("http://localhost:9000/store")
+  const { store, isFetching } = useFetchStore(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/store`)
   // useFetchStore("https://falcon-server-jaek.onrender.com/store")
 
   const showForm = () => {
@@ -47,12 +47,12 @@ const NewStore = () => {
     }
   };
 
-  const CREATE_STORE_URL = 'http://localhost:9000/store/store';
+  const CREATE_STORE_URL = `${process.env.REACT_APP_BACKEND_LOCAL_URL}/store`;
 
   const create = () => {
     const formData = new FormData();
     formData.append('file', logo);
-    formData.append('upload_preset', process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
+    formData.append('upload_preset', process.env.REACT_APP_CLOUDINARY_UPLOAD_PREET);
     setIsButtonDisabled(true);
 
     if (selectedImage) {

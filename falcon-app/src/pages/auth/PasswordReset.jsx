@@ -9,7 +9,7 @@ const PasswordReset = () => {
     const [password, setPassword] = useState("")
     const [isButtonDisabled, setIsButtonDisabled] = useState(false)
     const [isNavOpen, setIsNavOpen] = useState(false)
-    const URL = "https://falcon-server-jaek.onrender.com/auth/password_reset"
+    const URL = `https://falcon-server-jaek.onrender.com/auth/password_reset`
     const popUp = (position, toast, title, color, icon, timer) => {
         Swal.fire({
             position: position,

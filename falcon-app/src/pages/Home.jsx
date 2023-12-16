@@ -6,8 +6,10 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { MdOutlinePayments } from "react-icons/md"
 import { LineWave } from 'react-loader-spinner';
+
+
 const Home = () => {
-  const { count, data: product, isFetching } = useFetch("http://localhost:9000/store/product")
+  const { count, data: product, isFetching } = useFetch(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/product`)
   const [isNavOpen, setIsNavOpen] = useState(false)
   const [totalMoney, setTotalMoney] = useState(0.00)
   const [totalTransaction, setTotalTransaction] = useState(0.00)
@@ -35,7 +37,7 @@ const Home = () => {
   }, [])
   const retrieveMoneyMade = async () => {
     try {
-      const response = await axios.get('http://localhost:9000/payment/payment', {
+      const response = await axios.get(`http://localhost:9000/payment/payment`, {
         params: {
           email,
         },
