@@ -31,7 +31,7 @@ const NewProduct = () => {
   // const [value, setValue] = useState('4');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false)
-  const [listOfTags, setListOfTags] = useState(["css", "html"]);
+  const [listOfTags, setListOfTags] = useState([]);
   const [inputText, setInputText] = useState("")
   const { email, token } = localStorage;
   const { store, isFetching } = useFetchStore(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/store`)
@@ -660,6 +660,7 @@ const NewProduct = () => {
 
                         <ul className=' top-1 left-2 rounded-lg w-[100px] px-3 py-2 text-[#F3F3F3] bg-[#3a416f] flex items-center justify-between text-xs' style={{ background: "#3a416f", color: "white", width: "80px", top: "48px", left: "20px" }}>
                           <li>html</li>
+                          <li>css</li>
                         </ul>
 
                         <div className="flex flex-wrap mt-4 items-center">
@@ -692,14 +693,19 @@ const NewProduct = () => {
                             <div
                               className="flex items-center justify-between w-full md:w-8/12 px-3 pb"
                               style={{ marginTop: '2%' }}
-                              onKeyDown={handleKeydown}
+                              // onKeyDown={handleKeydown}
                             >
                               {/* <div className='relative w-full'> */}
                               <div>
-                              <ul>
-                                <li className=' top-1 left-2 rounded-lg w-[100px] px-3 py-2 text-[#F3F3F3] bg-[#3a416f] flex items-center justify-between text-xs' style={{ background: "#3a416f", color: "white", width: "80px", top: "48px", left: "20px" }}>html</li>
+                              <ul style={{display: "flex", gap: "10px"}}>
+                                {
+                                  listOfTags.map((each, index) => (
+                                    <li key={index} style={{listStyleType: "none", backgroundColor: "#3a416f", color: "white", gap: "10px", borderRadius: "10px", padding: "8px 10px"}}>{each}</li>
+                                  ))
+                                }
+                               <input className='focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4' style={{flexBasis: "100%"}} type="text" name="" value={inputText} onChange={e => setInputText(e.target.value)} onKeyDown={handleKeydown} />
                               </ul>
-                                <input
+                                {/* <input
                                   className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
                                   id="Style"
                                   type="text"
@@ -707,7 +713,7 @@ const NewProduct = () => {
                                   // value={style}
                                   onChange={multipleOptionChnage}
                                 // value="0.00"
-                                />
+                                /> */}
                               </div>
                               
                                 {/* <div style={{ background: "#3a416f", color: "white", width: "80px", top: "48px", left: "20px" }} className='absolute top-1 left-2 rounded-lg w-[100px] px-3 py-2 text-[#F3F3F3] bg-[#3a416f] flex items-center justify-between text-xs'>
