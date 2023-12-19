@@ -14,7 +14,7 @@ import Profile from './pages/Profile';
 import MyAI from './pages/MyAI';
 import ManageStore from './pages/store/ManageStore';
 import ManageStoreEdit from './pages/store/ManageStoreEdit';
-
+import Blank from './pages/store/Blank';
 // ------>> STORE <<-------
 import Products from './pages/store/Product';
 import Payments from './pages/store/Payments';
@@ -35,9 +35,10 @@ import "./assets/css/soft-ui-dashboard-tailwind.css"
 
 const App = () => {
   return (
-    <React.StrictMode>
+    <>
       <BrowserRouter>
         <Routes>
+        <Route exact path="/oauth/google/callback" element={<Blank />} />
         <Route exact path="/" element={<Index />} />
         <Route exact path="/Register" element={<Register />} />
         <Route exact path="/Verify" element={<VerifyEmail />} />
@@ -65,7 +66,7 @@ const App = () => {
         <Route exact path="/err505in" element={<ServerError />} />
         </Routes>
       </BrowserRouter>
-    </React.StrictMode>
+    </>
   );
 }
 

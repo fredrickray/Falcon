@@ -1,7 +1,7 @@
 const router = require("express").Router()
 const passport = require("passport")
 require("../controllers/googleAuthcontroller")
-
+const { oauth } = require("../controllers/googleAuthcontroller")
 
 // Route for initiating the Google OAuth authentication
 router
@@ -11,8 +11,11 @@ router
 // Route for handling the callback URL after successful authentication
 router.get('/google/callback', 
 passport.authenticate('google', {
-   successRedirect: "http://localhost:3000/Home",
-   failureRedirect: 'http://localhost:3000/Register'}),
+  session: false
+  //  successRedirect: "http://localhost:3000/Home",
+  //  failureRedirect: process.env.FAILURE_REDIRECT_URL
+  }),
+  oauth
 );
 
 

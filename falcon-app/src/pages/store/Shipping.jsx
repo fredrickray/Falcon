@@ -3,6 +3,9 @@ import AsideBar from '../../components/AsideBar'
 import axios from "axios"
 import useFetch from '../../hooks/useFetch'
 import { LineWave } from 'react-loader-spinner'
+import { MdEdit } from "react-icons/md";
+import Swal from "sweetalert2"
+
 const Shipping = () => {
     const [handleShipping, setHandleShipping] = useState(false)
     const [showInputField, setShowInputField] = useState(false)
@@ -14,6 +17,7 @@ const Shipping = () => {
     const { email, token } = localStorage
     const CREATE_DELIVERY_URL = `${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/delivery`
     const GET_DELIVERY_URL = `${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/delivery`
+    const DELETE_DELIVERY_URL = `${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/delivery`
     // const DELETE_DELIVERY_URL = 
     const handleInputChange = () => {
         setShowInputField(true)
@@ -33,33 +37,31 @@ const Shipping = () => {
         setIsNavOpen(prev => !prev)
     }
 
-    // const handleSave = () => {
-    //     if (regionsValue !== '' && priceValue !== '') {
-    //         const newSavedValues = [...savedValues, { regions: regionsValue, price: priceValue }];
-    //         setSavedValues(newSavedValues);
-    //         setPriceValue("")
-    //         setRegionsValue("")
-    //         console.log(savedValues)
-    //     }
-    // };
+    const Toast = Swal.mixin ({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        didOpen: toast => {
+          toast.addEventListener ('mouseenter', Swal.stopTimer);
+          toast.addEventListener ('mouseleave', Swal.resumeTimer);
+        },
+      });
 
+    
     const fetchSavedValues = async () => {
         try {
-            const response = await axios.get(GET_DELIVERY_URL, { email },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.token}`,
-                        "Content-Type": "application/json"
-                    },
-                }
-            )
-            // console.log(response.data.data2)
-            setSavedValues(response.data.data2);
-        }
+          const response = await axios.get(GET_DELIVERY_URL, {
+            params: { email }
+          });
+          setSavedValues(response.data.data);
+        } 
         catch (error) {
-            console.error('Error fetching saved values:', error);
+          console.error('Error fetching saved values:', error);
         }
-    };
+      };
+      
 
     useEffect(() => {
         fetchSavedValues();
@@ -98,7 +100,7 @@ const Shipping = () => {
     // }, [savedValues])
     const handleRemove = async (id) => {
         try {
-            await axios.delete(`https://falcon-server-jaek.onrender.com/store/delete-delivery/${id}`,
+            await axios.delete(`${DELETE_DELIVERY_URL}/${id}`,
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.token}`,
@@ -109,6 +111,12 @@ const Shipping = () => {
             const updatedValues = savedValues.filter((item) => item.id !== id);
             console.log(updatedValues)
             setSavedValues(updatedValues);
+
+              Toast.fire ({
+                icon: 'success',
+                title: `Item deleted successfully`,
+              })
+
         }
         catch (error) {
             console.log(error.message)
@@ -116,21 +124,6 @@ const Shipping = () => {
         }
     };
 
-
-
-
-
-    // axios.post(DELIVERY_URL, {
-    //     email,
-    //     fee,
-    //     location
-    // })
-    //     .then(response => {
-    //         console.log(response)
-    //     })
-    //     .catch(err => {
-    //         console.log(err)
-    //     })
 
     return (
         <div>
@@ -273,37 +266,38 @@ const Shipping = () => {
 
 
                                 {savedValues.length > 0 && (
-                                    <div class="relative flex flex-col w-full  min-w-0 mb-0 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
-                                        <div class="flex-auto px-0 pt-0 pb-2">
-                                            <div class="p-0 overflow-x-auto">
-                                                <table class="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
-                                                    <thead class="align-bottom">
+                                    <div className="relative flex flex-col w-full  min-w-0 mb-0 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
+                                        <div className="flex-auto px-0 pt-0 pb-2">
+                                            <div className="p-0 overflow-x-auto">
+                                                <table className="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
+                                                    <thead className="align-bottom">
                                                         <tr>
-                                                            <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Label</th>
-                                                            <th class="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Regions</th>
-                                                            <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Price</th>
-                                                            <th class="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-gray-200 border-solid shadow-none tracking-none whitespace-nowrap text-slate-400 opacity-70"></th>
+                                                            <th className="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Label</th>
+                                                            <th className="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Regions</th>
+                                                            <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Price</th>
+                                                            <th className="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-gray-200 border-solid shadow-none tracking-none whitespace-nowrap text-slate-400 opacity-70"></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         {savedValues.map((value, index) => (
                                                             <tr key={value.id}>
-                                                                <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                    <div class="flex px-2 py-1">
+                                                                <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                    <div className="flex px-2 py-1">
 
-                                                                        <div class="flex flex-col justify-center">
-                                                                            <h6 class="mb-0 leading-normal text-sm">{index + 1}</h6>
+                                                                        <div className="flex flex-col justify-center">
+                                                                            <h6 className="mb-0 leading-normal text-sm">{index + 1}</h6>
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                    <p class="mb-0 font-semibold leading-tight text-xs">{value.regions || value.location}</p>
+                                                                <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                    <p className="mb-0 font-semibold leading-tight text-xs">{value.regions || value.location}</p>
                                                                 </td>
-                                                                <td class="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                    <span class="font-semibold leading-tight text-xs text-slate-400">{value.price || value.fee}</span>
+                                                                <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                                                                    <span className="font-semibold leading-tight text-xs text-slate-400">{value.price || value.fee}</span>
                                                                 </td>
-                                                                <td class="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                                                                    <p onClick={() => handleRemove(value.id)} class="font-semibold leading-tight text-xs text-red-500"> Remove </p>
+                                                                <td className="p-2 pt-6 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent flex">
+                                                                    <MdEdit className='mr-6 cursor-pointer'/>
+                                                                    <p onClick={() => handleRemove(value.id)} className="font-semibold leading-tight text-xs text-red-500"> Remove </p>
                                                                 </td>
                                                             </tr>
                                                         ))}
