@@ -306,7 +306,7 @@ function generateToken() {
 
 const forgotPassword = async (req, res) => {
   const { email } = req.body
-  const token = generateToken()
+  const token = createToken()
 
   try {
     // await knex("Merchants").where({ email }).update({ token })
@@ -319,6 +319,20 @@ const forgotPassword = async (req, res) => {
   catch (error) {
     console.log(error)
     res.status(500).json({ error: 'Something went wrong.' });
+  }
+}
+
+const newPassword = async (req, res) => {
+  try {
+    const { token } = req.headers
+    if(!token) {
+      return res.status(401).json({error: "Token not found"})
+    }
+    const { id } = jwt.verify(token, process.env.SECRET)
+    console.log(id)
+    res.send(id)
+  } catch (error) {
+    res.json({message: "An error occured", error})
   }
 }
 
