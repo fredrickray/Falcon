@@ -1,5 +1,8 @@
 const express = require('express');
 
+const passport = require('passport');
+require('../middlewares/fbAuth');
+
 const {
   register,
   login,
@@ -24,5 +27,10 @@ router.post('/login', loginValidator, login);
 router.put('/update', update);
 
 router.post('/password_reset', passwordReset);
+
+router.get(
+  '/facebook',
+  passport.authenticate('facebook', { scope: ['email', 'public_profile'] })
+);
 
 module.exports = router;

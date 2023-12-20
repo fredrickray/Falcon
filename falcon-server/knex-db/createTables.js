@@ -16,7 +16,7 @@ async function createTableIfNotExists(tableName, tableDefinition) {
   }
 }
 
-exports.createTables = async function () {
+const createTables = async function () {
   try {
     await createTableIfNotExists('Merchants', function (table) {
       table.increments('id').primary(); // Assuming id is the primary key
@@ -123,4 +123,4 @@ exports.createTables = async function () {
   }
 };
 
-exports.createTables();
+module.exports = createTables;
