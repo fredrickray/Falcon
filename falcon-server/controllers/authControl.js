@@ -23,27 +23,27 @@ const register = async (req, res) => {
 
   // Validation logic for the front-end form inputs
   if (fname.length === 0) {
-    res.status(400).send({message: 'First Name field cannot be empty'});
+    res.status(400).send({ message: 'First Name field cannot be empty' });
     return;
   }
 
   if (lname.length === 0) {
-    res.status(400).send({message: 'Last Name field cannot be empty'});
+    res.status(400).send({ message: 'Last Name field cannot be empty' });
     return;
   }
 
   if (username.length === 0) {
-    res.status(400).send({message: 'Username field cannot be empty'});
+    res.status(400).send({ message: 'Username field cannot be empty' });
     return;
   }
 
   if (email.length === 0) {
-    res.status(400).send({message: 'Email Address cannot be empty'});
+    res.status(400).send({ message: 'Email Address cannot be empty' });
     return;
   }
 
   if (password.length < 8) {
-    res.status(400).send({message: 'Password must be at least 8 characters long'});
+    res.status(400).send({ message: 'Password must be at least 8 characters long' });
     return;
   }
 
@@ -70,12 +70,12 @@ const register = async (req, res) => {
   }
 
   if (countLowerCase === 0 || countUpperCase === 0 || countDigit === 0 || countSpecialCharacters === 0) {
-    res.status(400).send({message: 'Password must include lowercase, uppercase, a number, and a special character'});
+    res.status(400).send({ message: 'Password must include lowercase, uppercase, a number, and a special character' });
     return;
   }
 
   if (phone.length !== 11) {
-    res.status(400).send({message: 'Phone number must be 11 characters long'});
+    res.status(400).send({ message: 'Phone number must be 11 characters long' });
     return;
   }
 
@@ -107,9 +107,9 @@ const register = async (req, res) => {
       token: verificationCode
     });
 
-   
-    await sendMail(email, "Email Verification Code", `Email Verification code is: ${verificationCode}` );
-    
+
+    await sendMail(email, "Email Verification Code", `Email Verification code is: ${verificationCode}`);
+
     // Return success response
     res.status(200).json({
       success: true,
@@ -122,7 +122,7 @@ const register = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
-  const { email, verificationCode } = req.body
+  const { email, verificationCode } = req.body;
 
   try {
     if (!email || !verificationCode) {
@@ -133,65 +133,76 @@ const verifyEmail = async (req, res) => {
       });
     }
 
-    const user = await knex("Merchants").where({ email, token: verificationCode })
+    const user = await knex("Merchants").where({ email }).first();
 
-    if (!user[0]) {
-      res.status(401).send({ message: "Invalid email or verification code" })
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or verification code" });
     }
-    else {
-      await knex("Merchants").where({ email }).update({ token: null, verified: true })
 
-      res.status(200).json({
-        success: true,
-        message: 'Token verified',
-        data: user,
-      });
+    if (user.verified) {
+      return res.status(200).json({ message: "Email already verified", user });
     }
+
+    if (user.token !== verificationCode) {
+      return res.status(401).json({ message: "Invalid email or verification code" });
+    }
+
+    await knex("Merchants").where({ email }).update({ token: null, verified: true });
+
+    res.status(200).json({
+      success: true,
+      message: 'Token verified',
+      data: user,
+    });
   } catch (error) {
-    res.send(error.message)
+    res.status(500).send(error.message);
   }
-}
+};
 
 // To Login a Merchant
 const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    let user = await knex('Merchants').where({ email }).first();
+    const user = await knex('Merchants').where({ email }).first();
 
     if (!user) {
-      res.status(401).json({ message: 'Invalid login credentials' });
-    } else {
-      // Check if the user's account is verified
-      if (!user.verified || user.verified == "false") {
-        res.status(401).json({ message: 'Your account has not been verified yet.' });
-      } else {
-        let hashedPassword = user.password;
-        let isValid = await bcrypt.compare(password, hashedPassword);
-        const token = createToken(user.id);
-        if (!isValid) {
-          res.status(401).json({ message: 'Invalid login credentials' });
-        } else {
-          // res.cookie("test", true)
-          res.cookie('jwts', token, {
-            httpOnly: false,
-            withCredentials: true,
-            maxAge: maxAge * 1000,
-          });
-          // console.log ({user: user, token});
-          res.status(200).json({
-            status: 'success',
-            data: user,
-            message: 'Logged in successfully',
-            token,
-          });
-        }
-      }
+      return res.status(401).json({ message: 'Invalid login credentials' });
     }
+
+    // if (user.verified !== true) {
+    //   // Check for null in addition to boolean false
+    //   if (user.verified !== null) {
+    //     return res.status(401).json({ message: 'Your account has not been verified yet.' });
+    //   }
+    // }
+
+    const hashedPassword = user.password;
+    const isValid = await bcrypt.compare(password, hashedPassword);
+
+    if (!isValid) {
+      return res.status(401).json({ message: 'Invalid login credentials' });
+    }
+
+    const token = createToken(user.id);
+
+    res.cookie('jwts', token, {
+      httpOnly: false,
+      withCredentials: true,
+      maxAge: maxAge * 1000,
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: user,
+      message: 'Logged in successfully',
+      token,
+    });
   } catch (error) {
-    res.status(500).send({ message: 'Internal server error', err: error.message });
+    return res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 };
+
 
 const updateUser = async (req, res) => {
   const { image, email, username, twitter, tiktok, instagram } = req.body;
@@ -315,7 +326,7 @@ const forgotPassword = async (req, res) => {
     await sendMail(email, "Password Reset Link", `Click on the link to reset your password: ${resetLink}`)
 
     res.status(200).json({ message: 'Reset link sent successfully!' });
-  } 
+  }
   catch (error) {
     console.log(error)
     res.status(500).json({ error: 'Something went wrong.' });
@@ -325,14 +336,14 @@ const forgotPassword = async (req, res) => {
 const newPassword = async (req, res) => {
   try {
     const { token } = req.headers
-    if(!token) {
-      return res.status(401).json({error: "Token not found"})
+    if (!token) {
+      return res.status(401).json({ error: "Token not found" })
     }
     const { id } = jwt.verify(token, process.env.SECRET)
     console.log(id)
     res.send(id)
   } catch (error) {
-    res.json({message: "An error occured", error})
+    res.json({ message: "An error occured", error })
   }
 }
 

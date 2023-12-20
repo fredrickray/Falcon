@@ -13,7 +13,7 @@ const VerifyEmail = () => {
     const { email } = localStorage
     // const [isNavOpen, setIsNavOpen] = useState(false)
     // const URL = "https://falcon-server-jaek.onrender.com/auth/verify"
-    const URL = "http://localhost:9000/auth/verify"
+    const URL = `${process.env.REACT_APP_BACKEND_LOCAL_URL}/auth/verify`
 
     
 
