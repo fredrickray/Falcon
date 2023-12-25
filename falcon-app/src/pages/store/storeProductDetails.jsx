@@ -29,8 +29,8 @@ function StoreProductDetailed() {
   const [cartItemCount, setCartItemCount] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isQuantityZero, setIsQuantityZero] = useState(false)
-  const { error, data: productDetail, store, isFetching } = useProductId(`https://falcon-server-jaek.onrender.com/stores/get-product/${id}`)
-  const GET_DELIVERY_URL = "https://falcon-server-jaek.onrender.com/store/get-delivery"
+  const { error, data: productDetail, store, isFetching } = useProductId(`http://localhost:9000/store/product/${id}`)
+  const GET_DELIVERY_URL = `${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/delivery`
   const [addedItem, setAddedItem] = useState([])
   // const [isInputValid, setIsInputValid] = useState(false)
   const { email } = localStorage
@@ -179,7 +179,7 @@ function StoreProductDetailed() {
   // }
   const [firstClick, setFirstClick] = useState(false)
 
-  useEffect(() => console.log(addedItem), [addedItem])
+  // useEffect(() => console.log(addedItem), [addedItem])
   const addQuantity = (id) => {
     // Find the index of the item in the addedItem array
     const itemIndex = addedItem.find((item) => item.id === id);
@@ -231,7 +231,7 @@ function StoreProductDetailed() {
     const cartItem = localStorage.getItem("cartItem");
     // const itemQuantity = localStorage.getItem("quantity")
     const parsedArray = cartItem ? JSON.parse(cartItem) : [];
-    console.log(parsedArray)
+    // console.log(parsedArray)
     // console.log(productDetail)
     if (parsedArray) {
       const itemCount = parsedArray.length;
@@ -296,11 +296,9 @@ function StoreProductDetailed() {
       if (productDetail != null) {
         if (productDetail[0].quantity === 0) {
           setIsQuantityZero(true)
-          console.log("Quantity is zero")
         }
         else {
           setIsQuantityZero(false)
-          console.log("Quantity is not zero")
         }
       }
       return "Product detail have not mounted"
@@ -353,7 +351,7 @@ function StoreProductDetailed() {
   const [discountValue, setDiscountValue] = useState([])
   const fetchDiscount = async () => {
     try {
-      const response = await axios.post("https://falcon-server-jaek.onrender.com/store/get-discount", { email })
+      const response = await axios.get("http://localhost:9000/store/discount", { email })
       console.log(response.data.discounts)
       const discount = response.data.discounts
       const newDiscounts = discount.map(item => ({ name: item.name, price: item.price }))
@@ -366,19 +364,29 @@ function StoreProductDetailed() {
   }
   useEffect(() => {
     fetchDeliveryValues();
-    fetchDiscount()
+    // fetchDiscount()
+    fetch()
   }, []);
 
+  const fetch = async () => {
+    try {
+      const response = await axios.get("http://localhost:9000/store/delivery", { email })
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const fetchDeliveryValues = async () => {
     try {
-      const response = await axios.post(GET_DELIVERY_URL, { email }
-      )
-      const shipping = response.data.data2
-      const newShiping = shipping.map((item) => ({ location: item.location, fee: item.fee }))
-      setDeliveryInfo(newShiping)
+      const response = await axios.get(GET_DELIVERY_URL, { email })
+      // console.log(response)
+      // const shipping = response.data.data2
+      // const newShiping = shipping.map((item) => ({ location: item.location, fee: item.fee }))
+      // setDeliveryInfo(newShiping)
     }
     catch (error) {
-      console.error(error.message);
+      console.log(error)
+      // console.error(error.message);
     }
   };
 
@@ -500,94 +508,105 @@ function StoreProductDetailed() {
     };
   }
 
-  const selectedItemsData = addedItem.map(item => ({
-    product_Id: item.id,
-    name: item.name,
-    price: item.price,
-    quantity: quantity,
-    image: item.image
-  }));
+  // const selectedItemsData = addedItem.map(item => ({
+  //   product_Id: item.id,
+  //   name: item.name,
+  //   price: item.price,
+  //   quantity: quantity,
+  //   image: item.image
+  // }));
+
+  const initiatePayment = async() => {
+    try {
+      const response = await axios.post("http://localhost:9000/payment/initiate", {
+        customer_email,
+        firstname,
+        lastname,
+        totalPrice,
+        phone
+      })
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 
 
+  // const config = {
+  //   // public_key: process.env.FLUTTERWAVE_PUBLIC_API_KEY,
+  //   public_key: process.env.REACT_APP_FLTW_TEST_PUBLIC_KEY,
+  //   tx_ref: Date.now(),
+  //   amount: totalPrice,
+  //   currency: 'NGN',
+  //   payment_options: 'card,mobilemoney,ussd',
+  //   customer: {
+  //     email: customer_email,
+  //     phone: phone,
+  //     name: firstname + " " + lastname
+  //   },
+  //   customizations: {
+  //     title: 'My store',
+  //     description: 'Payment for items in cart',
+  //     logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
+  //   },
+  // };
 
+  // const fwConfig = {
+  //   ...config,
+  //   text: 'Proceed to payment',
+  //   callback: async (response) => {
+  //     console.log(response);
+  //     closePaymentModal(); // this will close the modal programmatically
 
-  // console.log(selectedItemsData)
-  const config = {
-    // public_key: process.env.FLUTTERWAVE_PUBLIC_API_KEY,
-    public_key: process.env.REACT_APP_FLTW_TEST_PUBLIC_KEY,
-    tx_ref: Date.now(),
-    amount: totalPrice,
-    currency: 'NGN',
-    payment_options: 'card,mobilemoney,ussd',
-    customer: {
-      email: customer_email,
-      phone: phone,
-      name: firstname + " " + lastname
-    },
-    customizations: {
-      title: 'My store',
-      description: 'Payment for items in cart',
-      logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
-    },
-  };
+  //     const { tx_ref, amount, currency, transaction_id, status } = response;
+  //     const mainData = { email, firstname, lastname, customer_email, tx_ref, shipping_money: shippingMoney, amount, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, status, currency, transaction_id }
+  //     try {
+  //       const response = await axios.post('https://falcon-server-jaek.onrender.com/payment/new_payment', {
+  //         mainData,
+  //         itemsData: selectedItemsData
+  //       });
 
-  const fwConfig = {
-    ...config,
-    text: 'Proceed to payment',
-    callback: async (response) => {
-      console.log(response);
-      closePaymentModal(); // this will close the modal programmatically
-
-      const { tx_ref, amount, currency, transaction_id, status } = response;
-      const mainData = { email, firstname, lastname, customer_email, tx_ref, shipping_money: shippingMoney, amount, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, status, currency, transaction_id }
-      try {
-        const response = await axios.post('https://falcon-server-jaek.onrender.com/payment/new_payment', {
-          mainData,
-          itemsData: selectedItemsData
-        });
-
-        console.log(response)
-        console.log('POST request successful:', response.data);
-        localStorage.removeItem("cartItem")
-        setFirstname('')
-        setLastname('')
-        setCustomerEmail('')
-        setPhone('')
+  //       console.log(response)
+  //       console.log('POST request successful:', response.data);
+  //       localStorage.removeItem("cartItem")
+  //       setFirstname('')
+  //       setLastname('')
+  //       setCustomerEmail('')
+  //       setPhone('')
         
-        // window.location.href = `/Store/${store}`
+  //       // window.location.href = `/Store/${store}`
 
-        if (status === "successful" || "completed") {
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: 'Transaction completed succesfully',
-            showConfirmButton: false,
-            timer: 2500
-          })
+  //       if (status === "successful" || "completed") {
+  //         Swal.fire({
+  //           position: 'center',
+  //           icon: 'success',
+  //           title: 'Transaction completed succesfully',
+  //           showConfirmButton: false,
+  //           timer: 2500
+  //         })
 
-          console.log("Success status: ", status)
-        }
-        else {
-          Swal.fire({
-            position: 'center',
-            icon: 'error',
-            title: 'Transaction was not succesfully',
-            showConfirmButton: false,
-            timer: 1500
-          })
+  //         console.log("Success status: ", status)
+  //       }
+  //       else {
+  //         Swal.fire({
+  //           position: 'center',
+  //           icon: 'error',
+  //           title: 'Transaction was not succesfully',
+  //           showConfirmButton: false,
+  //           timer: 1500
+  //         })
 
-          console.log(status)
-        }
-      }
-      catch (error) {
-        console.error('POST request error:', error.message);
-      }
-    },
-    onClose: () => console.log("Closing payment modal"),
-  };
+  //         console.log(status)
+  //       }
+  //     }
+  //     catch (error) {
+  //       console.error('POST request error:', error.message);
+  //     }
+  //   },
+  //   onClose: () => console.log("Closing payment modal"),
+  // };
 
-  // const handleFlutterPayment = useFlutterwave(config);
 
 
   return (
@@ -908,7 +927,8 @@ function StoreProductDetailed() {
                       })
                     }}
                     >PLACE YOUR ORDER</button> */}
-                      <FlutterWaveButton className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton>
+                      {/* <FlutterWaveButton className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton> */}
+                      <button type="button" className='btn_ship btn-success btn-md ms-auto' onClick={initiatePayment}>Proceed to Payment</button>
                     </div>
                   </div>
 

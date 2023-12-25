@@ -35,7 +35,7 @@ function StorePreview() {
   // console.log(storeData)
   // console.log(productDetail)
   const [addedItem, setAddedItem] = useState([])
-  const GET_DELIVERY_URL = "https://falcon-server-jaek.onrender.com/store/get-delivery"
+  const GET_DELIVERY_URL = `${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/delivery`
   const { email, token, size } = localStorage
   let sumPrice = addedItem.reduce((acc, item) => acc + item.price, 0);
   sumPrice = sumPrice * quantity
@@ -68,7 +68,6 @@ function StorePreview() {
   };
 
   const addQuantity = () => {
-    console.log()
     if (quantity > addedItem[0].quantity) {
       Swal.fire({
         position: 'top-end',
@@ -119,7 +118,7 @@ function StorePreview() {
 
   const fetchSavedValues = async () => {
     try {
-      const response = await axios.post(GET_DELIVERY_URL, { email },
+      const response = await axios.get(GET_DELIVERY_URL, { email },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -127,6 +126,7 @@ function StorePreview() {
           }
         }
       )
+      console.log(response)
       const shipping = response.data.data2
       const newShiping = shipping.map((item) => ({ location: item.location, fee: item.fee }))
       setDeliveryInfo(newShiping)
@@ -159,9 +159,7 @@ function StorePreview() {
   };
 
 
-  // const emptyCart = () => {
-  //   localStorage.removeItem("cartItems")
-  // }
+  
   // SideBar toggle function
   const bar = document.getElementById('cart');
   const close = document.getElementById('close');

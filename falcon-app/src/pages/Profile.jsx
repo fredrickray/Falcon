@@ -8,28 +8,29 @@ import useFetch from '../hooks/useFetch';
 
 
 const Profile = () => {
-  const env = process.env.REACT_APP_CLOUDINARY_API
-  console.log(env)
-  console.log(process.env.REACT_APP_FLTW_PUBLIC_KEY)
+  const navigate = useNavigate()
+  const { data } = useFetch("http://localhost:9000/store/product")
   const [showInputField, setShowInputField] = useState(false);
   const [showSecondInput, setShowSecondInput] = useState(false);
   const [showThirdInput, setShowThirdInput] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false)
-  const [image, setImage] = useState(
-    'https://res.cloudinary.com/dlokxjygn/image/upload/v1684341637/utxs0yadssiqbxjre0ev.jpg'
-  );
+  const [image, setImage] = useState('https://res.cloudinary.com/dlokxjygn/image/upload/v1684341637/utxs0yadssiqbxjre0ev.jpg');
   // const [selectedFile, setSelectedFile] = useState(null);
-  const navigate = useNavigate()
-  const { firstname, lastname, username, email, phone } = localStorage;
-  const [instagram, setInstagram] = useState('');
-  const [twitter, setTwitter] = useState('');
-  const [tiktok, setTikTok] = useState('');
-  const URL = 'https://falcon-server-jaek.onrender.com/auth/socials';
-  const UPDATE_URL = 'https://falcon-server-jaek.onrender.com/auth/update';
-  const CLOUDINARY_API = 'https://api.cloudinary.com/v1_1/dlokxjygn/image/upload';
+  const nw = () => {
+    const { firstname, lastname, username, email, phone } = localStorage;
+    return{ firstname, lastname, username, email, phone }
+  }
 
-  const { data } = useFetch("https://falcon-server-jaek.onrender.com/store/get-products")
+  const [users, setUsers] = useState(nw())
+  const { username, lastname, firstname, email, phone } = users
+  const [instagram, setInstagram] = useState(null);
+  const [twitter, setTwitter] = useState(null);
+  const [tiktok, setTikTok] = useState(null);
+  const URL = 'http://localhost:9000/auth/profile';
+  const UPDATE_URL = 'https://falcon-server-jaek.onrender.com/auth/update';
+  const CLOUDINARY_API = process.env.REACT_APP_CLOUDINARY_API
+
 
   const profileImgAdd = event => {
     const file = event.target.files[0];
@@ -69,15 +70,15 @@ const Profile = () => {
   // Add social media account details
   const Save = () => {
     axios
-      .post(URL, {
+      .put(URL, {
         instagram,
         twitter,
         tiktok,
         email,
       })
       .then(response => {
-        console.log(response);
-        const { instagram, twitter, tiktok } = response.data.data;
+        console.log(response.data.message);
+        const { instagram, twitter, tiktok } = response.data.user
         localStorage.setItem('instagram', instagram);
         localStorage.setItem('twitter', twitter);
         localStorage.setItem('tiktok', tiktok);
@@ -95,11 +96,12 @@ const Profile = () => {
 
         Toast.fire({
           icon: 'success',
-          title: 'Socials accounts added successfully',
+          title: response.data.message,
         });
       })
       .catch(err => {
-        console.log(err)
+        console.log(err.response.status)
+        console.log(err.response.data.message)
         Swal.fire({
           position: 'top-end',
           toast: true,
@@ -170,6 +172,11 @@ const Profile = () => {
         })
     }
   };
+
+  const changeUserHandler = (e) => {
+    const { name, value } = e.target
+    setUsers((prev) => ({...prev, [name]: value}))
+  }
 
   const handleNavOpen = () =>  setIsNavOpen(prev => !prev)
 
@@ -289,7 +296,9 @@ const Profile = () => {
                             className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                             id="firstname"
                             type="text"
+                            name='firstname'
                             value={firstname}
+                            onChange={changeUserHandler}
                           />
                         </div>
                       </div>
@@ -310,7 +319,9 @@ const Profile = () => {
                             className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                             id="name"
                             type="text"
+                            name='lastname'
                             value={lastname}
+                            onChange={changeUserHandler}
                           />
                         </div>
                       </div>
@@ -331,7 +342,9 @@ const Profile = () => {
                             className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                             id="name"
                             type="text"
+                            name='username'
                             value={username}
+                            onChange={changeUserHandler}
                           />
                         </div>
                       </div>
@@ -365,7 +378,9 @@ const Profile = () => {
                       className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
                       id="name"
                       type="text"
+                      name='phone'
                       value={phone}
+                      onChange={changeUserHandler}
                     />
                   </div>
 
@@ -419,13 +434,12 @@ const Profile = () => {
                             Instagram
                           </label>
                           <div className=" flex items-center justify-between w-full md:w-2/12 px-3 pb">
-                            {/* // style={{marginTop: '2%'}} */}
-
                             <input
                               className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
                               id="instagram"
                               type="text"
-                              value="https://instagram.com/user/"
+                              placeholder='user'
+                              value={instagram}
                               onChange={e => setInstagram(e.target.value)}
                             />
 
@@ -453,7 +467,7 @@ const Profile = () => {
                               className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
                               id="twitter"
                               type="text"
-                              placeholder="https://twitter.com/user/mike"
+                              placeholder="user"
                               value={twitter}
                               onChange={e => setTwitter(e.target.value)}
                             />
@@ -480,8 +494,8 @@ const Profile = () => {
                             <input
                               className="focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow mr-4"
                               id="price"
-                              type="number"
-                              placeholder="https://Tik_Tok.com/user/mike"
+                              type="text"
+                              placeholder= "user"
                               value={tiktok}
                               onChange={e => setTikTok(e.target.value)}
                             />

@@ -68,7 +68,7 @@ const createCategory = async (req, res) => {
 
     const response = await knex("Collections").insert({ name: collection, description, store })
     res.send(response)
-  } 
+  }
   catch (error) {
     res.send(error)
   }
@@ -82,22 +82,22 @@ const getCategory = async (req, res) => {
     if (response == "") {
       res.status(404).send({ message: "No collection with that name" })
     }
-    else{
-      res.send({response})
+    else {
+      res.send({ response })
     }
-  
+
   } catch (error) {
     res.send(error)
   }
 }
 
 // Saving customization data
-const saveCustomization = async(req, res) => {
+const saveCustomization = async (req, res) => {
   try {
     const { logo, color, theme, banner, email } = req.body
 
     const response = await knex("").where({ email })
-    if(response) {
+    if (response) {
       knex.insert({
         color,
         logo,
@@ -105,8 +105,8 @@ const saveCustomization = async(req, res) => {
         banner,
       })
     }
-    else{}
-    res.status(200).send({message: "Customization saved"})
+    else { }
+    res.status(200).send({ message: "Customization saved" })
   } catch (error) {
     res.send(error)
   }
@@ -335,10 +335,10 @@ const createDiscount = async (req, res) => {
 }
 
 const getDiscounts = async (req, res) => {
-  const { email } = req.body; // Assuming the email is passed as a parameter
+  const { email } = req.body;
 
   try {
-    const discounts = await knex("Discounts").where({ email });
+    const [discounts] = await knex("Discounts").where({ email });
 
     if (discounts.length === 0) {
       res.status(404).json({ message: "No discounts found for the provided email" });
@@ -383,23 +383,22 @@ const createDelivery = async (req, res) => {
 
 
 const getDelivery = async (req, res) => {
-  const { email } = req.body
+  const { email } = req.query
 
   try {
-    let response = await knex("Delivery").where({ email: email })
-    if (response == "") {
-      // console.log("Email not found")
-      res.status(404).json({ message: "Email not found" })
+    let response = await knex("Delivery").where({ email })
+
+    if (!response || response.length === 0) {
+      return res.status(404).json({ message: "Email not found" });
     }
-    else {
-      let data = response
-      let data2 = JSON.parse(JSON.stringify(data));
-      // console.log({ message: "Delivery was retrived succesfully", data2 })
-      res.status(200).json({ status: "success", message: "Products were retrieved successfully", data2 })
-    }
+
+    const data = JSON.parse(JSON.stringify(response));
+    return res.status(200).json({ status: "success", message: "Products were retrieved successfully", data });
   }
   catch (error) {
-    res.status(500).send({ status: "Server Error", message: "There was an error in the server" })
+    console.log(error)
+    res.send(error)
+    // res.status(500).send({ status: "Server Error", message: "There was an error in the server" })
   }
 }
 
@@ -436,7 +435,7 @@ const createReview = async (req, res) => {
 
     res.send(response)
   } catch (error) {
-    res.send({message: "Error occured while creating a review", error})
+    res.send({ message: "Error occured while creating a review", error })
   }
 }
 

@@ -16,7 +16,7 @@ const OrderDetail = () => {
         const fetchData = async () => {
             setIsFetching(true)
             try {
-                const response = await axios.get(`http://localhost:9000/payment/order/order_details/${tx_ref}`)
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/payment/order/order_details/${tx_ref}`)
                 if (response.status === 400) {
                     setIsFetching(false)
                     return

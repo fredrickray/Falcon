@@ -57,11 +57,11 @@ router
 router
 .get("/category/:category", getCategory)
 
-// router
-// .post("/product", requireAuth, createProduct)
+router
+.post("/product", requireAuth, createProduct)
 
 router
-.get("/product", getProducts)
+.get("/product", requireAuth, getProducts)
 
 router
 .put("/product/:id", requireAuth, updateProduct)

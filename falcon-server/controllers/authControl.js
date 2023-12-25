@@ -1,4 +1,3 @@
-const saltRounds = 10;
 // Packages imports
 const bcrypt = require('bcrypt');
 const express = require('express');
@@ -159,6 +158,35 @@ const update = async (req, res, next) => {
         .status(200)
         .send({ message: 'Updated successfully', status: 'success', user });
     }
+
+    // if (user.verified !== true) {
+    //   // Check for null in addition to boolean false
+    //   if (user.verified !== null) {
+    //     return res.status(401).json({ message: 'Your account has not been verified yet.' });
+    //   }
+    // }
+
+    const hashedPassword = user.password;
+    const isValid = await bcrypt.compare(password, hashedPassword);
+
+    if (!isValid) {
+      return res.status(401).json({ message: 'Invalid login credentials' });
+    }
+
+    const token = createToken(user.id);
+
+    res.cookie('jwts', token, {
+      httpOnly: false,
+      withCredentials: true,
+      maxAge: maxAge * 1000,
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: user,
+      message: 'Logged in successfully',
+      token,
+    });
   } catch (error) {
     // res.status(500).send({message: "Internal server error", err: error.message})
     next(error);
@@ -221,7 +249,7 @@ module.exports = {
   register,
   verifyEmail,
   login,
-  update,
+  updateUser,
   social,
   passwordReset,
 };

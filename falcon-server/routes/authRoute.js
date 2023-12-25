@@ -9,7 +9,10 @@ const {
   verifyEmail,
   update,
   passwordReset,
+  forgotPassword,
+  updateUser,
 } = require('../controllers/authControl');
+
 const {
   registerValidator,
   emailValidator,
@@ -27,10 +30,13 @@ router.post('/login', loginValidator, login);
 router.put('/update', update);
 
 router.post('/password_reset', passwordReset);
+router.put('/profile', updateUser);
 
 router.get(
   '/facebook',
   passport.authenticate('facebook', { scope: ['email', 'public_profile'] })
 );
+
+router.post('/forgot-password', forgotPassword);
 
 module.exports = router;

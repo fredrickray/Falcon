@@ -19,7 +19,7 @@ const MerchantDetail = () => {
     useEffect(() => {
         if (email) {
             console.log(email)
-            getDetails()
+            // getDetails()
         }
     }, [email])
 

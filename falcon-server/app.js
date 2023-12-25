@@ -71,7 +71,7 @@ app.use(handlePreflight);
 
 // Initialize Passport middleware
 app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.session());
 
 app.use('/oauth', OauthRoute);
 app.use('/auth', authR);
