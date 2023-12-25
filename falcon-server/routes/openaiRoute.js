@@ -1,14 +1,12 @@
-const express = require("express")
-const router  = express.Router()
-const openaiController = require("../controllers/openaiController")
-router.use(express.json())
+const express = require('express');
+const openaiController = require('../controllers/openaiController');
 
-router
-.post("/generate/meta", openaiController.generateMeta)
+const router = express.Router();
 
-router
-.post('/generate/image', openaiController.generateImage)
+router.post('/generate/meta', openaiController.generateMeta);
 
-module.exports = router
+router.post('/generate/image', openaiController.generateImage);
+
+module.exports = router;
 
 // 192.168.43.171

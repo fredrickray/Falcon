@@ -1,37 +1,38 @@
 const express = require('express');
-const router = express.Router();
-const bodyParser = require ('body-parser');
-const cors = require ('cors');
+const passport = require('passport');
+require('../middlewares/fbAuth');
 
 const {
-    register,
-    login,
-    verifyEmail,
-    passwordReset,
-    forgotPassword,
-    updateUser
-} = require("../controllers/authControl")
+  register,
+  login,
+  verifyEmail,
+  passwordReset,
+  forgotPassword,
+  updateUser,
+} = require('../controllers/authControl');
+const {
+  registerValidator,
+  emailValidator,
+  loginValidator,
+} = require('../validators/authValidator');
 
-router.use (bodyParser.urlencoded ({extended: true}));
-router.use (bodyParser.json ());
-router.use (express.json ());
-router.use(cors({
-    origin: ["https://falcon-app.vercel.app", "http://localhost:3000"],
-    methods: ["GET", "POST", "UPDATE", "DELETE"],
-    credentials: true,
+const router = express.Router();
 
-}))
+router.post('/register', registerValidator, register);
 
-router.post("/register", register)
+router.post('/verify', emailValidator, verifyEmail);
 
-router.post("/verify", verifyEmail)
+router.post('/login', loginValidator, login);
 
-router.post("/login", login)
+router.post('/password_reset', passwordReset);
 
-router.put("/profile", updateUser)
+router.put('/profile', updateUser);
 
-router.post("/password_reset", passwordReset)
+router.get(
+  '/facebook',
+  passport.authenticate('facebook', { scope: ['email', 'public_profile'] })
+);
 
-router.post("/forgot-password", forgotPassword)
+router.post('/forgot-password', forgotPassword);
 
-module.exports = router
+module.exports = router;
