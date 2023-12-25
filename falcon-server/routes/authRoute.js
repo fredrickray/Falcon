@@ -1,5 +1,4 @@
 const express = require('express');
-
 const passport = require('passport');
 require('../middlewares/fbAuth');
 
@@ -7,12 +6,10 @@ const {
   register,
   login,
   verifyEmail,
-  update,
   passwordReset,
   forgotPassword,
   updateUser,
 } = require('../controllers/authControl');
-
 const {
   registerValidator,
   emailValidator,
@@ -27,9 +24,8 @@ router.post('/verify', emailValidator, verifyEmail);
 
 router.post('/login', loginValidator, login);
 
-router.put('/update', update);
-
 router.post('/password_reset', passwordReset);
+
 router.put('/profile', updateUser);
 
 router.get(

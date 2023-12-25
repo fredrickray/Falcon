@@ -10,10 +10,11 @@ async function tableExists(tableName) {
 async function createTableIfNotExists(tableName, tableDefinition) {
   if (!(await tableExists(tableName))) {
     await db.schema.createTable(tableName, tableDefinition);
-    console.log(`Table ${tableName} created successfully`);
-  } else {
-    console.log(`Table ${tableName} already exists, skipping creation`);
+    // console.log(`Table ${tableName} created successfully`);
   }
+  // else {
+  //   console.log(`Table ${tableName} already exists, skipping creation`);
+  // }
 }
 
 const createTables = async function () {
@@ -116,6 +117,7 @@ const createTables = async function () {
     });
 
     await db.schema;
+    console.log('Database Tables have been created.');
   } catch (error) {
     console.error('Error creating tables', error);
   } finally {
