@@ -51,13 +51,13 @@ class App {
   }
 
   routes() {
-    this.app.use('/api/v1/auth', authR);
-    this.app.use('/api/v1/admin', adminR);
-    this.app.use('/api/v1/store', storeR);
-    this.app.use('/api/v1/customer', customerRoute);
-    this.app.use('/api/v1/pay', payRoute);
-    this.app.use('/api/v1/openai', openaiR);
-    this.app.use('/api/v1/oauth', OauthRoute);
+    this.app.use('/auth', authR);
+    this.app.use('/admin', adminR);
+    this.app.use('/store', storeR);
+    this.app.use('/customer', customerRoute);
+    this.app.use('/pay', payRoute);
+    this.app.use('/openai', openaiR);
+    this.app.use('/oauth', OauthRoute);
   }
 
   handleErrors() {

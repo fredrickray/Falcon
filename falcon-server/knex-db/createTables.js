@@ -19,7 +19,7 @@ async function createTableIfNotExists(tableName, tableDefinition) {
 const createTables = async function () {
   try {
     await createTableIfNotExists('Merchants', function (table) {
-      table.increments('id').primary(); // Assuming id is the primary key
+      table.increments('id').primary();
       table.string('google_id');
       table.string('fname');
       table.string('lname');
@@ -35,11 +35,11 @@ const createTables = async function () {
       table.string('token');
       // You can add more columns as needed
 
-      table.timestamps(true, true); // Adds created_at and updated_at columns
+      table.timestamps(true, true);
     });
 
     await createTableIfNotExists('Products', function (table) {
-      table.increments('id').primary(); // Assuming id is the primary key
+      table.increments('id').primary();
       table.string('name');
       table.string('price');
       table.string('compare_price');
@@ -47,7 +47,7 @@ const createTables = async function () {
       table.string('description');
       table.string('weight');
       table.string('image');
-      table.string('collection'); //or category
+      table.string('collection');
       table.string('style');
       table.string('colour');
       table.boolean('size');
@@ -55,11 +55,11 @@ const createTables = async function () {
       table.string('merchant_email').references('email').inTable('Merchants');
       table.string('store');
 
-      table.timestamps(true, true); // Adds created_at and updated_at columns
+      table.timestamps(true, true);
     });
 
     await createTableIfNotExists('Transactions', function (table) {
-      table.increments('id').primary(); // Assuming id is the primary key
+      table.increments('id').primary();
       table.string('firstname');
       table.string('lastname');
       table.string('customer_email');
@@ -67,22 +67,22 @@ const createTables = async function () {
       table.string('tx_ref');
       table.string('transaction_id');
       table.string('currency');
-      table.string('status'); //or category
+      table.string('status');
       table.string('merchant_email').references('email').inTable('Merchants');
       table.string('colour');
       table.boolean('size');
 
-      table.timestamps(true, true); // Adds created_at and updated_at columns
+      table.timestamps(true, true);
     });
 
     await createTableIfNotExists('Store', function (table) {
-      table.increments('id').primary(); // Assuming id is the primary key
+      table.increments('id').primary();
       table.string('name');
       table.string('email').unique(); // foreign key to the Merchants(email) table
       table.string('link');
       table.string('logo');
 
-      table.timestamps(true, true); // Adds created_at and updated_at columns
+      table.timestamps(true, true);
     });
 
     await createTableIfNotExists('Orders', function (table) {
@@ -100,7 +100,7 @@ const createTables = async function () {
       table.string('status');
       table.string('merchant_email').references('email').inTable('Merchants');
 
-      table.timestamps(true, true); // Adds created_at and updated_at columns
+      table.timestamps(true, true);
     });
 
     await createTableIfNotExists('Order_detail', function (table) {
@@ -112,7 +112,7 @@ const createTables = async function () {
       table.string('quantity');
       table.string('tx_ref').references('tx_ref').inTable('Orders').index();
 
-      table.timestamps(true, true); // Adds created_at and updated_at columns
+      table.timestamps(true, true);
     });
 
     await db.schema;

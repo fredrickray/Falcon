@@ -126,7 +126,7 @@ const login = async (req, res, next) => {
     delete userWithoutPassword.password;
 
     res.cookie('jwts', token, {
-      httpOnly: false,
+      httpOnly: true,
       withCredentials: true,
       maxAge: maxAge * 1000,
     });
