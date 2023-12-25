@@ -381,6 +381,24 @@ const createDelivery = async (req, res) => {
   }
 };
 
+const updateDelivery = async (req, res) => {
+  const { location, fee, email } = req.body;
+
+  try {
+    const response = await knex('Delivery')
+      .where({ email })
+      .update({ location, fee });
+
+    if (response === 0) {
+      return res.status(404).json({ message: 'Delivery info does not exist.' });
+    }
+
+    return res.status(200).json({ message: 'Delivery updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ message: 'An error occurred', error });
+  }
+};
+
 
 const getDelivery = async (req, res) => {
   const { email } = req.query
@@ -468,6 +486,7 @@ module.exports = {
   getDiscounts,
   deleteDiscount,
   createDelivery,
+  updateDelivery,
   getDelivery,
   deleteDelivery,
   createReview,
