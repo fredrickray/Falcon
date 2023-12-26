@@ -1,8 +1,11 @@
 const express = require('express');
-
 const session = require('express-session');
 const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 const passport = require('passport');
+
 const {
   authR,
   adminR,
@@ -25,7 +28,9 @@ class App {
   }
 
   initializeMiddlewares() {
-    this.app.use(cors());
+    this.app.use(helmet());
+    this.app.use(morgan('combined'));
+
     this.app.use(
       cors({
         origin: [
@@ -40,15 +45,21 @@ class App {
 
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
-    this.app.use(
-      session({
-        secret: 'your_session_secret',
-        resave: false,
-        saveUninitialized: false,
-        cookie: { secure: true },
-      })
-    );
+    const sessionConfig = {
+      secret: process.env.SESSION_SECRET || 'your_session_secret',
+      resave: false,
+      saveUninitialized: false,
+      cookie: { secure: process.env.NODE_ENV === 'production' },
+    };
+
+    this.app.use(session(sessionConfig));
     this.app.disable('x-powered-by');
+
+    const limiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 100,
+    });
+    this.app.use(limiter);
   }
 
   routes() {
@@ -67,7 +78,12 @@ class App {
   }
 
   async connectToDatabase() {
-    await createTables();
+    try {
+      await createTables();
+      console.log('Database connected and tables created');
+    } catch (error) {
+      console.error('Database connection error:', error);
+    }
   }
 
   start(port) {
