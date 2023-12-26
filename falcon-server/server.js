@@ -48,6 +48,7 @@ class App {
         cookie: { secure: true },
       })
     );
+    this.app.disable('x-powered-by');
   }
 
   routes() {
@@ -55,7 +56,7 @@ class App {
     this.app.use('/admin', adminR);
     this.app.use('/store', storeR);
     this.app.use('/customer', customerRoute);
-    this.app.use('/pay', payRoute);
+    this.app.use('/payment', payRoute);
     this.app.use('/openai', openaiR);
     this.app.use('/oauth', OauthRoute);
   }

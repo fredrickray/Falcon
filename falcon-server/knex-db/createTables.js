@@ -26,6 +26,7 @@ const createTables = async function () {
       table.string('lname');
       table.string('email').unique();
       table.string('phone');
+      table.string('image');
       table.string('username');
       table.string('password');
       table.string('instagram');
@@ -53,7 +54,7 @@ const createTables = async function () {
       table.string('colour');
       table.boolean('size');
 
-      table.string('merchant_email').references('email').inTable('Merchants');
+      table.string('email').references('email').inTable('Merchants');
       table.string('store');
 
       table.timestamps(true, true);
@@ -69,9 +70,7 @@ const createTables = async function () {
       table.string('transaction_id');
       table.string('currency');
       table.string('status');
-      table.string('merchant_email').references('email').inTable('Merchants');
-      table.string('colour');
-      table.boolean('size');
+      table.string('email').references('email').inTable('Merchants');
 
       table.timestamps(true, true);
     });
@@ -90,8 +89,8 @@ const createTables = async function () {
       table.increments('id').primary();
       table.string('firstname');
       table.string('lastname');
-      table.string('customer_email');
-      table.string('amount');
+      table.string('email');
+      table.string('total_amount');
       table.string('tx_ref');
       table.string('shipping_fee');
       table.string('discount');
@@ -99,12 +98,12 @@ const createTables = async function () {
       table.string('address');
       table.string('delivery_note');
       table.string('status');
-      table.string('merchant_email').references('email').inTable('Merchants');
+      table.string('my_email').references('email').inTable('Merchants');
 
       table.timestamps(true, true);
     });
 
-    await createTableIfNotExists('Order_detail', function (table) {
+    await createTableIfNotExists('Order_details', function (table) {
       table.increments('id').primary();
       table.string('product_id');
       table.string('name');
