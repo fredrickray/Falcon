@@ -1,6 +1,8 @@
 const knex = require("../knex-db/knex")
 const axios = require("axios")
 require("dotenv").config()
+const Flutterwave = require('flutterwave-node-v3');
+const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
 
 const initiatePayment = async (req, res) => {
   const { customer_email, firstname, lastname, totalPrice, phone, logo } = req.body
@@ -9,7 +11,7 @@ const initiatePayment = async (req, res) => {
       tx_ref: Date.now(),
       amount: totalPrice,
       currency: "NGN",
-      redirect_url: "https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc",
+      redirect_url: "http://localhost:3000/Login",
       meta: {
         consumer_id: 23,
         consumer_mac: "92a3-912ba-1192a"
@@ -29,13 +31,27 @@ const initiatePayment = async (req, res) => {
       }
     });
     const { link } = response.data.data
-    res.status(200).send({message: link});
+    res.status(200).json(response.data);
   } catch (error) {
     res.status(500).send({ message: "Error occurred while making the request", error: error.message });
     console.error("An error occurred:", error);
   }
 }
 
+const initiatePaymentCallback = async (req, res) => {
+  if (req.query.status === 'successful') {
+    const transactionDetails = await Transaction.find({ref: req.query.tx_ref});
+    const response = await flw.Transaction.verify({id: req.query.transaction_id});
+    if (
+        response.data.status === "successful"
+        && response.data.amount === transactionDetails.amount
+        && response.data.currency === "NGN") {
+        // Success! Confirm the customer's payment
+    } else {
+        // Inform the customer their payment was unsuccessful
+    }
+}
+}
 
 const savePayment = async (req, res) => {
   let { mainData, itemsData } = req.body;
@@ -250,6 +266,7 @@ const getAllPayments = async (req, res) => {
 
 module.exports = {
   initiatePayment,
+  initiatePaymentCallback,
   savePayment,
   getPayments,
   getAllOrders,

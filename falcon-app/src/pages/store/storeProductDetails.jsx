@@ -185,19 +185,19 @@ function StoreProductDetailed() {
     const itemIndex = addedItem.find((item) => item.id === id);
     console.log(itemIndex)
     // console.log(addedItem)
-  
+
     if (itemIndex.cartQuantity <= itemIndex.quantity) {
-      if(firstClick) {
-        const newArray =  addedItem.map((obj) => (obj.id === id ? {...obj, cartQuantity: obj.cartQuantity + 1} : obj) )
+      if (firstClick) {
+        const newArray = addedItem.map((obj) => (obj.id === id ? { ...obj, cartQuantity: obj.cartQuantity + 1 } : obj))
         setAddedItem(newArray)
       }
-      else{
-        const newArray =  addedItem.map((obj) => (obj.id === id ? {...obj, cartQuantity: obj.cartQuantity + 2} : obj) )
+      else {
+        const newArray = addedItem.map((obj) => (obj.id === id ? { ...obj, cartQuantity: obj.cartQuantity + 2 } : obj))
         setAddedItem(newArray)
         setFirstClick(true)
       }
     }
-    else{
+    else {
       Swal.fire({
         position: 'top-end',
         toast: true,
@@ -207,12 +207,12 @@ function StoreProductDetailed() {
         timer: 2500,
       });
     }
-    
-  };
-  
 
- 
-  
+  };
+
+
+
+
 
   const minusQuantity = (id) => {
     if (quantity > 1) {
@@ -368,21 +368,16 @@ function StoreProductDetailed() {
     fetch()
   }, []);
 
-  const fetch = async () => {
-    try {
-      const response = await axios.get("http://localhost:9000/store/delivery", { email })
-      console.log(response)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+
   const fetchDeliveryValues = async () => {
     try {
-      const response = await axios.get(GET_DELIVERY_URL, { email })
+      const response = await axios.get(GET_DELIVERY_URL, {
+        params: { email }
+      })
       // console.log(response)
-      // const shipping = response.data.data2
-      // const newShiping = shipping.map((item) => ({ location: item.location, fee: item.fee }))
-      // setDeliveryInfo(newShiping)
+      const shipping = response.data.data
+      const newShiping = shipping.map((item) => ({ location: item.location, fee: item.fee }))
+      setDeliveryInfo(newShiping)
     }
     catch (error) {
       console.log(error)
@@ -508,15 +503,16 @@ function StoreProductDetailed() {
     };
   }
 
-  // const selectedItemsData = addedItem.map(item => ({
-  //   product_Id: item.id,
-  //   name: item.name,
-  //   price: item.price,
-  //   quantity: quantity,
-  //   image: item.image
-  // }));
+  const selectedItemsData = addedItem.map(item => ({
+    product_Id: item.id,
+    name: item.name,
+    price: item.price,
+    quantity: quantity,
+    image: item.image
+  }));
 
-  const initiatePayment = async() => {
+
+  const initiatePayment = async () => {
     try {
       const response = await axios.post("http://localhost:9000/payment/initiate", {
         customer_email,
@@ -525,11 +521,24 @@ function StoreProductDetailed() {
         totalPrice,
         phone
       })
-      console.log(response)
+      console.log(response.data.message)
     } catch (error) {
       console.log(error)
     }
   }
+
+  // const savePayment = async () => {
+  //   const mainData = { email, firstname, lastname, customer_email, shippingMoney, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, status, currency, transaction_id, amount, tx_ref}
+  //   try{
+  //     const response = await axios.post(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/payment`, {
+  //       mainData,
+  //       itemsData: selectedItemsData
+  //     })
+  //     console.log(response)
+  //   } catch(error){
+  //     console.log(error)
+  //   }
+  // }
 
 
 
@@ -574,7 +583,7 @@ function StoreProductDetailed() {
   //       setLastname('')
   //       setCustomerEmail('')
   //       setPhone('')
-        
+
   //       // window.location.href = `/Store/${store}`
 
   //       if (status === "successful" || "completed") {
@@ -626,7 +635,7 @@ function StoreProductDetailed() {
         />
       )}
 
-      {!isFetching &&  error === 500 && !productDetail ? (
+      {!isFetching && error === 500 && !productDetail ? (
         <ServerError />
       ) : null}
 
@@ -914,21 +923,8 @@ function StoreProductDetailed() {
                     </div>
 
                     <div data-v-7d194230 className='summary__footer__item'>
-                      {/* <button 
-                    type="" 
-                    className='btn btn--primary btn--block'
-                    onClick={() => {
-                      handleFlutterPayment({
-                        callback: (response) => {
-                          console.log(response)
-                          closePaymentModal()
-                        },
-                        onClose: () => {},
-                      })
-                    }}
-                    >PLACE YOUR ORDER</button> */}
                       {/* <FlutterWaveButton className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton> */}
-                      <button type="button" className='btn_ship btn-success btn-md ms-auto' onClick={initiatePayment}>Proceed to Payment</button>
+                      <button type="" className='btn_ship btn-success btn-md ms-auto' onClick={initiatePayment}>Proceed to Payment</button>
                     </div>
                   </div>
 

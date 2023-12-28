@@ -14,7 +14,7 @@ const Products = () => {
     data.name.toLowerCase().includes(searchItem.toLowerCase())
   );
   const navigate = useNavigate()
-  const link = `https://falcon-app.vercel.app/Store/${store}`
+  const link = `${process.env.REACT_APP_FRONTEND_LOCAL_URL}/store/${store}`
   const textToCopy = link
 
   const handleNavOpen = () => setIsNavOpen(prev => !prev)

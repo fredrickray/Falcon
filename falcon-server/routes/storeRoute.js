@@ -96,7 +96,7 @@ router
 
 // CUSTOMER ROUTES
 router
-.get("/store/:store", getStore)
+.get("/:store", getStore)
 
 // router
 // .get("/product/:id", )
