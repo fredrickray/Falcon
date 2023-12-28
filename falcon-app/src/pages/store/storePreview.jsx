@@ -13,7 +13,7 @@ import NotFound from '../../components/notFound';
 function StorePreview() {
 
   const { store } = useParams();
-  const { data: storeData, error, isFetching } = useProductId(`https://falcon-server-jaek.onrender.com/stores/get-store/${store}`)
+  const { data: storeData, error, isFetching } = useProductId(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/${store}`)
   const [firstname, setFirstname] = useState("")
   const [lastname, setLastname] = useState("")
   const [customer_email, setCustomerEmail] = useState("")
@@ -118,16 +118,11 @@ function StorePreview() {
 
   const fetchSavedValues = async () => {
     try {
-      const response = await axios.get(GET_DELIVERY_URL, { email },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        }
-      )
-      console.log(response)
-      const shipping = response.data.data2
+      const response = await axios.get(GET_DELIVERY_URL, {
+        params: { email }
+      })
+      // console.log(response)
+      const shipping = response.data.data
       const newShiping = shipping.map((item) => ({ location: item.location, fee: item.fee }))
       setDeliveryInfo(newShiping)
     }
@@ -176,6 +171,7 @@ function StorePreview() {
 
   if (bar) {
     bar.addEventListener('click', () => {
+      console.log("Clicking!!")
       nav.classList.add('active');
     });
   }
