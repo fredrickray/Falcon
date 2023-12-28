@@ -3,6 +3,31 @@ const axios = require("axios")
 require("dotenv").config()
 const Flutterwave = require('flutterwave-node-v3');
 const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
+const sdk = require('api')('@raven-atlas/v1.0#q6geo3gl7pdtgoz');
+
+
+const ravenPayment = async (req, res) => {
+  const { bank, amount, bank_code, currency, account_number, account_name, narration, reference } = req.body
+  try {
+    const response = await axios.post("https://integrations.getravenbank.com/v1/transfers/create", {
+      amount,
+      bank_code,
+      bank,
+      account_name,
+      account_number,
+      narration,
+      reference,
+      currency
+    })
+    console.log(response.data)
+    const data = JSON.stringify(response)
+    res.json(response.data)
+  } 
+  catch (error) {
+    console.log("An error occured")
+    res.send(error)
+  }
+}
 
 const initiatePayment = async (req, res) => {
   const { customer_email, firstname, lastname, totalPrice, phone, logo } = req.body
@@ -265,6 +290,7 @@ const getAllPayments = async (req, res) => {
 }
 
 module.exports = {
+  ravenPayment,
   initiatePayment,
   initiatePaymentCallback,
   savePayment,

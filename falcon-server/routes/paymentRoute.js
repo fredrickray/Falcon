@@ -15,6 +15,7 @@ router.use(cors({
     allowedHeaders:  ["X-Requested-With", "Content-Type", "Authorization"],
 }))
 
+router.post("/raven", paymentController.ravenPayment)
 router.post("/initiate", paymentController.initiatePayment)
 router.get("/payment-cb", paymentController.initiatePaymentCallback)
 router.post("/", paymentController.savePayment)
