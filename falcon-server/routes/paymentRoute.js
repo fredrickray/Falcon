@@ -4,6 +4,7 @@ const paymentController = require('../controllers/paymentController');
 const router = express.Router();
 
 
+router.post("/raven", paymentController.ravenPayment)
 router.post("/initiate", paymentController.initiatePayment)
 router.get("/payment-cb", paymentController.initiatePaymentCallback)
 router.post("/", paymentController.savePayment)
