@@ -1,5 +1,6 @@
 import './App.css';
 import React from 'react';
+import { PaymentContextProvider } from './context/PaymentContext';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 // ------->> AUTH(Registration, Login) <<---------
 import Register from './pages/auth/Register';
@@ -36,36 +37,38 @@ import "./assets/css/soft-ui-dashboard-tailwind.css"
 const App = () => {
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-        <Route exact path="/oauth/google/callback" element={<Blank />} />
-        <Route exact path="/" element={<Index />} />
-        <Route exact path="/Register" element={<Register />} />
-        <Route exact path="/Verify" element={<VerifyEmail />} />
-        <Route exact path="/Login" element={<Login />} />
-        <Route exact path="/Reset-password" element={<PasswordReset />} />
-        <Route exact path="/Products" element={<Products />} />
-        <Route exact path="/Store/new" element={<NewStore />} />
-        <Route exact path="/Store/Product/:id" element={<StoreProduct />} />
-        <Route exact path="/Store/:store" element={<StorePreview />} />
-        <Route exact path="/Store/Product/Details/:id" element={<StoreProductDetailed />} />
-        <Route exact path="/Success" element={<SuccessPayment />} />
-        <Route exact path="/Payments" element={<Payments />} />
-        <Route exact path="/Orders" element={<Orders />} />
-        <Route exact path="/Orders/detail/:tx_ref" element={<OrderDetail />} />
-        <Route exact path="/store/Products/new" element={<NewProduct />} />
-        <Route exact path="/store/shipping" element={<Shipping />} />
-        <Route exact path="/Profile" element={<Profile />} />
-        <Route exact path="/Home" element={<Home />} />
-        <Route exact path="/Store/setup" element={<ManageStore />} />
-        <Route exact path="/Store/setup/edit" element={<ManageStoreEdit />} />
-        <Route exact path="/MyAi" element={<MyAI />} />
-        <Route exact path="/Tag" element={<Tag />} />
-        {/* <Route exact path="/Store/View/:store" element={<StoreView />} /> */}
-        <Route exact path="*" element={<NotFound />} />
-        <Route exact path="/err505in" element={<ServerError />} />
-        </Routes>
-      </BrowserRouter>
+      <PaymentContextProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route exact path="/oauth/google/callback" element={<Blank />} />
+            <Route exact path="/" element={<Index />} />
+            <Route exact path="/Register" element={<Register />} />
+            <Route exact path="/Verify" element={<VerifyEmail />} />
+            <Route exact path="/Login" element={<Login />} />
+            <Route exact path="/Reset-password" element={<PasswordReset />} />
+            <Route exact path="/Products" element={<Products />} />
+            <Route exact path="/Store/new" element={<NewStore />} />
+            <Route exact path="/Store/Product/:id" element={<StoreProduct />} />
+            <Route exact path="/Store/:store" element={<StorePreview />} />
+            <Route exact path="/Store/Product/Details/:id" element={<StoreProductDetailed />} />
+            <Route exact path="/Success" element={<SuccessPayment />} />
+            <Route exact path="/Payments" element={<Payments />} />
+            <Route exact path="/Orders" element={<Orders />} />
+            <Route exact path="/Orders/detail/:tx_ref" element={<OrderDetail />} />
+            <Route exact path="/store/Products/new" element={<NewProduct />} />
+            <Route exact path="/store/shipping" element={<Shipping />} />
+            <Route exact path="/Profile" element={<Profile />} />
+            <Route exact path="/Home" element={<Home />} />
+            <Route exact path="/Store/setup" element={<ManageStore />} />
+            <Route exact path="/Store/setup/edit" element={<ManageStoreEdit />} />
+            <Route exact path="/MyAi" element={<MyAI />} />
+            <Route exact path="/Tag" element={<Tag />} />
+            {/* <Route exact path="/Store/View/:store" element={<StoreView />} /> */}
+            <Route exact path="*" element={<NotFound />} />
+            <Route exact path="/err505in" element={<ServerError />} />
+          </Routes>
+        </BrowserRouter>
+      </PaymentContextProvider>
     </>
   );
 }
