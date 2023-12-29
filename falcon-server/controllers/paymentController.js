@@ -18,6 +18,10 @@ const ravenPayment = async (req, res) => {
       narration,
       reference,
       currency
+    }, {
+      headers: {
+        Authorization: `Bearer RVSEC-TESTe24fd17275d998645746770c00c4499ecfac044994a8e084883e3e66a3fbb14201185f670d329dc414b8dcb4955e7a6b-1682685347830`
+      }
     })
     console.log(response.data)
     const data = JSON.stringify(response)

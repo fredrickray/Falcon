@@ -10,8 +10,9 @@ import { useNavigate } from 'react-router-dom';
 import { LineWave } from 'react-loader-spinner';
 import NotFound from '../../components/notFound';
 import ServerError from '../../components/ServerError';
-
+import { usePaymentContext } from "../../context/PaymentContext"
 function StoreProductDetailed() {
+  const { addDataToPaymentContext } = usePaymentContext()
   const { id } = useParams();
   const [firstname, setFirstname] = useState("")
   const [lastname, setLastname] = useState("")
@@ -513,6 +514,8 @@ function StoreProductDetailed() {
 
 
   const initiatePayment = async () => {
+    const mainData = { email, firstname, lastname, customer_email, shippingMoney, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, currency: "NGN", amount: totalPrice }
+    addDataToPaymentContext(mainData)
     try {
       const response = await axios.post("http://localhost:9000/payment/initiate", {
         customer_email,
@@ -527,18 +530,7 @@ function StoreProductDetailed() {
     }
   }
 
-  // const savePayment = async () => {
-  //   const mainData = { email, firstname, lastname, customer_email, shippingMoney, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, status, currency, transaction_id, amount, tx_ref}
-  //   try{
-  //     const response = await axios.post(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/payment`, {
-  //       mainData,
-  //       itemsData: selectedItemsData
-  //     })
-  //     console.log(response)
-  //   } catch(error){
-  //     console.log(error)
-  //   }
-  // }
+ 
 
 
 
