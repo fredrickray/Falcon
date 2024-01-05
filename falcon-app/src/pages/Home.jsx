@@ -35,7 +35,7 @@ const Home = () => {
   
   const retrieveMoneyMade = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/payment`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/pay`, {
         params: {
           email,
         },
@@ -62,7 +62,7 @@ const Home = () => {
 
   const retrieveOrders = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/payment/orders`, { my_email: email })
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/pay/orders`, { my_email: email })
       if (response.status === 404) {
         popUp("top-end", response.data.message)
       }

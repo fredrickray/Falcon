@@ -32,7 +32,7 @@ const Payments = () => {
     const handleGetPayments = async () => {
         setIsFetching(true)
         try {
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/payment/payment`, {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/pay`, {
                 params: {
                     email,
                 },

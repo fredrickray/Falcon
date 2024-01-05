@@ -11,6 +11,6 @@ router.post("/", paymentController.savePayment)
 router.get("/", paymentController.getPayments)
 router.post("/orders", paymentController.getAllOrders)
 router.get("/orders/:tx_ref", paymentController.getOrdersByTxRef)
-router.get("/order/order_details/:tx_ref", paymentController.getItemsByTxRef)
+router.get("/order/detail/:tx_ref", paymentController.getItemsByTxRef)
 
 module.exports = router;
