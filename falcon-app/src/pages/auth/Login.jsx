@@ -348,7 +348,7 @@ const Login = () => {
                             onChange={e => setPassword (e.target.value)}
                             required
                           />
-                          <div onClick={() => setIsOpen(prevState => !prevState)} className="absolute inset-y-0 left-3 flex items-center" style={{marginLeft: "90%"}}>
+                          <div onClick={() => setIsOpen(prevState => !prevState)} className="absolute inset-y-0 left-3 flex items-center cursor-pointer" style={{marginLeft: "90%"}}>
                           {isOpen ? <BsEyeFill /> : <BsEyeSlashFill />}
                         </div>
                         </div>
