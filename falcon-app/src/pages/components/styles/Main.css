@@ -1,0 +1,55 @@
+.main_card{
+    font-family: 'Jost', sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    padding: 20px;
+}
+h2{
+    font-family: 'Jost', sans-serif !important;
+    font-weight: 500 !important;
+    color: rgb(1, 17, 30);
+    margin: 0;
+    padding: 0;
+
+}
+.main_card>div{
+    width: clamp(250px, 20%, 350px);
+    height: 250px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.109);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px;
+    transition: 0.3s;
+}
+.main_icons{
+    height: 50px;
+    width: 50px;
+    background: rgb(1, 17, 30);
+    padding: 18px 14px;
+    display: flex;
+    justify-content: center;
+    border-radius: 100px;
+    color: #fff;
+    align-items: center;
+}
+.main_icons > *{
+    margin: 0;
+    padding: 0;
+}
+.main_card>div h3{
+    font-size: 1.4em;
+    font-weight: 500;
+    color: rgb(1, 17, 30);
+    font-family: 'Jost', sans-serif;
+}
+.main_card>div p{
+    font-family: 'Jost', sans-serif;
+}

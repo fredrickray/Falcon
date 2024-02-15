@@ -1,0 +1,60 @@
+.hero_section{
+    height: calc(100vh - 88px);
+    margin-top: 98px;
+    width: 100%;
+    padding: 0 20px;
+}
+.coverImg{
+    width: 100%;
+    height: 80%;
+    object-fit: cover;
+    border-radius: 25px;
+    z-index: -1;
+    background: linear-gradient(rgba(0, 0, 0, 0.275), rgba(0, 0, 0, 0.265)), url('../../../asset/img/index-bg.jpg');
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #fff;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.239);
+    margin-top: 30px;
+}
+.coverImg h2{
+    color: #fff;
+    font-size: 5em;
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    animation: fadeUp 1s ease;
+}
+.coverImg h2 span{
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: #ff6;
+    font-family: 'Jost', sans-serif;
+}
+.cta_btns {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+.cta_btns button{
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 1.3em;
+    font-weight: 500;
+    transition: 0.3s;
+    background: rgb(6, 13, 50);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    animation: fadeIn 1s ease;
+}
+.cta_btns button:hover{
+    scale: 1.05;
+}
+.cta_btns a:first-of-type button{
+    background: rgb(255, 255, 255);
+    color: rgb(6, 13, 50);
+}

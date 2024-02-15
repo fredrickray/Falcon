@@ -7,7 +7,8 @@ import Login from "./pages/auth/Login"
 import PasswordReset from './pages/auth/PasswordReset';
 //------->> AUTH END <-----------
 
-import Index from './pages/Index';
+import Index from './pages/Page';
+import Index2 from './pages/Index';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import MyAI from './pages/MyAI';
@@ -37,6 +38,7 @@ const App = () => {
     <React.StrictMode>
       <BrowserRouter>
         <Routes>
+        <Route exact path="/oldpage" element={<Index2 />} />
         <Route exact path="/" element={<Index />} />
         <Route exact path="/Register" element={<Register />} />
         <Route exact path="/Login" element={<Login />} />
