@@ -2,8 +2,14 @@ const saltRounds = 10;
 const bcrypt = require('bcrypt');
 const knex = require('../knex-db/knex');
 const { createToken, maxAge } = require('../helpers/createToken');
+const {
+  ResourceNotFound,
+  ServerError,
+  BadRequest,
+  Unauthorized,
+} = require('../middlewares/errorHandler');
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
@@ -14,42 +20,38 @@ const login = async (req, res) => {
     } else {
       let hashedPassword = user.password;
       let isValid = await bcrypt.compare(password, hashedPassword);
-      const token = createToken(user.id);
+
       if (!isValid) {
-        res.status(401).json({ message: 'Invalid credentials' });
-      } else {
-        // res.cookie("test", true)
-        res.cookie('jwts', token, {
-          httpOnly: true,
-          withCredentials: true,
-          maxAge: maxAge * 1000,
-        });
-        // console.log ({user: user, token});
-        res.status(200).json({
-          status: 'success',
-          data: user,
-          message: `Welcome back ${user.firstname}`,
-          token,
-        });
+        throw new Unauthorized('Invalid credentials');
       }
+
+      const token = createToken(user.id);
+
+      res.cookie('jwts', token, {
+        httpOnly: true,
+        withCredentials: true,
+        maxAge: maxAge * 1000,
+      });
+
+      res.status(200).json({
+        status: 'success',
+        data: user,
+        message: `Welcome back ${user.firstname}`,
+        token,
+      });
     }
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: 'Internal server error', err: error.message });
+    next(error);
   }
 };
 
 // To Update Merchant's Password
-const passwordReset = async (req, res) => {
+const passwordReset = async (req, res, next) => {
   const { email, password } = req.body;
 
   // Check if email and password are provided
   if (!email || !password) {
-    return res.send({
-      status: 'Failed',
-      message: 'Email and password are required.',
-    });
+    throw new Unauthorized('Email and password are required.');
   }
 
   try {
@@ -66,15 +68,11 @@ const passwordReset = async (req, res) => {
         status: 'Success',
         message: 'Email found and password updated successfully',
       });
-    } else {
-      return res.status(404).json({
-        status: 'Failed',
-        message: 'Email not found and password was not updated',
-      });
     }
+    throw new ResourceNotFound('Email not found and password was not updated');
   } catch (error) {
     console.log(error);
-    res.send(error);
+    next(error);
     // return res.status(error).json({
     //   status: 'Error',
     //   message: 'Internal server error',
@@ -84,7 +82,7 @@ const passwordReset = async (req, res) => {
 };
 
 // get all merchants
-const getMerchants = async (req, res) => {
+const getMerchants = async (req, res, next) => {
   try {
     // Retrieve user data from the "Merchants" table
     const users = await knex.select().from('Merchants');
@@ -92,99 +90,85 @@ const getMerchants = async (req, res) => {
     if (users.length > 0) {
       // Respond with success and the retrieved users
       res.status(200).json({ message: 'Users retrieved', users });
-    } else {
-      // Respond with a not found status and message
-      res.status(404).json({ message: 'No users found' });
     }
+    // Respond with a not found status and message
+    throw new ResourceNotFound('No users found');
   } catch (error) {
-    // Handle any errors that occur during the database query or response sending
-    console.error('Error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    next(error);
   }
 };
 
-const getMerchantId = async (req, res) => {
+const getMerchantId = async (req, res, next) => {
   try {
     const { id } = req.params;
 
     const response = await knex('Merchants').where({ id });
     if (response.length === 0) {
-      return res.status(404).json({ message: 'User does not exist' });
-    } else {
-      return res.status(200).json(response);
+      throw new ResourceNotFound('User does not exist');
     }
+
+    return res.status(200).json(response);
   } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ message: 'Internal server error', err: error.message });
+    // console.log(error);
+    next(error);
   }
 };
 
 // get all orders for all merchants
-const getOrders = async (req, res) => {
+const getOrders = async (req, res, next) => {
   try {
-    // Retrieve user data from the "Merchants" table
+    // Retrieve all data from the "Order" table
     const orders = await knex.select().from('Orders');
 
     if (orders.length > 0) {
       // Respond with success and the retrieved users
       res.status(200).json({ message: 'Orders retrieved succesfully', orders });
-    } else {
-      // Respond with a not found status and message
-      res.status(404).json({ message: 'No users found' });
     }
+    // Respond with a not found status and message
+    throw new ResourceNotFound('No orders found');
   } catch (error) {
     // Handle any errors that occur during the database query or response sending
-    console.error('Error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    next(error);
   }
 };
 
-const getOrderId = async (req, res) => {
+const getOrderId = async (req, res, next) => {
   try {
     const { id } = req.params;
 
     const response = await knex('Orders').where({ id });
     if (response.length === 0) {
-      return res.status(404).json({ message: 'Order does not exist' });
-    } else {
-      return res.status(200).json(response);
+      throw new ResourceNotFound('Order does not exist');
     }
+    return res.status(200).json(response);
   } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .send({ message: 'Internal server error', err: error.message });
+    // console.log(error);
+    next(error);
   }
 };
 
 // getting all stores for all merchants
-const getStores = async (req, res) => {
+const getStores = async (req, res, next) => {
   try {
-    let data = await knex.select().from('Store');
+    let stores = await knex.select().from('Store');
 
-    if (data) {
-      // console.log(data)
-      res.send({
-        message: 'All stores were successfully retrieved',
-        status: 'Success',
-        data,
-      });
-    } else {
-      res.send({ messsage: 'Stors were not retrieved', status: 'Failed' });
+    if (!stores) {
+      throw new ResourceNotFound('Stores not found');
     }
-  } catch (err) {
-    // console.log(err)
-    res.send({
-      message: 'There was an error retrieving data',
-      status: 'Error',
+
+    res.status(200).json({
+      message: 'All stores were successfully retrieved',
+      status: 'Success',
+      data: stores,
     });
+  } catch (error) {
+    // console.log(err)
+    next(error);
   }
 };
 
 // retrieving a particular store by id
-const getStoreID = async (req, res) => {
+const getStoreID = async (req, res, next) => {
   let { name, id } = req.body;
 
   try {
@@ -193,20 +177,19 @@ const getStoreID = async (req, res) => {
       // console.log(response);
       res.status(200).json({
         status: 'Success',
-        message: 'The single store was retrieved successfully',
+        message: 'Store retrieved successfully',
         response,
       });
-    } else {
-      res.json({ status: 'Failed', message: 'Something went wrong' });
     }
+    throw new ServerError();
   } catch (error) {
     // console.log(error);
-    res.send({ status: 'Error', message: 'An error occured' });
+    next(error);
   }
 };
 
 // retrieve all transaction for all Merchants
-const getTransaction = async (req, res) => {
+const getTransaction = async (req, res, next) => {
   try {
     let data = await knex.select().from('Transactions');
     if (data.length > 0) {
@@ -214,43 +197,33 @@ const getTransaction = async (req, res) => {
       res
         .status(200)
         .send({ message: 'Transaction successfully retrieved', data });
-    } else {
-      res
-        .status(404)
-        .send({ messsage: 'Payments information were not retrieved' });
     }
+    throw new ResourceNotFound('Payments information were not retrieved');
   } catch (err) {
     // console.log(err)
-    res
-      .status(500)
-      .send({ message: 'Internal server error', error: err.message });
+    next(error);
   }
 };
 
-const getTransactionId = async (req, res) => {
+const getTransactionId = async (req, res, next) => {
   try {
     const { id } = req.params;
 
     const response = await knex('Transactions').where({ id });
     if (response.length === 0) {
-      res.status(404).send({ messsage: 'No payment found' });
-    } else {
-      res.status(200).json(response);
+      throw new ResourceNotFound('No payment found');
     }
+    res.status(200).json(response);
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: 'Internal server error', error: err.message });
+    next(error);
   }
 };
 
-const getMultipleTable = async (req, res) => {
+const getMultipleTable = async (req, res, next) => {
   const { email } = req.query;
   try {
     if (!email) {
-      return res
-        .status(400)
-        .json({ error: 'Email is required in the request body' });
+      throw new BadRequest('Email is required in the request body');
     }
     const response = await knex('Merchants')
       .select('*')
@@ -259,16 +232,16 @@ const getMultipleTable = async (req, res) => {
       .join('Products', 'Merchants.email', '=', 'Products.email');
 
     if (response.length === 0) {
-      return res.status(404).send({ error: 'Email not found' });
+      throw new ResourceNotFound('Email not found');
     }
 
     res.status(200).json(response);
   } catch (error) {
-    res.send(error.message);
+    next(error);
   }
 };
 
-const testMultipleRequest = async (req, res) => {
+const testMultipleRequest = async (req, res, next) => {
   try {
     const { email } = req.body;
 
@@ -279,7 +252,9 @@ const testMultipleRequest = async (req, res) => {
 
       await Promise.all(async());
     });
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports = {

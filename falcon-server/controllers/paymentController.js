@@ -50,21 +50,19 @@ const initiatePayment = async (req, res) => {
         phonenumber: phone,
         name: firstname + " " + lastname
       },
-      customizations: {
-        title: "Payment for items in cart",
-        logo: logo || "https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg"
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`,
+        },
       }
-    }, {
-      headers: {
-        Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`
-      }
-    });
-    const { link } = response.data.data
-    res.status(200).json(response.data);
+    );
+    const { link } = response.data.data;
+    res.status(200).send({ message: link });
   } catch (error) {
-    res.status(500).send({ message: "Error occurred while making the request", error: error.message });
-    console.error("An error occurred:", error);
+    console.error('An error occurred:', error);
+    next(error);
   }
+
 }
 
 const initiatePaymentCallback = async (req, res) => {
@@ -80,9 +78,11 @@ const initiatePaymentCallback = async (req, res) => {
         // Inform the customer their payment was unsuccessful
     }
 }
-}
 
-const savePayment = async (req, res) => {
+};
+
+
+const savePayment = async (req, res, next) => {
   let { mainData, itemsData } = req.body;
 
   try {
@@ -106,7 +106,7 @@ const savePayment = async (req, res) => {
       } = mainData;
 
       // Insert into Transactions table
-      await trx("Transactions").insert({
+      await trx('Transactions').insert({
         amount,
         currency,
         tx_ref,
@@ -119,7 +119,7 @@ const savePayment = async (req, res) => {
       });
 
       // Insert into Orders table
-      await trx("Orders").insert({
+      await trx('Orders').insert({
         firstname,
         lastname,
         email: customer_email,
@@ -137,7 +137,7 @@ const savePayment = async (req, res) => {
       // Insert order details from the itemsData array
       await Promise.all(
         itemsData.map(async (item) => {
-          await trx("Order_details").insert({
+          await trx('Order_details').insert({
             product_Id: item.product_Id,
             name: item.name,
             price: item.price,
@@ -147,151 +147,146 @@ const savePayment = async (req, res) => {
           });
 
           // Decrement product quantity in Product table
-          await trx("Products")
-            .where("id", item.product_Id)
-            .decrement("quantity", item.quantity);
+          await trx('Products')
+            .where('id', item.product_Id)
+            .decrement('quantity', item.quantity);
         })
       );
     });
 
-    res.status(201).send({ message: "Transaction completed successfully" });
+    res.status(201).send({ message: 'Transaction completed successfully' });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).send({ message: "Internal server error", err: error.message });
+    // console.log(error.message);
+    next(error);
   }
 };
 
-
-const getPayments = async (req, res) => {
+const getPayments = async (req, res, next) => {
   const { email } = req.query;
 
   try {
-    const response = await knex("Transactions").where({ email });
+    const response = await knex('Transactions').where({ email });
     // console.log(response);
 
     if (response.length === 0) {
-      return res.status(404).send({ message: "No transactions found for this email" });
-    } else {
-      return res.status(200).send({ message: "Transactions retrieved successfully", response });
+      throw new ResourceNotFound('No transactions found for this email');
     }
+    return res
+      .status(200)
+      .send({ message: 'Transactions retrieved successfully', response });
   } catch (error) {
     // console.log(error);
-    res.status(500).send({ message: "Internal server error", err: error.message });
+    next(error);
   }
 };
 
-const getAllOrders = async (req, res) => {
+const getAllOrders = async (req, res, next) => {
   const { my_email } = req.body;
 
   try {
-    const orderItems = await knex("Orders")
-      .where({ my_email })
+    const orderItems = await knex('Orders').where({ my_email });
 
     if (orderItems.length === 0) {
-      return res.status(404).json({ message: "No order items found for the provided email" });
+      throw new ResourceNotFound('No order items found for the provided email');
     }
 
-    res.status(200).json({ message: "Items retrieved succesfully", orderItems });
-  }
-  catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(200)
+      .json({ message: 'Items retrieved succesfully', orderItems });
+  } catch (error) {
+    next(error);
   }
 };
 
-const getOrdersByTxRef = async (req, res) => {
+const getOrdersByTxRef = async (req, res, next) => {
   const { tx_ref } = req.params;
 
   try {
-    const orders = await knex("Orders").where({ tx_ref });
+    const orders = await knex('Orders').where({ tx_ref });
 
     if (orders.length === 0) {
-      return res.status(404).json({ message: "No orders found for the provided tx_ref" });
+      throw new ResourceNotFound('No orders found for the provided tx_ref');
     }
 
     res.status(200).json(orders);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error retrieving orders", error: error.message });
+    next(error);
   }
 };
 
-const getItemsByTxRef = async (req, res) => {
+const getItemsByTxRef = async (req, res, next) => {
   const { tx_ref } = req.params;
 
   try {
-    const items = await knex("Order_details").where({ tx_ref });
+    const items = await knex('Order_details').where({ tx_ref });
 
     if (items.length === 0) {
-      return res.status(404).json({ message: "No items found for the provided tx_ref" });
+      throw new ResourceNotFound('No items found for the provided tx_ref');
     }
 
     res.status(200).json(items);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error retrieving items", error: error.message });
+    next(error);
   }
 };
 
-const deletePayment = async (req, res) => {
-  const { id } = req.params
-
-  try {
-    const response = await knex("Transactions").where({ id }).del()
-    console.log(response)
-    res.send(response)
-  }
-  catch (error) {
-    console.log(error)
-    res.status(500).send({ message: "Internal server error", error })
-  }
-}
-
-const deleteOrderById = async (req, res) => {
+const deletePayment = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const deletedRows = await knex("Orders").where({ id }).del();
-
-    if (deletedRows === 0) {
-      return res.status(404).json({ message: "Order not found for the provided ID" });
-    }
-
-    res.status(200).json({ message: "Order deleted successfully" });
+    const response = await knex('Transactions').where({ id }).del();
+    console.log(response);
+    res.send(response);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error deleting order", error: error.message });
+    console.log(error);
+    next(error);
   }
 };
 
-const deleteItemById = async (req, res) => {
+const deleteOrderById = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const deletedRows = await knex("Order_details").where({ id }).del();
+    const deletedRows = await knex('Orders').where({ id }).del();
 
     if (deletedRows === 0) {
-      return res.status(404).json({ message: "Item not found for the provided ID" });
+      throw new ResourceNotFound('Order not found for the provided ID');
     }
 
-    res.status(200).json({ message: "Item deleted successfully" });
+    res.status(200).json({ message: 'Order deleted successfully' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error deleting item", error: error.message });
+    // console.error(error);
+    next(error);
   }
 };
 
-const getAllPayments = async (req, res) => {
+const deleteItemById = async (req, res, next) => {
+  const { id } = req.params;
+
   try {
-    const response = knex.select().from("Transactions")
-    console.log(response)
-    res.send(response)
+    const deletedRows = await knex('Order_details').where({ id }).del();
+
+    if (deletedRows === 0) {
+      throw new ResourceNotFound('Item not found for the provided ID');
+    }
+
+    res.status(200).json({ message: 'Item deleted successfully' });
+  } catch (error) {
+    // console.error(error);
+    next(error);
   }
-  catch (error) {
-    console.log(error)
-    res.status(500).send({ message: "Internal server error", err: error.message })
+};
+
+const getAllPayments = async (req, res, next) => {
+  try {
+    const response = knex.select().from('Transactions');
+    console.log(response);
+    res.send(response);
+  } catch (error) {
+    // console.log(error);
+    next(error);
   }
-}
+};
 
 module.exports = {
   ravenPayment,
@@ -306,5 +301,5 @@ module.exports = {
   deleteOrderById,
   deleteItemById,
 
-  getAllPayments
-}
+  getAllPayments,
+};

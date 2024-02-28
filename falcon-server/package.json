@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon app"
+    "dev": "nodemon index"
   },
   "author": "",
   "license": "ISC",
@@ -17,12 +17,16 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
     "express-session": "^1.17.3",
     "express-validator": "^7.0.1",
     "flutterwave-node-v3": "^1.1.6",
     "jsonwebtoken": "^9.0.0",
     "knex": "^2.4.2",
     "mjml": "^4.14.1",
+    "helmet": "^7.1.0",
+    "joi": "^17.11.0",
+    "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "node-cron": "^3.0.2",
     "nodemailer": "^6.9.1",

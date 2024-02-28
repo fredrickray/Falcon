@@ -1,31 +1,10 @@
 const jwt = require('jsonwebtoken');
-// const knex = require("../knex-db/knex")
-const knex = require('knex')({
-  client: 'mysql',
-  connection: {
-    host: 'localhost',
-    port: 8889,
-    user: 'root',
-    password: 'root',
-    database: 'Falcon',
-  },
-});
-// const knex = require ('knex') ({
-//   client: process.env.DB_CLIENT,
-//   connection: {
-//     host: process.env.DB_HOST,
-//     port: process.env.DB_PORT,
-//     user: process.env.DB_USER,
-//     password: process.env.DB_PASSWORD,
-//     database: process.env.DATABASE,
-//   },
-// });
+const knex = require('../knex-db/knex');
 
 // MERN Authentication -- Net Ninja
 const requireAuth = async (req, res, next) => {
   // verifying authentication
   const { authorization } = req.headers;
-  console.log(req);
 
   if (!authorization) {
     return res.status(401).json({ error: 'Authorization token required' });
@@ -36,6 +15,7 @@ const requireAuth = async (req, res, next) => {
   try {
     const { id } = jwt.verify(token, process.env.SECRET);
     req.user = await knex('Merchants').where({ id });
+    // console.log(user);
     next();
   } catch (error) {
     // console.log(error)
