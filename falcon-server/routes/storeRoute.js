@@ -39,11 +39,15 @@ const {
   getReviews
 } = require("../controllers/storeControl")
 
+const {
+  storeValidator
+} = require("../validators/inputValidator")
+
 
 // Vendor Routes
 
 router
-.post("/", requireAuth, createStore)
+.post("/", requireAuth, storeValidator, createStore)
 
 router
 .put("/:id", requireAuth, updateStore)
@@ -96,7 +100,7 @@ router
 
 // CUSTOMER ROUTES
 router
-.get("/store/:store", getStore)
+.get("/:store", getStore)
 
 // router
 // .get("/product/:id", )

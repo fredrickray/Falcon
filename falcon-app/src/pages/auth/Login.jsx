@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import {Link} from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs"
 // import jwt_decode from "jwt-decode";
-
+import { usePaymentContext } from "../../context/PaymentContext"
 const Login = () => {
+  const { data } = usePaymentContext()
+  const params = useSearchParams()
+  console.log(data)
+  console.log({params})
   const [email, setEmail] = useState ('');
   const [password, setPassword] = useState ('');
   const [isButtonDisabled, setIsButtonDisabled] = useState (false);
@@ -14,6 +18,19 @@ const Login = () => {
   // const [isNavOpen, setIsNavOpen] = useState(false)
   // const LOGIN_URL = 'https://falcon-server-jaek.onrender.com/auth/login';
   const LOGIN_URL = "http://localhost:9000/auth/login"
+
+  // const savePayment = async () => {
+  //   const mainData = { email, firstname, lastname, customer_email, shippingMoney, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, status, currency, transaction_id, amount: totalPrice, tx_ref}
+  //   try{
+  //     const response = await axios.post(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/payment`, {
+  //       mainData,
+  //       itemsData: selectedItemsData
+  //     })
+  //     console.log(response)
+  //   } catch(error){
+  //     console.log(error)
+  //   }
+  // }
 
   const response = (message) => {
     Swal.fire ({
@@ -331,7 +348,7 @@ const Login = () => {
                             onChange={e => setPassword (e.target.value)}
                             required
                           />
-                          <div onClick={() => setIsOpen(prevState => !prevState)} className="absolute inset-y-0 left-3 flex items-center" style={{marginLeft: "90%"}}>
+                          <div onClick={() => setIsOpen(prevState => !prevState)} className="absolute inset-y-0 left-3 flex items-center cursor-pointer" style={{marginLeft: "90%"}}>
                           {isOpen ? <BsEyeFill /> : <BsEyeSlashFill />}
                         </div>
                         </div>

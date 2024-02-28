@@ -17,7 +17,7 @@ const Orders = () => {
     const result = async () => {
       setIsFetching(true)
       try {
-        const response = await  axios.post(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/payment/orders`, { my_email: email })
+        const response = await  axios.post(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/pay/orders`, { my_email: email })
         if(response.status === 200) {
           console.log(response.data.orderItems)
           setData(response.data.orderItems)

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom"
 import Swal from 'sweetalert2';
 import axios from 'axios';
-
+// import { swal } from '../components/Swal';
 const useFetch = url => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -9,6 +10,7 @@ const useFetch = url => {
   const [count, setCount] = useState(0);
   const [store, setStore] = useState("");
   const { email, token } = localStorage;
+  const navigate = useNavigate()
 
   useEffect(() => {
     setIsFetching(true);
@@ -33,6 +35,7 @@ const useFetch = url => {
         setIsFetching(false);
         if (err.response.data.error) {
           console.log(err.response.data.error);
+          // swal('top-end', true, 'error', err.response.data.error, 3000 )
           Swal.fire({
             position: 'top-end',
             toast: true,
@@ -41,13 +44,11 @@ const useFetch = url => {
             showConfirmButton: false,
             timer: 3000,
           });
-          setError(err); // Set the error state
-          setTimeout(() => {
-            window.location.href = "/Login";
-          }, 3000);
+          setError(err.response.data.error); // Set the error state
+          navigate("/Login")
         }
       });
-  }, [url, email, token]);
+  }, [url, email, token, navigate]);
 
   return { data, count, store, isFetching, error };
 };

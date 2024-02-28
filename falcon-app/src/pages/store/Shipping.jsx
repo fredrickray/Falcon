@@ -88,6 +88,10 @@ const Shipping = () => {
                 setSavedValues(createdItem);
                 setRegionsValue('');
                 setPriceValue('');
+                Toast.fire ({
+                    icon: 'success',
+                    title: `Delivery added successfully`,
+                  })
             } catch (error) {
                 console.error('Error saving the item:', error);
             }

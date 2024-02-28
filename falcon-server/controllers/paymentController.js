@@ -1,35 +1,54 @@
-const knex = require('../knex-db/knex');
-const axios = require('axios');
-const { ResourceNotFound } = require('../middlewares/errorHandler');
-require('dotenv').config();
+const knex = require("../knex-db/knex")
+const axios = require("axios")
+require("dotenv").config()
+const Flutterwave = require('flutterwave-node-v3');
+const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
+const sdk = require('api')('@raven-atlas/v1.0#q6geo3gl7pdtgoz');
 
-const initiatePayment = async (req, res, next) => {
-  const { customer_email, firstname, lastname, totalPrice, phone, logo } =
-    req.body;
+
+const ravenPayment = async (req, res) => {
+  const { bank, amount, bank_code, currency, account_number, account_name, narration, reference } = req.body
   try {
-    const response = await axios.post(
-      'https://api.flutterwave.com/v3/payments',
-      {
-        tx_ref: Date.now(),
-        amount: totalPrice,
-        currency: 'NGN',
-        redirect_url:
-          'https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc',
-        meta: {
-          consumer_id: 23,
-          consumer_mac: '92a3-912ba-1192a',
-        },
-        customer: {
-          email: customer_email,
-          phonenumber: phone,
-          name: firstname + ' ' + lastname,
-        },
-        customizations: {
-          title: 'Payment for items in cart',
-          logo:
-            logo ||
-            'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
-        },
+    const response = await axios.post("https://integrations.getravenbank.com/v1/transfers/create", {
+      amount,
+      bank_code,
+      bank,
+      account_name,
+      account_number,
+      narration,
+      reference,
+      currency
+    }, {
+      headers: {
+        Authorization: `Bearer RVSEC-TESTe24fd17275d998645746770c00c4499ecfac044994a8e084883e3e66a3fbb14201185f670d329dc414b8dcb4955e7a6b-1682685347830`
+      }
+    })
+    console.log(response.data)
+    const data = JSON.stringify(response)
+    res.json(response.data)
+  } 
+  catch (error) {
+    console.log("An error occured")
+    res.send(error)
+  }
+}
+
+const initiatePayment = async (req, res) => {
+  const { customer_email, firstname, lastname, totalPrice, phone, logo } = req.body
+  try {
+    const response = await axios.post("https://api.flutterwave.com/v3/payments", {
+      tx_ref: Date.now(),
+      amount: totalPrice,
+      currency: "NGN",
+      redirect_url: "http://localhost:3000/Login",
+      meta: {
+        consumer_id: 23,
+        consumer_mac: "92a3-912ba-1192a"
+      },
+      customer: {
+        email: customer_email,
+        phonenumber: phone,
+        name: firstname + " " + lastname
       },
       {
         headers: {
@@ -43,7 +62,25 @@ const initiatePayment = async (req, res, next) => {
     console.error('An error occurred:', error);
     next(error);
   }
+
+}
+
+const initiatePaymentCallback = async (req, res) => {
+  if (req.query.status === 'successful') {
+    const transactionDetails = await Transaction.find({ref: req.query.tx_ref});
+    const response = await flw.Transaction.verify({id: req.query.transaction_id});
+    if (
+        response.data.status === "successful"
+        && response.data.amount === transactionDetails.amount
+        && response.data.currency === "NGN") {
+        // Success! Confirm the customer's payment
+    } else {
+        // Inform the customer their payment was unsuccessful
+    }
+}
+
 };
+
 
 const savePayment = async (req, res, next) => {
   let { mainData, itemsData } = req.body;
@@ -252,7 +289,9 @@ const getAllPayments = async (req, res, next) => {
 };
 
 module.exports = {
+  ravenPayment,
   initiatePayment,
+  initiatePaymentCallback,
   savePayment,
   getPayments,
   getAllOrders,

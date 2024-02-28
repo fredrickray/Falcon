@@ -15,9 +15,6 @@ const Home = () => {
   const [totalTransaction, setTotalTransaction] = useState(0.00)
   const [productsSold, setProductsSold] = useState(0)
   const { email } = localStorage
-  // console.log(product)
-  // const lastProduct = product[product.length - 1]
-  // console.log(lastProduct)
 
   const handleNavOpen = () => setIsNavOpen(prev => !prev)
   const popUp = (position, message, color) => {
@@ -35,27 +32,24 @@ const Home = () => {
     retrieveMoneyMade()
     retrieveOrders()
   }, [])
+  
   const retrieveMoneyMade = async () => {
     try {
-      const response = await axios.get(`http://localhost:9000/payment/payment`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/pay`, {
         params: {
           email,
         },
       });
-
-      // console.log(response.data)
 
       if (response.data.message === 'No transactions found for this email') {
         popUp("center", response.data.message)
       }
       else {
         const transactions = response.data.response;
-        console.log(transactions.length)
         const totalAmount = transactions.reduce((total, transaction) => {
           return total + transaction.amount;
         }, 0);
         const formattedTotalAmount = totalAmount.toLocaleString();
-        console.log(formattedTotalAmount)
         setTotalMoney(formattedTotalAmount);
         setTotalTransaction(transactions.length)
       }
@@ -68,12 +62,11 @@ const Home = () => {
 
   const retrieveOrders = async () => {
     try {
-      const response = await axios.post("http://localhost:9000/payment/orders", { my_email: email })
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/pay/orders`, { my_email: email })
       if (response.status === 404) {
         popUp("top-end", response.data.message)
       }
       else {
-        console.log()
         setProductsSold(response.data.orderItems.length)
       }
 

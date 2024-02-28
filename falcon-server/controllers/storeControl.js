@@ -1,19 +1,22 @@
 const knex = require("../knex-db/knex")
+const {
+  BadRequest,
+  Unauthorized,
+  ResourceNotFound,
+} = require('../middlewares/errorHandler');
 
 //creating store for a merchant
-const createStore = async (req, res) => {
+const createStore = async (req, res, next) => {
   const { name, link, email, logo } = req.body;
-  if (name == '') {
-    res.send('Name field must not be empty');
-  }
-  else if (link == '') {
-    res.send('Store Link field must not be empty');
-  }
-  else {
     try {
+      const storeExist = await knex("Store").where({name}).first()
+      if(storeExist) {
+        throw new BadRequest("Store name already exist, try again")
+      }
+
       let store = await knex('Store').insert({
         name: name,
-        link: `http://localhost:9000/stores/get-store/${link}`,
+        link: `http://localhost:9000/store/${link}`,
         email: email,
         logo: logo,
         // "http://localhost:9000/stores/get-store/" +
@@ -25,9 +28,8 @@ const createStore = async (req, res) => {
       });
     }
     catch (error) {
-      res.send({ message: 'Failed to create store', status: 'Error', error });
+      next(error)
     }
-  }
 };
 
 const updateStore = async (req, res) => {
@@ -134,19 +136,19 @@ const createProduct = async (req, res) => {
         store,
       })
 
-    await knex("Collection")
-      .insert({
-        collection,
-        productName: name,
-        productPrice: price,
-        productWeight: weight,
-        productQuantity: quantity,
-        productImage: image,
-        productStyle: style,
-        productSize: size,
-        productColour: colour,
-        store
-      })
+    // await knex("Collection")
+    //   .insert({
+    //     collection,
+    //     productName: name,
+    //     productPrice: price,
+    //     productWeight: weight,
+    //     productQuantity: quantity,
+    //     productImage: image,
+    //     productStyle: style,
+    //     productSize: size,
+    //     productColour: colour,
+    //     store
+    //   })
     res.status(201).send({ message: "Product created succesfully", status: "Success", response })
   }
   catch (error) {
@@ -335,7 +337,7 @@ const createDiscount = async (req, res) => {
 }
 
 const getDiscounts = async (req, res) => {
-  const { email } = req.body;
+  const { email } = req.query;
 
   try {
     const [discounts] = await knex("Discounts").where({ email });
@@ -378,6 +380,24 @@ const createDelivery = async (req, res) => {
   catch (error) {
     console.log(error)
     res.status(500).send({ message: "Internal server error", error })
+  }
+};
+
+const updateDelivery = async (req, res) => {
+  const { location, fee, email } = req.body;
+
+  try {
+    const response = await knex('Delivery')
+      .where({ email })
+      .update({ location, fee });
+
+    if (response === 0) {
+      return res.status(404).json({ message: 'Delivery info does not exist.' });
+    }
+
+    return res.status(200).json({ message: 'Delivery updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ message: 'An error occurred', error });
   }
 };
 
@@ -468,6 +488,7 @@ module.exports = {
   getDiscounts,
   deleteDiscount,
   createDelivery,
+  updateDelivery,
   getDelivery,
   deleteDelivery,
   createReview,

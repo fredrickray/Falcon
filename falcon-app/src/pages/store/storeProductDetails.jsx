@@ -10,8 +10,9 @@ import { useNavigate } from 'react-router-dom';
 import { LineWave } from 'react-loader-spinner';
 import NotFound from '../../components/notFound';
 import ServerError from '../../components/ServerError';
-
+import { usePaymentContext } from "../../context/PaymentContext"
 function StoreProductDetailed() {
+  const { addDataToPaymentContext } = usePaymentContext()
   const { id } = useParams();
   const [firstname, setFirstname] = useState("")
   const [lastname, setLastname] = useState("")
@@ -185,19 +186,19 @@ function StoreProductDetailed() {
     const itemIndex = addedItem.find((item) => item.id === id);
     console.log(itemIndex)
     // console.log(addedItem)
-  
+
     if (itemIndex.cartQuantity <= itemIndex.quantity) {
-      if(firstClick) {
-        const newArray =  addedItem.map((obj) => (obj.id === id ? {...obj, cartQuantity: obj.cartQuantity + 1} : obj) )
+      if (firstClick) {
+        const newArray = addedItem.map((obj) => (obj.id === id ? { ...obj, cartQuantity: obj.cartQuantity + 1 } : obj))
         setAddedItem(newArray)
       }
-      else{
-        const newArray =  addedItem.map((obj) => (obj.id === id ? {...obj, cartQuantity: obj.cartQuantity + 2} : obj) )
+      else {
+        const newArray = addedItem.map((obj) => (obj.id === id ? { ...obj, cartQuantity: obj.cartQuantity + 2 } : obj))
         setAddedItem(newArray)
         setFirstClick(true)
       }
     }
-    else{
+    else {
       Swal.fire({
         position: 'top-end',
         toast: true,
@@ -207,12 +208,12 @@ function StoreProductDetailed() {
         timer: 2500,
       });
     }
-    
-  };
-  
 
- 
-  
+  };
+
+
+
+
 
   const minusQuantity = (id) => {
     if (quantity > 1) {
@@ -368,21 +369,16 @@ function StoreProductDetailed() {
     fetch()
   }, []);
 
-  const fetch = async () => {
-    try {
-      const response = await axios.get("http://localhost:9000/store/delivery", { email })
-      console.log(response)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+
   const fetchDeliveryValues = async () => {
     try {
-      const response = await axios.get(GET_DELIVERY_URL, { email })
+      const response = await axios.get(GET_DELIVERY_URL, {
+        params: { email }
+      })
       // console.log(response)
-      // const shipping = response.data.data2
-      // const newShiping = shipping.map((item) => ({ location: item.location, fee: item.fee }))
-      // setDeliveryInfo(newShiping)
+      const shipping = response.data.data
+      const newShiping = shipping.map((item) => ({ location: item.location, fee: item.fee }))
+      setDeliveryInfo(newShiping)
     }
     catch (error) {
       console.log(error)
@@ -508,104 +504,109 @@ function StoreProductDetailed() {
     };
   }
 
-  // const selectedItemsData = addedItem.map(item => ({
-  //   product_Id: item.id,
-  //   name: item.name,
-  //   price: item.price,
-  //   quantity: quantity,
-  //   image: item.image
-  // }));
+  const selectedItemsData = addedItem.map(item => ({
+    product_Id: item.id,
+    name: item.name,
+    price: item.price,
+    quantity: quantity,
+    image: item.image
+  }));
 
-  const initiatePayment = async() => {
+
+  const initiatePayment = async () => {
+    const mainData = { email, firstname, lastname, customer_email, shippingMoney, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, currency: "NGN", amount: totalPrice }
+    addDataToPaymentContext(mainData)
     try {
-      const response = await axios.post("http://localhost:9000/payment/initiate", {
+      const response = await axios.post("http://localhost:9000/pay/initiate", {
         customer_email,
         firstname,
         lastname,
         totalPrice,
         phone
       })
-      console.log(response)
+      console.log(response.data.data.link)
     } catch (error) {
       console.log(error)
     }
   }
 
+ 
 
 
-  // const config = {
-  //   // public_key: process.env.FLUTTERWAVE_PUBLIC_API_KEY,
-  //   public_key: process.env.REACT_APP_FLTW_TEST_PUBLIC_KEY,
-  //   tx_ref: Date.now(),
-  //   amount: totalPrice,
-  //   currency: 'NGN',
-  //   payment_options: 'card,mobilemoney,ussd',
-  //   customer: {
-  //     email: customer_email,
-  //     phone: phone,
-  //     name: firstname + " " + lastname
-  //   },
-  //   customizations: {
-  //     title: 'My store',
-  //     description: 'Payment for items in cart',
-  //     logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
-  //   },
-  // };
 
-  // const fwConfig = {
-  //   ...config,
-  //   text: 'Proceed to payment',
-  //   callback: async (response) => {
-  //     console.log(response);
-  //     closePaymentModal(); // this will close the modal programmatically
+  const config = {
+    // public_key: process.env.FLUTTERWAVE_PUBLIC_API_KEY,
+    public_key: process.env.REACT_APP_FLTW_TEST_PUBLIC_KEY,
+    tx_ref: Date.now(),
+    amount: totalPrice,
+    currency: 'NGN',
+    payment_options: 'card,mobilemoney,ussd',
+    customer: {
+      email: customer_email,
+      phone: phone,
+      name: firstname + " " + lastname
+    },
+    customizations: {
+      title: 'My store',
+      description: 'Payment for items in cart',
+      logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
+    },
+  };
 
-  //     const { tx_ref, amount, currency, transaction_id, status } = response;
-  //     const mainData = { email, firstname, lastname, customer_email, tx_ref, shipping_money: shippingMoney, amount, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, status, currency, transaction_id }
-  //     try {
-  //       const response = await axios.post('https://falcon-server-jaek.onrender.com/payment/new_payment', {
-  //         mainData,
-  //         itemsData: selectedItemsData
-  //       });
+  const fwConfig = {
+    ...config,
+    text: 'Proceed to payment',
+    callback: async (response) => {
+      console.log(response);
+      closePaymentModal(); // this will close the modal programmatically
 
-  //       console.log(response)
-  //       console.log('POST request successful:', response.data);
-  //       localStorage.removeItem("cartItem")
-  //       setFirstname('')
-  //       setLastname('')
-  //       setCustomerEmail('')
-  //       setPhone('')
-        
-  //       // window.location.href = `/Store/${store}`
+      const { tx_ref, amount, currency, transaction_id, status } = response;
+      const mainData = { email, firstname, lastname, customer_email, tx_ref, shipping_money: shippingMoney, amount, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, status, currency, transaction_id }
+      try {
+        const response = await axios.post('http://localhost:9000/pay/initiate', {
+          mainData,
+          itemsData: selectedItemsData
+        });
 
-  //       if (status === "successful" || "completed") {
-  //         Swal.fire({
-  //           position: 'center',
-  //           icon: 'success',
-  //           title: 'Transaction completed succesfully',
-  //           showConfirmButton: false,
-  //           timer: 2500
-  //         })
+        console.log(response)
+        console.log('POST request successful:', response.data);
+        localStorage.removeItem("cartItem")
+        setFirstname('')
+        setLastname('')
+        setCustomerEmail('')
+        setPhone('')
 
-  //         console.log("Success status: ", status)
-  //       }
-  //       else {
-  //         Swal.fire({
-  //           position: 'center',
-  //           icon: 'error',
-  //           title: 'Transaction was not succesfully',
-  //           showConfirmButton: false,
-  //           timer: 1500
-  //         })
+        // window.location.href = `/Store/${store}`
 
-  //         console.log(status)
-  //       }
-  //     }
-  //     catch (error) {
-  //       console.error('POST request error:', error.message);
-  //     }
-  //   },
-  //   onClose: () => console.log("Closing payment modal"),
-  // };
+        if (status === "successful" || "completed") {
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Transaction completed succesfully',
+            showConfirmButton: false,
+            timer: 2500
+          })
+
+          console.log("Success status: ", status)
+        }
+        else {
+          Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: 'Transaction was not succesfully',
+            showConfirmButton: false,
+            timer: 1500
+          })
+
+          console.log(status)
+        }
+      }
+      catch (error) {
+        console.error('POST request error:', error.message);
+      }
+    },
+    onClose: () => console.log("Closing payment modal"),
+  };
 
 
 
@@ -626,7 +627,7 @@ function StoreProductDetailed() {
         />
       )}
 
-      {!isFetching &&  error === 500 && !productDetail ? (
+      {!isFetching && error === 500 && !productDetail ? (
         <ServerError />
       ) : null}
 
@@ -914,21 +915,8 @@ function StoreProductDetailed() {
                     </div>
 
                     <div data-v-7d194230 className='summary__footer__item'>
-                      {/* <button 
-                    type="" 
-                    className='btn btn--primary btn--block'
-                    onClick={() => {
-                      handleFlutterPayment({
-                        callback: (response) => {
-                          console.log(response)
-                          closePaymentModal()
-                        },
-                        onClose: () => {},
-                      })
-                    }}
-                    >PLACE YOUR ORDER</button> */}
-                      {/* <FlutterWaveButton className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton> */}
-                      <button type="button" className='btn_ship btn-success btn-md ms-auto' onClick={initiatePayment}>Proceed to Payment</button>
+                      <FlutterWaveButton className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton>
+                      {/* <button type="" className='btn_ship btn-success btn-md ms-auto' onClick={initiatePayment}>Proceed to Payment</button> */}
                     </div>
                   </div>
 

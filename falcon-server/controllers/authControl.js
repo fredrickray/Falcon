@@ -82,9 +82,9 @@ const verifyEmail = async (req, res, next) => {
       throw new Unauthorized('Invalid email or verification code');
     }
 
-    if (user.verified) {
-      return res.status(200).json({ message: 'Email already verified', user });
-    }
+    // if (user.verified) {
+    //   return res.status(200).json({ message: 'Email already verified', user });
+    // }
 
     if (user.token !== verificationCode) {
       throw new Unauthorized('Invalid email or verification code');
