@@ -8,6 +8,7 @@ import { BsEyeFill, } from "react-icons/bs"
 import axios from "axios"
 import useFetch from '../../hooks/useFetch';
 import { LineWave } from 'react-loader-spinner';
+import Swal from "sweetalert2"
 
 const ManageStore = () => {
     const { store, isFetching } =  useFetch(`${process.env.REACT_APP_BACKEND_LOCAL_URL}/store/product`)
@@ -25,6 +26,18 @@ const ManageStore = () => {
     const [discountCodes, setDiscountCodes] = useState([]);
     const [newDiscountName, setNewDiscountName] = useState('');
     const [newDiscountPrice, setNewDiscountPrice] = useState('');
+
+    const Toast = Swal.mixin ({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: toast => {
+          toast.addEventListener ('mouseenter', Swal.stopTimer);
+          toast.addEventListener ('mouseleave', Swal.resumeTimer);
+        },
+      });
 
     const addDiscountCode = async () => {
         if (newDiscountName.trim() !== '' && newDiscountPrice !== '') {
@@ -46,10 +59,16 @@ const ManageStore = () => {
                         }
                     }
                 );
-
+                
+          
+                 
                 // Fetch the discounts again and update the state with the fetched data
                 const fetchedDiscounts = await fetchDiscounts();
                 setDiscountCodes(fetchedDiscounts);
+                Toast.fire ({
+                    icon: 'success',
+                    title: `Discount code added`,
+                  })
 
                 // Clear the input fields
                 setNewDiscountName('');
@@ -79,6 +98,10 @@ const ManageStore = () => {
             // const updatedDiscounts = [...discountCodes];
             // updatedDiscounts.splice(index, 1);
             setDiscountCodes(updatedDiscountCode);
+            Toast.fire ({
+                icon: 'success',
+                title: `Discount code deleted`,
+              })
         } catch (error) {
             console.error('Error deleting discount:', error);
         }
@@ -86,6 +109,7 @@ const ManageStore = () => {
 
     async function fetchDiscounts() {
         try {
+            
             const response = await axios.post("https://falcon-server-jaek.onrender.com/store/get-discount", { email },
                 {
                     headers: {

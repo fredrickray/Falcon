@@ -517,14 +517,14 @@ function StoreProductDetailed() {
     const mainData = { email, firstname, lastname, customer_email, shippingMoney, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, currency: "NGN", amount: totalPrice }
     addDataToPaymentContext(mainData)
     try {
-      const response = await axios.post("http://localhost:9000/payment/initiate", {
+      const response = await axios.post("http://localhost:9000/pay/initiate", {
         customer_email,
         firstname,
         lastname,
         totalPrice,
         phone
       })
-      console.log(response.data.message)
+      console.log(response.data.data.link)
     } catch (error) {
       console.log(error)
     }
@@ -534,79 +534,79 @@ function StoreProductDetailed() {
 
 
 
-  // const config = {
-  //   // public_key: process.env.FLUTTERWAVE_PUBLIC_API_KEY,
-  //   public_key: process.env.REACT_APP_FLTW_TEST_PUBLIC_KEY,
-  //   tx_ref: Date.now(),
-  //   amount: totalPrice,
-  //   currency: 'NGN',
-  //   payment_options: 'card,mobilemoney,ussd',
-  //   customer: {
-  //     email: customer_email,
-  //     phone: phone,
-  //     name: firstname + " " + lastname
-  //   },
-  //   customizations: {
-  //     title: 'My store',
-  //     description: 'Payment for items in cart',
-  //     logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
-  //   },
-  // };
+  const config = {
+    // public_key: process.env.FLUTTERWAVE_PUBLIC_API_KEY,
+    public_key: process.env.REACT_APP_FLTW_TEST_PUBLIC_KEY,
+    tx_ref: Date.now(),
+    amount: totalPrice,
+    currency: 'NGN',
+    payment_options: 'card,mobilemoney,ussd',
+    customer: {
+      email: customer_email,
+      phone: phone,
+      name: firstname + " " + lastname
+    },
+    customizations: {
+      title: 'My store',
+      description: 'Payment for items in cart',
+      logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
+    },
+  };
 
-  // const fwConfig = {
-  //   ...config,
-  //   text: 'Proceed to payment',
-  //   callback: async (response) => {
-  //     console.log(response);
-  //     closePaymentModal(); // this will close the modal programmatically
+  const fwConfig = {
+    ...config,
+    text: 'Proceed to payment',
+    callback: async (response) => {
+      console.log(response);
+      closePaymentModal(); // this will close the modal programmatically
 
-  //     const { tx_ref, amount, currency, transaction_id, status } = response;
-  //     const mainData = { email, firstname, lastname, customer_email, tx_ref, shipping_money: shippingMoney, amount, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, status, currency, transaction_id }
-  //     try {
-  //       const response = await axios.post('https://falcon-server-jaek.onrender.com/payment/new_payment', {
-  //         mainData,
-  //         itemsData: selectedItemsData
-  //       });
+      const { tx_ref, amount, currency, transaction_id, status } = response;
+      const mainData = { email, firstname, lastname, customer_email, tx_ref, shipping_money: shippingMoney, amount, discount, state: selectedState, address: deliveryAddress, delivery_note: deliveryNote, status, currency, transaction_id }
+      try {
+        const response = await axios.post('http://localhost:9000/pay/initiate', {
+          mainData,
+          itemsData: selectedItemsData
+        });
 
-  //       console.log(response)
-  //       console.log('POST request successful:', response.data);
-  //       localStorage.removeItem("cartItem")
-  //       setFirstname('')
-  //       setLastname('')
-  //       setCustomerEmail('')
-  //       setPhone('')
+        console.log(response)
+        console.log('POST request successful:', response.data);
+        localStorage.removeItem("cartItem")
+        setFirstname('')
+        setLastname('')
+        setCustomerEmail('')
+        setPhone('')
 
-  //       // window.location.href = `/Store/${store}`
+        // window.location.href = `/Store/${store}`
 
-  //       if (status === "successful" || "completed") {
-  //         Swal.fire({
-  //           position: 'center',
-  //           icon: 'success',
-  //           title: 'Transaction completed succesfully',
-  //           showConfirmButton: false,
-  //           timer: 2500
-  //         })
+        if (status === "successful" || "completed") {
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Transaction completed succesfully',
+            showConfirmButton: false,
+            timer: 2500
+          })
 
-  //         console.log("Success status: ", status)
-  //       }
-  //       else {
-  //         Swal.fire({
-  //           position: 'center',
-  //           icon: 'error',
-  //           title: 'Transaction was not succesfully',
-  //           showConfirmButton: false,
-  //           timer: 1500
-  //         })
+          console.log("Success status: ", status)
+        }
+        else {
+          Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: 'Transaction was not succesfully',
+            showConfirmButton: false,
+            timer: 1500
+          })
 
-  //         console.log(status)
-  //       }
-  //     }
-  //     catch (error) {
-  //       console.error('POST request error:', error.message);
-  //     }
-  //   },
-  //   onClose: () => console.log("Closing payment modal"),
-  // };
+          console.log(status)
+        }
+      }
+      catch (error) {
+        console.error('POST request error:', error.message);
+      }
+    },
+    onClose: () => console.log("Closing payment modal"),
+  };
 
 
 
@@ -915,8 +915,8 @@ function StoreProductDetailed() {
                     </div>
 
                     <div data-v-7d194230 className='summary__footer__item'>
-                      {/* <FlutterWaveButton className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton> */}
-                      <button type="" className='btn_ship btn-success btn-md ms-auto' onClick={initiatePayment}>Proceed to Payment</button>
+                      <FlutterWaveButton className="btn_ship btn-success btn-md ms-auto" {...fwConfig} >Proceed to Payment</FlutterWaveButton>
+                      {/* <button type="" className='btn_ship btn-success btn-md ms-auto' onClick={initiatePayment}>Proceed to Payment</button> */}
                     </div>
                   </div>
 

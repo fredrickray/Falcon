@@ -337,7 +337,7 @@ const createDiscount = async (req, res) => {
 }
 
 const getDiscounts = async (req, res) => {
-  const { email } = req.body;
+  const { email } = req.query;
 
   try {
     const [discounts] = await knex("Discounts").where({ email });
